@@ -1,0 +1,681 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Patagonia 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: cartel de sendero arriba, franja de ruta con las 6 bases, línea de tiempo a la izquierda y panel del día a la derecha (apilado en el teléfono) */
+:root{
+  --bg:#eef1ec; --surface:#fbfcf9; --ink:#1d2a26; --muted:#5b6b64; --line:#cfd8d1;
+  --wood:#5a3b24; --sign:#f2c14e; --lake:#1f6f8b; --forest:#2f5d46; --ice:#cfe7ee;
+  --casa:#8a5a2b; --camp:#2f7a52; --ref:#2b6c9a; --fly:#7b4f8f;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111816; --surface:#18221f; --ink:#e7eee9; --muted:#9fb0a8; --line:#2c3a35;
+  --wood:#3a2616; --sign:#f2c14e; --lake:#5fb3d0; --forest:#7fbf98; --ice:#24414a;
+  --casa:#d9a066; --camp:#6cc493; --ref:#7ab8e6; --fly:#c59ad8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --surface:#18221f; --ink:#e7eee9; --muted:#9fb0a8; --line:#2c3a35;
+  --wood:#3a2616; --sign:#f2c14e; --lake:#5fb3d0; --forest:#7fbf98; --ice:#24414a;
+  --casa:#d9a066; --camp:#6cc493; --ref:#7ab8e6; --fly:#c59ad8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+/* cartel */
+.sign{background:var(--wood);color:var(--sign);border-radius:6px;padding:20px 24px;position:relative;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px);
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.25)}
+.sign small{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.sign h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,8vw,76px);line-height:.95;margin:6px 0 10px;letter-spacing:.01em;text-wrap:balance}
+.sign p{margin:0;color:#f6e7c1;max-width:60ch}
+.facts{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:14px;font-family:var(--mono);font-size:13px;color:#f6e7c1}
+.facts b{color:var(--sign);font-weight:600}
+/* ruta */
+.route{display:grid;grid-template-columns:repeat(6,1fr);gap:0;position:relative;overflow-x:auto}
+.route::before{content:"";position:absolute;left:8%;right:8%;top:15px;border-top:2px dashed var(--muted);opacity:.6}
+.base{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:0 4px;position:relative;min-width:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.base i{width:30px;height:30px;border-radius:50%;background:var(--surface);border:3px solid var(--forest);display:grid;place-items:center;font-style:normal;font-family:var(--mono);font-size:12px;font-weight:600}
+.base span{font-size:13px;font-weight:700;line-height:1.2}
+.base em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.base.on i{background:var(--sign);border-color:var(--wood);color:#2a1a0e}
+.base:focus-visible{outline:2px solid var(--lake);outline-offset:4px;border-radius:6px}
+/* filtros */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters label{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.chip .dot{width:9px;height:9px;border-radius:50%}
+.chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip:focus-visible{outline:2px solid var(--lake);outline-offset:2px}
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.main{grid-template-columns:minmax(0,1fr)}.route{grid-template-columns:repeat(6,minmax(84px,1fr))}}
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;position:relative}
+.tl::before{content:"";position:absolute;left:58px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.day{display:grid;grid-template-columns:48px 20px minmax(0,1fr);gap:0 10px;align-items:start;padding:8px 6px;border-radius:8px;cursor:pointer;background:none;border:0;width:100%;text-align:left;color:inherit;font:inherit;position:relative}
+.day:hover{background:var(--surface)}
+.day.on{background:var(--surface);box-shadow:0 0 0 1.5px var(--line)}
+.day:focus-visible{outline:2px solid var(--lake);outline-offset:1px}
+.day .d{font-family:var(--mono);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;padding-top:2px;text-align:right}
+.day .pin{width:14px;height:14px;border-radius:50%;margin:4px auto 0;border:3px solid var(--bg);box-shadow:0 0 0 2px currentColor;background:currentColor;z-index:1}
+.day .t{font-weight:700;line-height:1.3}
+.day .s{font-size:13px;color:var(--muted);line-height:1.35}
+.day.dim{opacity:.3}
+.k-casa{color:var(--casa)}.k-camp{color:var(--camp)}.k-ref{color:var(--ref)}.k-fly{color:var(--fly)}
+/* panel */
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;overflow:hidden;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:820px){.panel{position:static}}
+.ph{margin:0;position:relative}.ph img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;max-width:100%}.ph figcaption{position:absolute;right:8px;bottom:6px;font-family:var(--mono);font-size:10px;color:#fff;background:rgba(0,0,0,.45);padding:2px 6px;border-radius:3px}
+.scene[hidden]{display:none}
+.scene{display:block;width:100%;aspect-ratio:16/8;max-width:100%;background:#9cc}
+.pbody{padding:20px 22px 22px;display:flex;flex-direction:column;gap:14px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tag{border-radius:4px;padding:2px 8px;color:#fff;letter-spacing:.06em}
+.pbody h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,44px);line-height:1;margin:0;text-wrap:balance}
+.pbody .lead{margin:0;max-width:62ch;color:var(--ink)}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat{border:1.5px solid var(--line);border-radius:6px;padding:6px 10px;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.stat b{display:block;font-family:var(--body);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.acts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.acts li{display:grid;grid-template-columns:62px minmax(0,1fr);gap:10px;align-items:baseline}
+.acts .h{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{color:var(--ink);text-decoration:none;border:1.5px solid var(--ink);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:700}
+.links a:hover{background:var(--ink);color:var(--bg)}
+.links a:focus-visible{outline:2px solid var(--lake);outline-offset:2px}
+.nav{display:flex;justify-content:space-between;gap:8px;border-top:1.5px solid var(--line);padding-top:12px}
+.nav button{font:inherit;font-size:14px;background:none;border:0;color:var(--lake);cursor:pointer;font-weight:700;padding:4px 0}
+.nav button:disabled{color:var(--muted);opacity:.5;cursor:default}
+.nav button:focus-visible{outline:2px solid var(--lake);outline-offset:2px}
+.note{font-size:13px;color:var(--muted);margin:0}
+@media (prefers-reduced-motion:no-preference){.scene{transition:opacity .25s}.scene.fade{opacity:.35}}
+/* páginas: carteles de dirección de madera */
+.pages{display:flex;flex-wrap:wrap;gap:10px 30px;margin-top:-8px}
+.pages a{position:relative;display:inline-flex;align-items:baseline;gap:10px;height:46px;padding:0 12px 0 18px;text-decoration:none;color:var(--sign);background:var(--wood);
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px);border-radius:4px 0 0 4px;opacity:.5;transition:opacity .15s}
+.pages a::after{content:"";position:absolute;left:100%;top:0;border-left:20px solid var(--wood);border-top:23px solid transparent;border-bottom:23px solid transparent}
+.pages a b{font-family:var(--display);font-weight:800;font-size:24px;line-height:46px;letter-spacing:.01em}
+.pages a span{font-size:13px;color:#f6e7c1}
+.pages a[aria-current="page"]{opacity:1}
+.pages a:hover{opacity:.85}
+.pages a:focus-visible{outline:2px solid var(--lake);outline-offset:3px}
+@media (max-width:480px){.pages a span{display:none}}
+.view[hidden]{display:none}
+.view{display:flex;flex-direction:column;gap:24px}
+/* página de autos */
+.rent{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.rent{grid-template-columns:minmax(0,1fr)}}
+.shots{display:grid;gap:6px}
+.shots figure{margin:0;position:relative;border-radius:10px;overflow:hidden;background:var(--ice)}
+.shots .row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.shots img{display:block;width:100%;max-width:100%;aspect-ratio:16/10;object-fit:cover}
+.shots .row img{aspect-ratio:4/3}
+.shots figcaption{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:2px 6px;border-radius:3px}
+.voucher{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:820px){.voucher{position:static}}
+.v-top{padding:22px 22px 18px;display:flex;flex-direction:column;gap:10px}
+.v-top .who{margin:0;color:var(--muted);font-size:14px}
+.v-top h2{font-family:var(--display);font-weight:800;font-size:clamp(36px,5vw,50px);line-height:.95;margin:0;text-wrap:balance}
+.when{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 14px;font-size:14px}
+.when dt{color:var(--muted)}.when dd{margin:0;font-variant-numeric:tabular-nums}
+.total{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.total b{font-family:var(--display);font-weight:800;font-size:clamp(52px,8vw,76px);line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.total span{font-size:14px;color:var(--muted)}
+.perf{position:relative;height:0;border-top:2px dashed var(--line);margin:0 16px}
+.perf::before,.perf::after{content:"";position:absolute;top:-12px;width:22px;height:22px;border-radius:50%;background:var(--bg)}
+.perf::before{left:-29px}.perf::after{right:-29px}
+.stubs{display:grid;grid-template-columns:1fr 1fr}
+.stub{padding:18px 22px 22px;display:flex;flex-direction:column;gap:10px}
+.stub+.stub{border-left:2px dashed var(--line)}
+@media (max-width:480px){.stubs{grid-template-columns:1fr}.stub+.stub{border-left:0;border-top:2px dashed var(--line)}}
+.stub h3{margin:0;font-size:16px;font-weight:700}
+.stub .amt{font-family:var(--display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.stub dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:13px}
+.stub dt{color:var(--muted)}.stub dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.go{margin-top:4px;display:block;text-align:center;background:var(--sign);color:#2a1a0e;font-weight:700;text-decoration:none;border-radius:6px;padding:11px 12px}
+.go:hover{background:#e3ad2f}
+.go:focus-visible{outline:2px solid var(--lake);outline-offset:2px}
+.v-foot{border-top:1.5px solid var(--line);padding:14px 22px;font-size:13px;color:var(--muted);margin:0}
+.v-foot a{color:var(--lake)}
+.know{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+@media (max-width:820px){.know{grid-template-columns:minmax(0,1fr)}}
+.know h3{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;margin:0 0 10px}
+.know ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.know p{margin:0}
+.know li,.know p{font-size:15px;max-width:60ch}
+.know .k{border-top:3px solid var(--forest);padding-top:14px}
+/* página de casas */
+.city-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px}
+.city-h p{margin:0;color:var(--muted);font-size:14px;max-width:70ch}
+.hl .day .d{font-size:12px}
+.hl .day.out .t{text-decoration:line-through;text-decoration-thickness:2px}.hl .day.out{opacity:.55}.combo.out{opacity:.55}.combo.out h3,.combo.out .amt{text-decoration:line-through}.okb{display:inline-block;background:var(--camp);color:#fff;border-radius:4px;padding:1px 7px;font-size:12px;font-weight:700;margin-left:4px}
+.hl .day .t .star{color:var(--sign);-webkit-text-stroke:.5px var(--wood)}
+.hl .pin.src-air{color:#e0565b}.hl .pin.src-bkg{color:var(--ref)}
+.gal2{margin:0;position:relative;background:var(--ice)}
+.gal2 img{display:block;width:100%;max-width:100%;aspect-ratio:16/10;object-fit:cover}
+.gal2 figcaption{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;background:rgba(0,0,0,.45);padding:2px 6px;border-radius:3px}
+.thumbs{display:flex;gap:4px;padding:4px;overflow-x:auto;scroll-snap-type:x proximity;background:var(--surface);border-bottom:1.5px solid var(--line);scrollbar-width:thin}
+.thumbs button{flex:0 0 84px;height:60px;padding:0;border:2px solid transparent;border-radius:4px;overflow:hidden;cursor:pointer;background:var(--ice);scroll-snap-align:start}
+.thumbs button img{display:block;width:100%;height:100%;object-fit:cover}
+.thumbs button[aria-pressed="true"]{border-color:var(--sign)}
+.thumbs button:focus-visible{outline:2px solid var(--lake);outline-offset:1px}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:24px;line-height:40px;cursor:pointer;display:grid;place-items:center}
+.gnav:hover{background:rgba(0,0,0,.65)}.gnav:focus-visible{outline:2px solid var(--sign);outline-offset:2px}
+.gnav.p{left:10px}.gnav.n{right:10px}
+.gcount{position:absolute;left:8px;top:8px;font-family:var(--mono);font-size:12px;color:#fff;background:rgba(0,0,0,.5);padding:2px 8px;border-radius:999px;font-variant-numeric:tabular-nums}
+.bars{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 12px;align-items:center;font-size:14px}
+.bars .tr{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bars .tr i{display:block;height:100%;background:var(--forest);border-radius:4px}
+.bars b{font-family:var(--mono);font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.bars .tot{grid-column:1/-1;display:flex;justify-content:space-between;border-top:1.5px solid var(--line);padding-top:6px;font-weight:700}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:560px){.pc{grid-template-columns:1fr}}
+.pc h3{margin:0 0 6px;font-size:15px}
+.pc ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.pc .pro li::marker{color:var(--camp)}.pc .con li::marker{color:#c0583b}
+.combos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px}
+.combo{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.combo h3{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;margin:0}
+.combo .amt{font-family:var(--display);font-weight:800;font-size:34px;line-height:1}
+.combo ol{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.combo p{margin:0;font-size:13px;color:var(--muted)}
+.combo.rec{border-color:var(--wood);box-shadow:inset 0 0 0 1.5px var(--sign)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sec2{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);line-height:1;margin:0}
+
+/* elección final */
+.picked{background:var(--surface);border:1.5px solid var(--wood);box-shadow:inset 0 0 0 1.5px var(--sign);border-radius:10px;padding:20px 22px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px 32px}
+@media (max-width:820px){.picked{grid-template-columns:minmax(0,1fr)}}
+.picked h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,44px);line-height:1;margin:0 0 4px}
+.picked .sub{margin:0 0 12px;color:var(--muted);font-size:14px}
+.picked>div{min-width:0}
+.ptabw{overflow-x:auto}
+@media (max-width:560px){.ptab th:nth-child(3),.ptab td:nth-child(3){display:none}.ptab{font-size:13px}.ptab tr.tot td:first-child{white-space:nowrap}}
+.ptab{width:100%;border-collapse:collapse;font-size:14px}
+.ptab th{text-align:left;font-size:12px;color:var(--muted);font-weight:700;padding:0 8px 6px 0;border-bottom:1.5px solid var(--line)}
+.ptab td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.ptab td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ptab th.n{text-align:right}
+.ptab a{color:var(--ink);font-weight:700}
+.ptab .s{font-size:12px;color:var(--muted)}
+.ptab tr.tot td{font-weight:700;border-bottom:0;font-size:15px}
+.picked .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,7vw,68px);line-height:.9;font-variant-numeric:tabular-nums}
+.picked ul{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.picked h3{margin:14px 0 0;font-size:15px}
+
+/* celular y visor de fotos */
+.pages a{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.gal2 img{cursor:zoom-in}
+@media (max-width:820px){
+ .hl{flex-direction:row;overflow-x:auto;gap:8px;padding:2px 2px 8px;scroll-snap-type:x proximity;scrollbar-width:thin}
+ .hl::before{display:none}
+ .hl li{flex:0 0 auto;scroll-snap-align:start}
+ .hl .day{width:220px;height:100%;grid-template-columns:40px 16px minmax(0,1fr);border:1.5px solid var(--line);background:var(--surface)}
+ .hl .day.on{box-shadow:0 0 0 2px var(--sign)}
+ .gnav{width:36px;height:36px}
+}
+@media (max-width:480px){.pages{gap:8px 26px}.pages a{padding:0 8px 0 14px}.pages a b{font-size:22px}}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(6,9,8,.97);display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;gap:8px;
+ padding:calc(env(safe-area-inset-top,0px) + 10px) max(12px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 12px) max(12px,env(safe-area-inset-left,0px))}
+.lb[hidden]{display:none}
+.lb-top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#f4efe2;font-size:14px}
+.lb-top b{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.01em}
+.lb-top span{font-family:var(--mono);font-variant-numeric:tabular-nums;opacity:.85}
+.lb img{width:100%;height:100%;min-height:0;max-width:100%;object-fit:contain;align-self:center;touch-action:pan-y}
+.lb-x,.lb-p,.lb-n{border:0;border-radius:50%;width:44px;height:44px;background:rgba(255,255,255,.14);color:#fff;font-size:26px;line-height:44px;cursor:pointer;display:grid;place-items:center}
+.lb-x:focus-visible,.lb-p:focus-visible,.lb-n:focus-visible{outline:2px solid var(--sign);outline-offset:2px}
+.lb-bot{display:flex;justify-content:center;gap:24px;padding-top:8px}
+body.lb-open{overflow:hidden}
+</style>
+
+<div class="wrap">
+  <header class="sign">
+    <small>Parques Nacionales Lanín · Nahuel Huapi · Arrayanes</small>
+    <h1>Patagonia 2027<br>8 amigos · 14 noches</h1>
+    <p>Una tarde en Buenos Aires y, desde San Martín de los Andes, a Bariloche por la Ruta de los 7 Lagos, con Año Nuevo frente al Falkner y una noche al borde del glaciar del Tronador.</p>
+    <div class="facts"><span><b>27/12</b> → <b>10/01</b></span><span><b>5</b> noches de carpa/refugio</span><span><b>9</b> en casa</span><span>≈<b>800 km</b> de ruta</span><span>techo: <b>2.000 m</b></span></div>
+  </header>
+
+  <nav class="pages" aria-label="Páginas del viaje">
+    <a href="#itinerario" data-v="itinerario"><b>Itinerario</b><span>14 noches, día por día</span></a>
+    <a href="#autos" data-v="autos"><b>Autos</b><span>2 Basalt, USD 1.810,88</span></a>
+    <a href="#casas" data-v="casas"><b>Casas</b><span>22 opciones · 3 elegidas</span></a>
+  </nav>
+
+  <div class="view" id="view-itin">
+  <nav class="route" id="route" aria-label="Bases del viaje"></nav>
+
+  <div class="filters" role="group" aria-label="Filtrar por tipo de noche">
+    <label>Noches</label>
+    <button class="chip" data-k="all" aria-pressed="true">Todas</button>
+    <button class="chip" data-k="camp" aria-pressed="false"><span class="dot" style="background:var(--camp)"></span>Camping</button>
+    <button class="chip" data-k="casa" aria-pressed="false"><span class="dot" style="background:var(--casa)"></span>Casa</button>
+    <button class="chip" data-k="ref" aria-pressed="false"><span class="dot" style="background:var(--ref)"></span>Refugio</button>
+  </div>
+
+  <div class="main">
+    <ol class="tl" id="tl" aria-label="Línea de tiempo del viaje"></ol>
+    <article class="panel" id="panel" aria-live="polite">
+      <figure class="ph" id="phwrap" hidden><img id="photo" alt=""><figcaption id="cred"></figcaption></figure>
+      <canvas class="scene" id="scene" width="1120" height="560" role="img" aria-label=""></canvas>
+      <div class="pbody">
+        <div class="eyebrow" id="eb"></div>
+        <h2 id="ttl"></h2>
+        <p class="lead" id="lead"></p>
+        <div class="stats" id="stats"></div>
+        <ul class="acts" id="acts"></ul>
+        <div class="links" id="links"></div>
+        <div class="nav"><button id="prev">← Día anterior</button><button id="next">Día siguiente →</button></div>
+      </div>
+    </article>
+  </div>
+  <p class="note">Las fotos de cada día son de Wikimedia Commons (autor y licencia en cada una); si alguna no carga, aparece el paisaje dibujado. Los botones “Ver fotos” abren más fotos en una pestaña nueva. Itinerario sujeto a cambios (camino a Pampa Linda, clima, reservas).</p>
+  </div>
+
+  <section class="view" id="view-autos" aria-labelledby="autos-h" hidden>
+    <div class="rent">
+      <div class="shots">
+        <figure><img src="fotos3/afed2305a4.jpg" alt="Citroën Basalt visto de frente" loading="lazy"><figcaption>Foto: RL GNZLZ, CC BY-SA 2.0</figcaption></figure>
+        <div class="row">
+          <figure><img src="fotos1/01431f3f20.jpg" alt="Citroën Basalt visto de atrás" loading="lazy"><figcaption>Celica21gtfour, CC BY-SA 4.0</figcaption></figure>
+          <figure><img src="fotos3/8e73a16a54.jpg" alt="Interior del Citroën Basalt" loading="lazy"><figcaption>Celica21gtfour, CC BY-SA 4.0</figcaption></figure>
+        </div>
+      </div>
+
+      <article class="voucher">
+        <div class="v-top">
+          <p class="who">Hertz, en el aeropuerto Chapelco</p>
+          <h2 id="autos-h">Dos Citroën Basalt</h2>
+          <dl class="when">
+            <dt>Retiro</dt><dd>lunes 28/12, 10:00</dd>
+            <dt>Devolución</dt><dd>domingo 10/01, 10:00</dd>
+            <dt>Auto</dt><dd>Basalt VTI Live PK o similar, manual, 5 plazas, baúl para 3 valijas</dd>
+          </dl>
+          <div class="total"><b>USD 1.810,88</b><span>los dos autos, 13 días, con seguro completo. Unos USD 226 por persona, sin contar la nafta.</span></div>
+        </div>
+        <div class="perf" aria-hidden="true"></div>
+        <div class="stubs">
+          <div class="stub">
+            <h3>Conductor de 22 años</h3>
+            <span class="amt">USD 905,44</span>
+            <dl><dt>Al reservar</dt><dd>180,76</dd><dt>En el mostrador</dt><dd>724,68</dd><dt>Depósito en la tarjeta</dt><dd>1.679,47</dd></dl>
+            <a class="go" href="https://www.economybookings.com/es/cars/driver?plc=217331&amp;dlc=217331&amp;py=2026&amp;pm=12&amp;pd=28&amp;dy=2027&amp;dm=01&amp;dd=10&amp;pt=1000&amp;dt=1000&amp;age=22&amp;crcy=USD&amp;lang=es&amp;cr=236&amp;pos=4&amp;resultType=list-view&amp;sort=low-high&amp;pcntry=AR&amp;car-id=-yZMuu8Rf0-SsJDgmpIS4jFb7vFR3tC8yY8yXnDhqWRepMYipWYpr8HeWEivS5-N&amp;request-id=5C2EBD957E3F2D3DE00A622BB912B8175BC1BFFB_1106e61ad3ea45458f201e03c3c5d20a" target="_blank" rel="noopener">Abrir carrito</a>
+          </div>
+          <div class="stub">
+            <h3>Conductor de 23 años</h3>
+            <span class="amt">USD 905,44</span>
+            <dl><dt>Al reservar</dt><dd>180,76</dd><dt>En el mostrador</dt><dd>724,68</dd><dt>Depósito en la tarjeta</dt><dd>1.679,47</dd></dl>
+            <a class="go" href="https://www.economybookings.com/es/cars/driver?plc=217331&amp;dlc=217331&amp;py=2026&amp;pm=12&amp;pd=28&amp;dy=2027&amp;dm=01&amp;dd=10&amp;pt=1000&amp;dt=1000&amp;age=23&amp;crcy=USD&amp;lang=es&amp;cr=236&amp;pos=4&amp;resultType=list-view&amp;sort=low-high&amp;pcntry=AR&amp;car-id=-yZMuu8Rf0-SsJDgmpIS4jFb7vFR3tC8yY8yXnDhqWRepMYipWYpr8HeWEivS5-N&amp;request-id=5EA0BD93D402883BEC449218E7E2B6AFB8EFF2D7_138f6410d64f48bc892a013ed70c8f57" target="_blank" rel="noopener">Abrir carrito</a>
+          </div>
+        </div>
+        <p class="v-foot">Precio consultado el 30/10/2026 en EconomyBookings, como residentes de Uruguay. Si un carrito venció, buscá de nuevo para <a href="https://www.economybookings.com/es/cars/results?cr=236&amp;crcy=USD&amp;lang=es&amp;age=22&amp;py=2026&amp;pm=12&amp;pd=28&amp;dy=2027&amp;dm=01&amp;dd=10&amp;pt=1000&amp;dt=1000&amp;plc=217331&amp;dlc=217331&amp;pcntry=AR&amp;reload=1" target="_blank" rel="noopener">22 años</a> o <a href="https://www.economybookings.com/es/cars/results?cr=236&amp;crcy=USD&amp;lang=es&amp;age=23&amp;py=2026&amp;pm=12&amp;pd=28&amp;dy=2027&amp;dm=01&amp;dd=10&amp;pt=1000&amp;dt=1000&amp;plc=217331&amp;dlc=217331&amp;pcntry=AR&amp;reload=1" target="_blank" rel="noopener">23 años</a> y elegí el Basalt VTI Live PK de Hertz a USD 779,10.</p>
+      </article>
+    </div>
+
+    <div class="know">
+      <div class="k">
+        <h3>Qué incluye</h3>
+        <ul>
+          <li>Kilometraje ilimitado, impuestos y tasa del aeropuerto</li>
+          <li>Seguro básico contra choque y robo, y responsabilidad civil</li>
+          <li>Asistencia en ruta las 24 horas</li>
+          <li>Cobertura Total, USD 126,34 por auto: parabrisas, cubiertas, la parte de abajo y la devolución de la franquicia</li>
+        </ul>
+      </div>
+      <div class="k">
+        <h3>Para retirarlos</h3>
+        <ul>
+          <li>Licencia, Permiso Internacional de Conducir y documento</li>
+          <li>Tarjeta de crédito física a nombre del que maneja, con USD 1.680 libres para el depósito</li>
+          <li>Devolverlos con el tanque lleno</li>
+          <li>Se cancela gratis hasta 48 horas antes</li>
+        </ul>
+      </div>
+      <div class="k">
+        <h3>La Visa Infinite</h3>
+        <p>El seguro de la Santander Select cubre el auto si está a nombre del titular y se paga entero con esa tarjeta, lo de la reserva y lo del mostrador. No cubre nada que pase en ripio; para eso está la Cobertura Total.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-casas" aria-labelledby="casas-h" hidden>
+    <article class="picked" id="picked" aria-labelledby="picked-h">
+      <div>
+        <h2 id="picked-h">Las casas elegidas</h2>
+        <p class="sub">La del grupo · precios consultados el 30/10/2026 · total para los 8</p>
+        <div class="ptabw"><table class="ptab">
+          <thead><tr><th>Lugar</th><th>Casa</th><th>Noches</th><th class="n">Total</th><th class="n">Por persona</th></tr></thead>
+          <tbody>
+            <tr><td>San Martín</td><td><a href="https://www.airbnb.com.ar/rooms/1164114111945418693?check_in=2026-12-28&amp;check_out=2026-12-30&amp;adults=8" target="_blank" rel="noopener">Casa en Las Pendientes ↗</a><br><span class="s">Airbnb</span><span class="okb">Confirmada ✓</span></td><td>28 al 30/12</td><td class="n">USD 857</td><td class="n">USD 107</td></tr>
+            <tr><td>La Angostura</td><td><a href="https://www.booking.com/hotel/ar/cuncumen-casa-de-montana-puerto-manzano1.es.html?checkin=2027-01-03&amp;checkout=2027-01-06&amp;group_adults=8&amp;no_rooms=1&amp;selected_currency=USD" target="_blank" rel="noopener">Cuncumen ↗</a><br><span class="s">Booking</span></td><td>3 al 6/1</td><td class="n">USD 948</td><td class="n">USD 119</td></tr>
+            <tr><td>Bariloche</td><td><a href="https://www.airbnb.com.ar/rooms/1642907817061376935?check_in=2027-01-07&amp;check_out=2027-01-10&amp;adults=8" target="_blank" rel="noopener">Departamento sobre el lago ↗</a><br><span class="s">Airbnb</span></td><td>7 al 10/1</td><td class="n">USD 742</td><td class="n">USD 93</td></tr>
+            <tr class="tot"><td colspan="2">Total</td><td>8 noches</td><td class="n">USD 2.547</td><td class="n">USD 318</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <span class="big">USD 318</span>
+        <p class="sub">por persona, las 8 noches en casa</p>
+        <h3>Antes de reservar</h3>
+        <ul>
+          <li>Cuncumen es de Booking: entrá con tu cuenta para ver el descuento de Genius.</li>
+          <li>Las Pendientes se cancela gratis hasta el 14/12 y el departamento hasta el 6/1. En Cuncumen, elegí la tarifa con cancelación gratis si aparece.</li>
+          <li>El departamento tiene 2 dormitorios: 4 duermen en una pieza y 2 en el diván del living.</li>
+          <li>Los precios cambian todos los días en temporada alta: conviene reservar pronto.</li>
+        </ul>
+      </div>
+    </article>
+
+    <div class="city-h">
+      <h2 id="casas-h" class="sr-only">Casas</h2>
+      <div class="filters" role="group" aria-label="Elegir lugar" id="cityChips"></div>
+      <p id="cityNote"></p>
+    </div>
+    <div class="main">
+      <ol class="tl hl" id="hl" aria-label="Casas de este lugar"></ol>
+      <article class="panel" id="hpanel" aria-live="polite">
+        <figure class="gal2"><img id="hphoto" alt=""><span class="gcount" id="hcount"></span><button type="button" class="gnav p" id="gprev" aria-label="Foto anterior">‹</button><button type="button" class="gnav n" id="gnext" aria-label="Foto siguiente">›</button><figcaption id="hcred"></figcaption></figure>
+        <div class="thumbs" id="hthumbs"></div>
+        <div class="pbody">
+          <div class="eyebrow" id="heb"></div>
+          <h2 id="httl"></h2>
+          <p class="lead" id="hlead"></p>
+          <div class="stats" id="hstats"></div>
+          <div class="bars" id="hbars"></div>
+          <div class="pc"><div class="pro"><h3>A favor</h3><ul id="hpro"></ul></div><div class="con"><h3>En contra</h3><ul id="hcon"></ul></div></div>
+          <div class="links" id="hlinks"></div>
+          <div class="nav"><button id="hprev">← Casa anterior</button><button id="hnext">Casa siguiente →</button></div>
+        </div>
+      </article>
+    </div>
+    <div class="city-h"><h2 class="sec2">Combinaciones para las 8 noches</h2></div>
+    <div class="combos" id="combos"></div>
+    <p class="note">Precios totales para los 8, consultados el 30/10/2026 en Airbnb y Booking, en USD. En Booking, con Genius nivel 2 pueden salir entre 10% y 15% menos. Puntajes de 1 a 5: casa, ubicación (centro y lago), vistas, cercanía a las actividades del itinerario, extras (pileta, juegos, quincho) y calidad-precio. Los precios cambian todos los días en temporada alta.</p>
+  </section>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Fotos" hidden>
+  <div class="lb-top"><div><b id="lbt"></b><br><span id="lbc"></span></div><button type="button" class="lb-x" id="lbx" aria-label="Cerrar">×</button></div>
+  <img id="lbi" alt="">
+  <div class="lb-bot"><button type="button" class="lb-p" id="lbp" aria-label="Foto anterior">‹</button><button type="button" class="lb-n" id="lbn" aria-label="Foto siguiente">›</button></div>
+</div>
+<script>
+const PH=["","fotos1/0888beef1a.jpg","fotos1/13b86302c4.jpg","fotos1/158efc97a2.jpg","fotos2/598000354b.jpg","fotos3/947a6eea74.jpg","fotos3/bc65617f79.jpg","fotos3/bc56b50fef.jpg","fotos1/175236a652.jpg","fotos3/b708cf7d45.jpg","fotos3/a8a67d9c5d.jpg","fotos3/b16229277b.jpg","fotos3/a62d7faffe.jpg","fotos4/e76be0c4e5.jpg","fotos2/398b0d86a0.jpg"];
+const CR=["","Falk2, CC BY-SA 4.0","Gervacio Rosales, CC BY 3.0","Claudio Elias, CC BY-SA 4.0","GaboWade, CC BY-SA 4.0","Juan José Cardozo, CC BY-SA 4.0","Andrea Alvarez Sánchez, CC BY-SA 4.0","Luna929e9, CC BY 4.0","Marianobruno, CC BY-SA 4.0","Robertoe, CC BY-SA 4.0","Stevage, CC BY-SA 3.0","Fernando Pascullo, CC BY-SA 4.0","enzofloyd, CC BY-SA 3.0","Fernando, CC BY-SA 4.0","Dario Alpern, CC BY-SA 4.0"];
+const BASES=[
+ {n:"Buenos Aires",e:"1 noche corta",d:0},{n:"San Martín",e:"2 noches",d:1},{n:"Lago Falkner",e:"2 · Año Nuevo",d:3},{n:"Villa Traful",e:"2 noches",d:5},
+ {n:"La Angostura",e:"3 noches",d:7},{n:"Otto Meiling",e:"1 · 2.000 m",d:10},{n:"Bariloche",e:"3 noches",d:11}];
+const KL={casa:"Casa",camp:"Camping",ref:"Refugio",fly:"Vuelo"};
+const KC={casa:"var(--casa)",camp:"var(--camp)",ref:"var(--ref)",fly:"var(--fly)"};
+const DAYS=[
+ {d:"27/12",w:"Dom",k:"casa",t:"Buenos Aires",s:"Barco, valijas en el Airbnb y una birra",
+  lead:"Cruzan de mañana desde Montevideo, dejan las valijas en un Airbnb cerca del puerto y aprovechan el día. Es domingo, así que está la feria de San Telmo. Cena y cerveza temprano, unas horas de sueño y a las 4 salen para Ezeiza.",
+  st:[["Cruce","≈2 h 15 en barco"],["Airbnb","San Telmo o Puerto Madero"],["A Ezeiza","≈40 min de noche"]],
+  a:[["Mañana","Buquebus Montevideo → Buenos Aires (o bus + barco por Colonia, más barato)"],["Mediodía","Valijas en el Airbnb: pedir al anfitrión dejarlas antes del check-in"],["Tarde","Feria de San Telmo, Plaza de Mayo y Puerto Madero"],["20:00","Cena y una birra temprano"],["22:00","A dormir"],["4:00","Salida a Ezeiza: dos autos o una combi para los 8 con valijas, reservada de antes"]],
+  f:["Feria de San Telmo domingo","Puerto Madero atardecer"],sc:{type:"town",sky:"dusk",seed:7}},
+ {d:"28/12",w:"Lun",k:"casa",t:"San Martín de los Andes",s:"Llegada, compras, primer atardecer",
+  lead:"Aterrizan en Chapelco a las 9:09, retiran los autos y hacen las compras grandes. La casa se entrega a las 15 h y la tarde queda para conocer el pueblo y el Lácar.",
+  st:[["Llegada","9:09"],["Aeropuerto → pueblo","22 km"],["Altura","640 m"]],
+  a:[["9:09","Aterrizaje en Chapelco y retiro de autos"],["11:00","Súper: comida para Año Nuevo y los campings"],["15:00","Entrega de la casa"],["16:00","Mirador Bandurrias, la mejor vista del pueblo"],["18:00","Playa Catritre, primer chapuzón en el Lácar"],["21:00","Asado en la casa"]],
+  f:["Mirador Bandurrias San Martín de los Andes","Playa Catritre Lago Lácar"],sc:{type:"town",sky:"dusk",seed:3}},
+ {d:"29/12",w:"Mar",k:"casa",t:"Playa Yuco y Pozones del Caleufú",s:"Agua turquesa, ripio y pozones",
+  lead:"Día de agua. Yuco a la mañana temprano, porque el estacionamiento se llena, y a la tarde los pozones del Caleufú, ollas turquesa en un cañón de piedra.",
+  st:[["Yuco","30 km ripio"],["Caleufú","≈50 km"],["Manejo","≈4 h"]],
+  a:[["8:00","Salida a Yuco por la RP 48, a 40 km/h"],["9:00","Cinco playas sobre el Lácar"],["13:00","Almuerzo y salida al Caleufú por la RP 63"],["14:15","Pozones: plataformas de piedra y ollas profundas"],["18:00","Últimas compras y armar todo para los campings"]],
+  f:["Playa Yuco Lago Lácar","Pozones del Caleufú"],sc:{type:"river",sky:"day",seed:11}},
+ {d:"30/12",w:"Mié",k:"camp",t:"Ruta de los 7 Lagos hasta el Falkner",s:"Paradas libres y a elegir parcela",
+  lead:"Solo 47 km, pero con paradas. Llegan al Camping Lago Falkner con tiempo para conseguir dos parcelas juntas con vista al lago.",
+  st:[["Distancia","47 km"],["Parcelas","2 contiguas"],["Pesca","Río Falkner–Villarino"]],
+  a:[["Mañana","Mirador del Pil Pil y Laguna Fría"],["","Lago Machónico, el primero de los 7"],["","Lago Hermoso: muelle y cascada"],["","Cascada Vuliñanco, 20 m de caída"],["Tarde","Carpas armadas, playa en la unión con el Villarino"]],
+  f:["Lago Machónico Ruta 7 Lagos","Cascada Vuliñanco","Camping Lago Falkner"],sc:{type:"lake",sky:"day",seed:21}},
+ {d:"31/12",w:"Jue",k:"camp",t:"Año Nuevo en el Lago Falkner",s:"Cerro Falkner y fogón",
+  lead:"El primer desafío del viaje: el Cerro Falkner, de día completo. El que prefiera algo tranquilo camina la costa del Villarino y el Escondido. A la noche, fogón frente al lago.",
+  st:[["Trekking","Cerro Falkner"],["Dificultad","Difícil"],["Noche","Año Nuevo"]],
+  a:[["8:00","Subida al Cerro Falkner (opcional)"],["","Costa Villarino–Escondido para los tranquilos"],["Atardecer","Pesca en el río entre los dos lagos"],["00:00","Brindis con fogón"]],
+  f:["Cerro Falkner","Lago Falkner atardecer"],sc:{type:"lake",sky:"night",seed:27}},
+ {d:"1/1",w:"Vie",k:"camp",t:"Villa Traful",s:"Camping Paloma Araucana",
+  lead:"Traslado por la RN 40 y la RP 65 hasta Villa Traful. Camping Paloma Araucana, bajo el mirador, con fogón y luz en cada parcela.",
+  st:[["Distancia","≈75 km"],["Manejo","≈1 h 30"],["Nafta","Una sola estación"]],
+  a:[["Mañana","Desarme y salida por la Ruta 7 Lagos"],["Tarde","Mirador del Viento, vista de todo el lago"],["Noche","Asado en el camping"]],
+  f:["Mirador del Viento Villa Traful","Lago Traful"],sc:{type:"lake",sky:"dusk",seed:33}},
+ {d:"2/1",w:"Sáb",k:"camp",t:"Bosque sumergido",s:"Kayak, cascadas y pesca",
+  lead:"Kayak hasta el bosque sumergido, cipreses que asoman del agua. A la tarde, las cascadas Coa Có y Co Lochi. El Traful es famoso por el salmón encerrado.",
+  st:[["Kayak","Mañana"],["Cascadas","Medio día"],["Pesca","Salmón encerrado"]],
+  a:[["Mañana","Kayak al bosque sumergido, antes del viento"],["Tarde","Cascadas Coa Có y Co Lochi"],["Atardecer","Pesca desde la costa"]],
+  f:["Bosque sumergido Villa Traful","Cascada Coa Có"],sc:{type:"forestlake",sky:"day",seed:41}},
+ {d:"3/1",w:"Dom",k:"casa",t:"Villa La Angostura",s:"Belvedere, Inacayal y el Correntoso",
+  lead:"Llegan a la casa después de cuatro noches de carpa. A la tarde, el mirador Belvedere con la cascada Inacayal, y al atardecer, pesca en el río Correntoso, uno de los más cortos del mundo.",
+  st:[["Distancia","65 km"],["Trekking","Fácil, 3 h"],["Pesca","Mosca, zona preferencial"]],
+  a:[["Mañana","Traslado y ducha"],["Tarde","Mirador Belvedere + Cascada Inacayal"],["Atardecer","Desembocadura del Correntoso"]],
+  f:["Mirador Belvedere Villa La Angostura","Río Correntoso desembocadura"],sc:{type:"lake",sky:"dusk",seed:52}},
+ {d:"4/1",w:"Lun",k:"casa",t:"Filo del Cerro Belvedere",s:"Primer gran desnivel",
+  lead:"El trekking más exigente de La Angostura: unas 3 h de subida hasta el filo, a 1.600 m, sobre basalto. Vista del Correntoso y el Nahuel Huapi a la vez.",
+  st:[["Desnivel","≈800 m"],["Subida","≈3 h"],["Dificultad","Media–difícil"]],
+  a:[["8:30","Inicio del sendero, marcas rojas en los troncos"],["11:30","Filo y cruz de la cumbre"],["Tarde","Bajada y descanso en el Lago Espejo"]],
+  f:["Filo Cerro Belvedere","Lago Espejo Villa La Angostura"],sc:{type:"peak",sky:"day",seed:61}},
+ {d:"5/1",w:"Mar",k:"casa",t:"Kayak y Bosque de Arrayanes",s:"Día tranquilo antes del Meiling",
+  lead:"Kayak a la mañana y el Bosque de Arrayanes, único en el mundo, con la vuelta en barco. A la noche, mochilas armadas y a dormir temprano.",
+  st:[["Arrayanes","12 km ida"],["Vuelta","En barco"],["Mañana","Salida 8:30"]],
+  a:[["Mañana","Kayak en el Nahuel Huapi"],["Tarde","Bosque de Arrayanes"],["Noche","Compras y mochilas listas para el Tronador"]],
+  f:["Bosque de Arrayanes Quetrihué","Villa La Angostura kayak"],sc:{type:"forest",sky:"day",seed:73}},
+ {d:"6/1",w:"Mié",k:"ref",t:"Refugio Otto Meiling",s:"Noche al borde del glaciar",
+  lead:"El gran desafío. Salen de La Angostura a las 8:30, entran al camino de Pampa Linda a las 10:30 y suben 13 km hasta el refugio, entre los glaciares Castaño Overa y Alerce.",
+  st:[["Salida","8:30 (límite 10:00)"],["Subida","5–7 h"],["Desnivel","1.050 m"],["Altura","≈2.000 m"]],
+  a:[["8:30","Salida de La Angostura"],["10:30","Los Rápidos: abre la entrada al camino"],["11:45","Pampa Linda, registro y mochilas"],["12:15","Subida al Meiling"],["Atardecer","Glaciar Castaño Overa y el Tronador"]],
+  f:["Refugio Otto Meiling","Glaciar Castaño Overa Tronador"],sc:{type:"glacier",sky:"dusk",seed:89}},
+ {d:"7/1",w:"Jue",k:"casa",t:"Ventisquero Negro y Bariloche",s:"Bajada, glaciar negro y Blest",
+  lead:"Bajan a la mañana y, como del camino no se sale antes de las 16, pasan el mediodía en el Ventisquero Negro y la Garganta del Diablo. Llegan a la casa de Bariloche y cierran con cerveza en Blest.",
+  st:[["Bajada","≈3 h"],["Salida camino","16–17:30"],["Casa","≈19:00"]],
+  a:[["8:30","Bajada del Meiling"],["12:30","Ventisquero Negro y Garganta del Diablo"],["16:00","Salida por el camino de mano única"],["20:30","Cervecería Blest"]],
+  f:["Ventisquero Negro Tronador","Garganta del Diablo Pampa Linda"],sc:{type:"blackglacier",sky:"day",seed:97}},
+ {d:"8/1",w:"Vie",k:"casa",t:"Rafting en el río Manso",s:"Clase IV hasta Chile + Patagonia",
+  lead:"Rafting Manso a la Frontera: rápidos de clase IV hasta el límite con Chile, sin experiencia previa. A la noche, Cervecería Patagonia frente al Lago Moreno para el atardecer.",
+  st:[["Rafting","Clase IV"],["Duración","Día completo"],["Atardecer","≈21:15"]],
+  a:[["Mañana","Traslado al Manso inferior"],["Mediodía","≈2 h de rápidos hasta la frontera"],["19:30","Cervecería Patagonia, km 24,7"]],
+  f:["Rafting río Manso Bariloche","Cervecería Patagonia Circuito Chico vista"],sc:{type:"river",sky:"dusk",seed:103}},
+ {d:"9/1",w:"Sáb",k:"casa",t:"Filo de las Cabras y Circuito Chico",s:"Último día: montaña y bici",
+  lead:"A la mañana, el Filo de las Cabras en el Cerro López, con el Nahuel Huapi abajo. A la tarde, el Circuito Chico en bici por Llao Llao y Bahía López.",
+  st:[["Filo","≈930 m"],["Trekking","5–6 h"],["Bici","≈4 h"]],
+  a:[["8:00","Filo de las Cabras desde el arroyo López"],["13:45","Almuerzo en Colonia Suiza"],["15:15","Circuito Chico en bici"],["20:00","Nafta y valijas"]],
+  f:["Filo de las Cabras Cerro López","Circuito Chico Bariloche Llao Llao"],sc:{type:"peak",sky:"dusk",seed:113}},
+ {d:"10/1",w:"Dom",k:"fly",t:"Vuelta a casa",s:"Salida 6:30, vuelo 13:50",
+  lead:"Salen de Bariloche a las 6:30 por la ruta de la estepa, unos 240 km, para llegar a Chapelco a las 10 con margen para devolver los autos.",
+  st:[["Salida","6:30"],["Distancia","≈240 km"],["Vuelo","13:50"]],
+  a:[["6:30","Salida por RN 237 y RN 40"],["≈10:00","Aeropuerto Chapelco, devolución de autos"],["13:50","Vuelo"]],
+  f:["Ruta 237 estepa Neuquén","Aeropuerto Chapelco"],sc:{type:"steppe",sky:"dawn",seed:127}}
+];
+
+const tl=document.getElementById('tl'),route=document.getElementById('route');
+let cur=0,filter='all';
+function load(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+cur=Math.min(DAYS.length-1,Math.max(0,parseInt(load('pat-day','0'))||0));
+
+BASES.forEach((b,i)=>{const el=document.createElement('button');el.className='base';el.dataset.d=b.d;
+ el.innerHTML=`<i>${i+1}</i><span>${b.n}</span><em>${b.e}</em>`;el.onclick=()=>select(b.d,true);route.appendChild(el)});
+DAYS.forEach((d,i)=>{const li=document.createElement('li');const b=document.createElement('button');b.className='day';b.dataset.i=i;
+ b.innerHTML=`<span class="d">${d.d}</span><span class="pin k-${d.k}"></span><span><span class="t">${d.t}</span><br><span class="s">${d.s}</span></span>`;
+ b.onclick=()=>select(i,true);li.appendChild(b);tl.appendChild(li)});
+
+document.querySelectorAll('#view-itin .chip').forEach(c=>c.onclick=()=>{filter=c.dataset.k;
+ document.querySelectorAll('#view-itin .chip').forEach(x=>x.setAttribute('aria-pressed',x===c));
+ tl.querySelectorAll('.day').forEach(x=>{const k=DAYS[x.dataset.i].k;x.classList.toggle('dim',filter!=='all'&&k!==filter)})});
+document.getElementById('prev').onclick=()=>select(cur-1,true);
+document.getElementById('next').onclick=()=>select(cur+1,true);
+
+function baseOf(i){let b=0;BASES.forEach((x,j)=>{if(i>=x.d)b=j});return i===DAYS.length-1?-1:b}
+function select(i,user){if(i<0||i>=DAYS.length)return;cur=i;save('pat-day',i);const d=DAYS[i];
+ tl.querySelectorAll('.day').forEach(x=>x.classList.toggle('on',+x.dataset.i===i));
+ const bi=baseOf(i);document.querySelectorAll('.base').forEach((x,j)=>x.classList.toggle('on',j===bi));
+ document.getElementById('eb').innerHTML=`<span class="tag" style="background:${KC[d.k]}">${KL[d.k]}</span><span>Día ${i+1} · ${d.w} ${d.d}</span>`;
+ document.getElementById('ttl').textContent=d.t;
+ document.getElementById('lead').textContent=d.lead;
+ document.getElementById('stats').innerHTML=d.st.map(s=>`<div class="stat"><b>${s[0]}</b>${s[1]}</div>`).join('');
+ document.getElementById('acts').innerHTML=d.a.map(a=>`<li><span class="h">${a[0]}</span><span>${a[1]}</span></li>`).join('');
+ document.getElementById('links').innerHTML=d.f.map(q=>`<a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank" rel="noopener">Ver fotos: ${q.split(' ').slice(0,3).join(' ')} ↗</a>`).join('');
+ document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===DAYS.length-1;
+ const cv=document.getElementById('scene');cv.setAttribute('aria-label','Ilustración: '+d.t);
+ const pw=document.getElementById('phwrap');if(PH[i]){document.getElementById('photo').onerror=()=>{pw.hidden=true;cv.hidden=false;draw(d.sc)};document.getElementById('photo').src=PH[i];document.getElementById('photo').alt='Foto: '+d.t;document.getElementById('cred').textContent='Foto: '+CR[i]+' · Wikimedia Commons';pw.hidden=false;cv.hidden=true}else{pw.hidden=true;cv.hidden=false}
+ if(user&&matchMedia('(prefers-reduced-motion: no-preference)').matches){cv.classList.add('fade');setTimeout(()=>{draw(d.sc);cv.classList.remove('fade')},140)}else draw(d.sc);
+ if(user&&innerWidth<=820)document.getElementById('panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* --- paisajes generativos --- */
+function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+const SKY={day:["#8fc3e0","#d8ecf2"],dusk:["#3d4d7a","#f0a868"],night:["#0b1630","#2c3e6b"],dawn:["#5a6fa0","#f4c38a"]};
+function ridge(ctx,r,W,H,base,amp,col,rough,snow){
+ const pts=[];let y=base;const n=60;
+ for(let i=0;i<=n;i++){const x=i/n*W;y=base-amp*(0.5+0.5*Math.sin(i*rough+r()*2))*(.55+r()*.45);pts.push([x,y])}
+ for(let k=0;k<2;k++)for(let i=1;i<pts.length-1;i++)pts[i][1]=(pts[i-1][1]+pts[i][1]*2+pts[i+1][1])/4;
+ ctx.beginPath();ctx.moveTo(0,H);pts.forEach(p=>ctx.lineTo(p[0],p[1]));ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle=col;ctx.fill();
+ if(snow){ctx.save();ctx.clip();ctx.fillStyle="rgba(255,255,255,.88)";ctx.beginPath();ctx.moveTo(0,0);
+  pts.forEach(p=>ctx.lineTo(p[0],Math.min(p[1]+amp*snow,base-amp*.55)));ctx.lineTo(W,0);ctx.closePath();
+  ctx.globalCompositeOperation="source-atop";ctx.fill();ctx.restore()}
+ return pts}
+function trees(ctx,r,W,y0,y1,col,count,size){ctx.fillStyle=col;
+ for(let i=0;i<count;i++){const x=r()*W,y=y0+r()*(y1-y0),h=size*(.6+r()*.8);
+  ctx.beginPath();ctx.moveTo(x,y-h);ctx.lineTo(x-h*.28,y);ctx.lineTo(x+h*.28,y);ctx.closePath();ctx.fill()}}
+function draw(sc){const cv=document.getElementById('scene'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,r=rng(sc.seed*9973);
+ const s=SKY[sc.sky];let g=ctx.createLinearGradient(0,0,0,H*.6);g.addColorStop(0,s[0]);g.addColorStop(1,s[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ if(sc.sky==="night"){ctx.fillStyle="#fff";for(let i=0;i<160;i++){ctx.globalAlpha=r()*.8+.2;ctx.fillRect(r()*W,r()*H*.5,r()*2+.5,r()*2+.5)}ctx.globalAlpha=1;
+  ctx.fillStyle="#f4efd8";ctx.beginPath();ctx.arc(W*.8,H*.16,26,0,7);ctx.fill()}
+ else{ctx.fillStyle=sc.sky==="day"?"rgba(255,255,240,.9)":"rgba(255,220,160,.9)";ctx.beginPath();ctx.arc(W*(.2+r()*.6),H*(sc.sky==="day"?.15:.38),sc.sky==="day"?30:40,0,7);ctx.fill()}
+ const t=sc.type,horizon=t==="steppe"?H*.66:t==="peak"?H*.72:H*.6;
+ const far=sc.sky==="night"?"#2a3a5c":sc.sky==="day"?"#7a96a8":"#6b6788",mid=sc.sky==="night"?"#1b2742":sc.sky==="day"?"#4e6b6a":"#4a4a66",near=sc.sky==="night"?"#0f1a2c":sc.sky==="day"?"#2f4d3c":"#2e3a3c";
+ if(t==="steppe"){ridge(ctx,r,W,H,horizon,40,far,.25,0);ridge(ctx,r,W,H,horizon+40,20,"#b9a46c",.15,0);
+  ctx.fillStyle="#cdb57a";ctx.fillRect(0,horizon+40,W,H);ctx.strokeStyle="#4a4038";ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(W*.52,horizon+30);ctx.lineTo(W*.2,H);ctx.lineTo(W*.36,H);ctx.closePath();ctx.fillStyle="#555";ctx.fill();
+  ctx.strokeStyle="#f2c14e";ctx.lineWidth=3;ctx.setLineDash([18,18]);ctx.beginPath();ctx.moveTo(W*.515,horizon+34);ctx.lineTo(W*.28,H);ctx.stroke();ctx.setLineDash([]);return}
+ const big=(t==="glacier"||t==="blackglacier"||t==="peak");
+ ridge(ctx,r,W,H,horizon-(big?140:60),big?260:150,far,.35,big?.5:.35);
+ if(t==="glacier"||t==="blackglacier"){ctx.fillStyle=t==="glacier"?"#e8f5f9":"#3a3a3a";ctx.beginPath();ctx.moveTo(W*.42,horizon-150);ctx.quadraticCurveTo(W*.5,horizon-40,W*.62,horizon+10);ctx.lineTo(W*.38,horizon+10);ctx.closePath();ctx.fill();
+  if(t==="glacier"){ctx.strokeStyle="#a9d3e0";ctx.lineWidth=3;for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(W*(.43+i*.03),horizon-100+i*15);ctx.lineTo(W*(.45+i*.03),horizon-20+i*5);ctx.stroke()}}}
+ ridge(ctx,r,W,H,horizon-10,90,mid,.6,0);
+ const water=["lake","forestlake","town","glacier","blackglacier","river"].includes(t);
+ if(water){const wg=ctx.createLinearGradient(0,horizon,0,H);
+  wg.addColorStop(0,t==="blackglacier"?"#6d7f86":t==="river"?"#3fa7a0":sc.sky==="night"?"#1d2b4f":"#2f86a5");wg.addColorStop(1,sc.sky==="night"?"#0a1328":"#174f63");
+  ctx.fillStyle=wg;if(t==="river"){ctx.fillStyle=near;ctx.fillRect(0,horizon,W,H);ctx.fillStyle=wg;ctx.beginPath();ctx.moveTo(W*.45,horizon);ctx.bezierCurveTo(W*.2,H*.75,W*.8,H*.8,W*.35,H);ctx.lineTo(W*.75,H);ctx.bezierCurveTo(W*1.05,H*.8,W*.45,H*.75,W*.58,horizon);ctx.closePath();ctx.fill();
+   ctx.fillStyle="#9a9688";for(let i=0;i<14;i++){ctx.beginPath();ctx.ellipse(W*(.3+r()*.5),horizon+r()*(H-horizon),30+r()*40,10+r()*12,0,0,7);ctx.fill()}}
+  else{ctx.fillRect(0,horizon,W,H-horizon);ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;for(let i=0;i<40;i++){const y=horizon+8+r()*(H-horizon-20),x=r()*W;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+20+r()*60,y);ctx.stroke()}
+   if(t==="blackglacier"){ctx.fillStyle="#3b3f42";for(let i=0;i<9;i++){ctx.beginPath();ctx.ellipse(W*(.3+r()*.4),horizon+20+r()*90,14+r()*20,6+r()*6,0,0,7);ctx.fill()}}
+   if(t==="forestlake"){ctx.strokeStyle="#5a4a3a";ctx.lineWidth=4;for(let i=0;i<10;i++){const x=W*(.3+r()*.4),y=horizon+30+r()*120;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+(r()-.5)*10,y-50-r()*60);ctx.stroke()}}}}
+ else{ctx.fillStyle=near;ctx.fillRect(0,horizon+40,W,H)}
+ if(t!=="glacier"&&t!=="blackglacier"){ridge(ctx,r,W,H,water?horizon+12:horizon+60,40,near,.9,0);}
+ const tc=sc.sky==="night"?"#07101e":"#1f3a2c";
+ if(t==="forest"){trees(ctx,r,W,horizon+30,H,"#3a2a1e",0,0);ctx.fillStyle="#c9732e";for(let i=0;i<26;i++){const x=r()*W,y=horizon+40+r()*(H-horizon);ctx.fillRect(x,y-90-r()*60,7,160)}trees(ctx,r,W,horizon+40,H,tc,60,70)}
+ else if(t==="peak"){trees(ctx,r,W,horizon+50,H,tc,40,40);ctx.fillStyle="#2a2a2a";ctx.beginPath();ctx.moveTo(W*.7,H*.62);ctx.lineTo(W*.69,H*.52);ctx.lineTo(W*.71,H*.52);ctx.fill();ctx.fillRect(W*.678,H*.545,W*.044,5)}
+ else if(t==="town"){trees(ctx,r,W,horizon+16,horizon+44,tc,40,34);ctx.fillStyle="#7a4e2c";for(let i=0;i<8;i++){const x=W*.08+i*W*.04,y=horizon+40;ctx.fillRect(x,y-18,22,18);ctx.beginPath();ctx.moveTo(x-3,y-18);ctx.lineTo(x+11,y-30);ctx.lineTo(x+25,y-18);ctx.fill()}}
+ else if(t==="glacier"){ctx.fillStyle="#3f3a36";ctx.fillRect(W*.62,horizon-14,70,40);ctx.fillStyle="#b23a2a";ctx.beginPath();ctx.moveTo(W*.62-6,horizon-14);ctx.lineTo(W*.62+35,horizon-40);ctx.lineTo(W*.62+76,horizon-14);ctx.fill();
+  ctx.fillStyle=near;ctx.fillRect(0,horizon+26,W,H);trees(ctx,r,W,horizon+80,H,tc,30,40)}
+ else if(t==="blackglacier"){trees(ctx,r,W,horizon+150,H,tc,40,60)}
+ else{trees(ctx,r,W,water?horizon+12:horizon+60,water?horizon+40:H,tc,50,40)}
+ if(t==="lake"&&sc.sky!=="day"){ctx.fillStyle="rgba(255,170,80,.9)";for(let i=0;i<6;i++){ctx.beginPath();ctx.ellipse(W*(.12+i*.025),H-40+r()*8,12,5,0,0,7);ctx.fill()}
+  ctx.fillStyle="#f0a040";ctx.beginPath();ctx.moveTo(W*.15,H-60);ctx.quadraticCurveTo(W*.13,H-90,W*.15,H-110);ctx.quadraticCurveTo(W*.17,H-90,W*.15,H-60);ctx.fill()}
+}
+select(cur,false);
+/* páginas */
+/* casas: datos consultados el 30/10/2026 */
+const A=u=>'https://a0.muscache.com/im/pictures/'+u+'?im_w=1200';
+const B=n=>'https://cf.bstatic.com/xdata/images/hotel/max1024x768/'+n.replace('?','.jpg?');
+const AIR=id=>'https://www.airbnb.com.ar/rooms/'+id;
+const MAP=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+const SC=["Casa","Ubicación","Vistas","Actividades","Extras","Precio"];
+const CITIES=[{"k":"sma","n":"San Martín","when":"28 al 30/12 · 2 noches","ci":"2026-12-28","co":"2026-12-30","note":"Actividades: Playa Catritre y Mirador Bandurrias junto al centro, Yuco y el Caleufú hacia el sur. Conviene el centro o el sur.","h":[{"n":"Casa en Las Pendientes","src":"Airbnb","id":"1164114111945418693","tot":857,"s":[5,2,5,3,5,3],"rat":"5,0 · 28 reseñas","beds":"4 dorm · 9 camas · 2,5 baños","zona":"Las Pendientes, ladera del Cerro Chapelco · 25 min del centro","map":"Las Pendientes Ski Village, Cerro Chapelco","lead":"Casa de montaña en un barrio cerrado del Chapelco, con la mejor vista del viaje: el Lácar y el volcán Lanín.","pro":["Ping-pong, mesa de pool, hidromasaje y hogar a leña","Vista al Lácar y al volcán Lanín","5,0 con 28 reseñas, todas de 5 estrellas","Seguridad 24 h · cancelación gratis hasta el 14/12"],"con":["A 25 min del centro: para salir de noche alguien maneja","Prefieren alquilar por semana (aceptan 2 noches)"],"f":["fotos2/589cc667ba.jpg","fotos1/377f3a6e76.jpg","fotos4/d6e4263129.jpg","fotos3/c8516a83bc.jpg","fotos4/e23e7198a4.jpg","fotos4/f67b9a0255.jpg","fotos1/1129c57008.jpg","fotos2/615821fcb0.jpg","fotos2/6a8a865869.jpg","fotos3/ca56aefeda.jpg","fotos1/0a53bea3a2.jpg","fotos1/1f6b83d4f8.jpg","fotos1/2cf3f3f8ae.jpg","fotos2/68b0db277d.jpg","fotos4/eb0de438b4.jpg","fotos3/a110374046.jpg","fotos1/0d92d7da9f.jpg","fotos4/d947475036.jpg","fotos3/96ca8e5adc.jpg","fotos3/9986574bae.jpg"],"star":"La elegida"},
+{"n":"Cabañas Aitue","src":"Airbnb","id":"40822869","bk":"https://www.booking.com/hotel/ar/cabanas-aitue.es.html","tot":444,"s":[3,5,2,5,1,5],"rat":"9,6 · 36 en Booking · 5,0 · 5 en Airbnb","beds":"3 dorm · 8 camas · 1 baño + toilette","zona":"Centro, a 3 cuadras · 5 cuadras del Lácar","map":"Brown 781, San Martín de los Andes","lead":"Cabaña de 3 pisos en pleno centro: se va a todo caminando y nadie tiene que manejar a la noche.","pro":["A 3 cuadras del centro y 5 del lago","Limpieza todos los días, hogar a leña y parrilla","La más barata con buenas reseñas"],"con":["Un solo baño completo para 8","Sin vista y sin extras","En Airbnb solo reembolso parcial hasta el 21/12"],"f":["fotos2/626db34406.jpg","fotos4/e108e57e7d.jpg","fotos3/c42ded6c94.jpg","fotos1/1ad83f94f7.jpg","fotos1/357fe586c3.jpg","fotos3/892aabe293.jpg","fotos3/bbaefe1e43.jpg","fotos3/b5971ddcad.jpg","fotos4/e3a87177d2.jpg","fotos1/0339bd1176.jpg","fotos2/42dc6d7321.jpg","fotos1/23a9d1272d.jpg"]},
+{"n":"Residencia Fermi","src":"Airbnb","id":"1183377735976864022","tot":980,"s":[5,3,4,3,5,3],"rat":"5,0 · 2 reseñas · Superanfitrión","beds":"4 dorm · 9 camas · 3 baños · 480 m²","zona":"Parque de 2 hectáreas a 14 min del centro","map":"San Martín de los Andes, Neuquén","lead":"Casa enorme en un parque de 2 hectáreas, con pileta, jacuzzi y fogón.","pro":["Pileta, jacuzzi, brasero y parrilla","Limpieza y ropa blanca día por medio","Cancelación gratis hasta el 14/12"],"con":["Solo 2 reseñas","No muestra cómo se reparten las camas: preguntar"],"f":["fotos1/1f49bb5258.jpg","fotos1/2d10725c6d.jpg","fotos3/b851177fa4.jpg","fotos2/5de447dfee.jpg","fotos1/164cc50fa4.jpg","fotos1/16c2d040f5.jpg","fotos3/a5cc1c580f.jpg","fotos1/2f6f143847.jpg","fotos4/e4ad380fcf.jpg","fotos3/a1d6baa138.jpg","fotos2/4d4e632dba.jpg","fotos3/c1a1ce81af.jpg"]},
+{"n":"Gran Casa con pileta","src":"Airbnb","id":"1318861504078842921","tot":1100,"s":[4,5,3,5,3,2],"rat":"4,67 · 3 reseñas","beds":"4 dorm · 8 camas · 2 baños","zona":"Pleno centro, a metros del Lácar","map":"Plaza del Centenario, San Martín de los Andes","lead":"Unidad grande dentro de un apart-hotel, en pleno centro y a metros del lago.","pro":["La mejor ubicación: centro y lago a pasos","Pileta climatizada y parrilla","Cancelación gratis hasta el 28/11"],"con":["La pileta es compartida y tiene horario","Es un apart-hotel, no una casa propia","La más cara de San Martín"],"f":["fotos4/ec2d77502e.jpg","fotos2/711251998a.jpg","fotos1/2cd8f740b4.jpg","fotos4/d04b9ba1a6.jpg","fotos3/c9264aea9b.jpg","fotos3/c0cb0ba75b.jpg","fotos1/1f9be899be.jpg","fotos1/25a06d53fd.jpg","fotos4/f5c03f07cb.jpg","fotos3/8a54555dd6.jpg","fotos2/6eb96f4d79.jpg","fotos3/8e7f62fd08.jpg"]},
+{"n":"Cabañas La Encantada","src":"Booking","url":"https://www.booking.com/hotel/ar/cabanas-la-encantada.es.html","tot":560,"s":[4,4,3,4,3,4],"rat":"9,3 · 20 reseñas","beds":"4 dorm · 9 camas · 2 baños · 130 m²","zona":"Bosque a 1,6 km del centro","map":"Perito Moreno 2000, San Martín de los Andes","lead":"Casa en el bosque con pileta y vista al pueblo, a pocos minutos del centro.","pro":["Pileta de verano y vista al pueblo","Ya se quedaron grupos de 10","Buen precio"],"con":["2 baños para 8","Sábanas y toallas pueden cobrarse aparte"],"f":["fotos1/009fe44495.jpg","fotos2/594a74689c.jpg","fotos4/fb1323ba58.jpg","fotos3/c890baefb9.jpg","fotos1/2feca3bc41.jpg","fotos1/066de7bd7e.jpg","fotos4/d7a69b7ea1.jpg","fotos2/62419f533a.jpg","fotos4/d72a693dd3.jpg","fotos4/e9b143f9ab.jpg","fotos1/0c4febfeb1.jpg","fotos1/0d089c1118.jpg"]},
+{"n":"Casa boutique en el bosque","src":"Airbnb","id":"39992784","tot":1034,"s":[4,3,3,4,3,2],"rat":"4,7 · 30 reseñas","beds":"3 dorm · 8 camas · 2 baños","zona":"Barrio cerrado en la montaña, 5 min en auto","map":"San Martín de los Andes, Neuquén","lead":"Casa de madera y piedra con grandes ventanales dentro del bosque.","pro":["Jacuzzi privado y chimenea","Diseño muy lindo"],"con":["Cara para lo que ofrece","Solo 3 dormitorios"],"f":["fotos3/95ad8abc89.jpg","fotos2/43c4042fdb.jpg","fotos1/38e5f3a2f5.jpg","fotos2/687ff8ce2a.jpg","fotos4/d289d841bc.jpg","fotos4/f19147a54a.jpg","fotos2/85ce32cbe2.jpg","fotos2/63d6a58eaf.jpg","fotos2/5207dc6833.jpg","fotos1/2f09d85124.jpg","fotos4/fe6a76e4aa.jpg","fotos3/b53e8c3cc3.jpg"]},
+{"n":"Espacio Bandurrias","src":"Booking","url":"https://www.booking.com/hotel/ar/cabanas-bandurrias-san-martin-de-los-andes.es.html","tot":280,"s":[4,2,2,3,1,5],"rat":"8,5 · 9 reseñas","beds":"5 dorm · 13 camas · 4 baños · 260 m²","zona":"A 5,4 km del centro","map":"Georg Miciu 547, San Martín de los Andes","lead":"Casa enorme y barata, lejos del centro.","pro":["La más barata","4 baños y mucho espacio","Se paga en el lugar"],"con":["Lejos del centro y del lago","Sin vista ni extras","Pocas reseñas"],"f":["fotos3/98b98eb3b4.jpg","fotos3/90cd9a20e7.jpg","fotos3/a72c3bb375.jpg","fotos1/24d6605f4c.jpg","fotos3/b94593a0cb.jpg","fotos4/d22211d4a8.jpg","fotos1/3374e26e5a.jpg","fotos4/df8f80744c.jpg","fotos2/7fd9d8fb36.jpg","fotos2/3ce75e9813.jpg","fotos2/73efd2a1a1.jpg","fotos4/d6019c5e72.jpg"]}]},{"k":"vla","n":"La Angostura","when":"3 al 6/1 · 3 noches","ci":"2027-01-03","co":"2027-01-06","note":"Actividades: Belvedere e Inacayal, el Correntoso, el Bosque de Arrayanes y kayak. Lo mejor es Las Balsas o Puerto Manzano, sobre el lago.","h":[{"n":"Cuncumen","src":"Booking","url":"https://www.booking.com/hotel/ar/cuncumen-casa-de-montana-puerto-manzano1.es.html","tot":948,"s":[3,4,2,4,1,5],"rat":"9,5 · 108 reseñas","beds":"2 chalets · 4 dorm · 2 baños","zona":"Puerto Manzano, cerca de bares","map":"Los Robles 95, Puerto Manzano, Villa La Angostura","lead":"Dos chalets de 4 en Puerto Manzano, con bares a pie.","pro":["Muy buenas reseñas (108)","Bares de Manzano caminando","La más barata"],"con":["Son 2 casitas separadas","Sin extras"],"f":["fotos4/dca70ccc09.jpg","fotos2/5588d8f853.jpg","fotos3/a217a5e0d5.jpg","fotos1/1ff305a181.jpg","fotos1/25a7b8a186.jpg","fotos3/ceda85d0c2.jpg","fotos1/1ad5d288f7.jpg","fotos2/805d6bb767.jpg","fotos2/44036bb261.jpg","fotos3/c6e8bfb549.jpg","fotos1/0ac4371d51.jpg","fotos3/c98c5324b0.jpg","fotos1/15c755f4f0.jpg","fotos1/145ba316f6.jpg","fotos4/e730000566.jpg","fotos4/e9baf98060.jpg","fotos3/9a37c134c7.jpg","fotos4/d5fbf228e6.jpg","fotos1/2ec693fb80.jpg","fotos1/09e43c9459.jpg"],"star":"La elegida"},
+{"n":"La Villa del Montañés","src":"Airbnb","id":"1343508526230553976","tot":1377,"s":[4,4,3,4,5,3],"rat":"5,0 · 1 reseña · Superanfitriona","beds":"4 dorm · 7 camas · 2 baños","zona":"A 5 min caminando del Nahuel Huapi","map":"La Villa del Montañés, Villa La Angostura","lead":"Cabaña dentro de un complejo con todo para el grupo: pileta, sauna, quincho y juegos, cerca del lago.","pro":["Pileta climatizada, sauna y quincho","Metegol, arco de fútbol y aro de básquet","A 5 min caminando del lago"],"con":["Solo 1 reseña","Complejo de 13 cabañas: el parque se comparte"],"f":["fotos1/1e303e1a44.jpg","fotos3/a21c3ab9cb.jpg","fotos3/9be84cc137.jpg","fotos3/b6c48b2bdb.jpg","fotos2/686089ba4b.jpg","fotos2/3ff9ac7db8.jpg","fotos1/2b588d2d86.jpg","fotos3/9c869b0544.jpg","fotos1/27ac5c70d5.jpg","fotos1/00947fe511.jpg","fotos4/fe54745539.jpg","fotos1/1cc294767e.jpg"]},
+{"n":"Casa junto al Nahuel Huapi","src":"Airbnb","id":"23560987","tot":2575,"s":[4,5,5,5,4,1],"rat":"4,86 · 78 reseñas","beds":"3 dorm · 6 camas · 2,5 baños","zona":"Sobre el lago, a 2 km del centro","map":"Villa La Angostura, Neuquén","lead":"La casa de película: jacuzzi en el balcón mirando el lago.","pro":["Jacuzzi en el balcón con vista al lago","Pileta climatizada y sauna","Vistas desde todas las habitaciones"],"con":["La más cara del viaje: USD 322 por persona","6 camas: confirmar dónde duermen 8"],"f":["fotos1/0f9a74e83b.jpg","fotos3/c5518a44e9.jpg","fotos4/f44958b7ff.jpg","fotos1/28bdc78493.jpg","fotos3/8dbced5834.jpg","fotos4/d1d185a53a.jpg","fotos1/2e8673ff75.jpg","fotos4/ffd7c32ce7.jpg","fotos2/4a952c71e9.jpg","fotos2/85f197b697.jpg","fotos4/e291cb23a2.jpg","fotos4/e32abf4f9e.jpg"]},
+{"n":"Cabaña 10 pax con pileta","src":"Airbnb","id":"1471810670871122732","tot":1686,"s":[5,4,3,4,5,2],"rat":"4,89 · 9 reseñas · Superanfitrión","beds":"4 dorm · 8 camas · 3 baños","zona":"Puerto Manzano, a 5 min del lago","map":"Encanto del Rio, Villa La Angostura","lead":"Cabaña grande en el complejo del Encanto del Río, en Puerto Manzano.","pro":["Pileta climatizada, mesa de pool y quincho","3 baños, hogar a leña y mucama","Bares de Manzano cerca"],"con":["Cara","La pileta es del complejo"],"f":["fotos2/5e8875ce1a.jpg","fotos3/94cbc6aea7.jpg","fotos1/18fb72724a.jpg","fotos1/12ae30c52a.jpg","fotos2/3d0ff4b8aa.jpg","fotos2/5310486682.jpg","fotos4/e7121e5105.jpg","fotos4/e1572b2fad.jpg","fotos1/118c356aa9.jpg","fotos1/0df4733dc7.jpg","fotos1/0df4733dc7.jpg","fotos1/372e744f45.jpg"]},
+{"n":"Las Rosas","src":"Booking","url":"https://www.booking.com/hotel/ar/las-rosas-villa-la-angostura.es.html","tot":974,"s":[4,4,4,4,1,4],"rat":"8,7 · 3 reseñas","beds":"4 dorm · 8 camas · 2 baños","zona":"A 900 m del centro","map":"Huilliches 292, Villa La Angostura","lead":"Casa sola cerca del centro con un ventanal enorme a las montañas.","pro":["Ventanal con vista a las montañas","Casa sola, patio con parrilla","Cerca del centro"],"con":["Solo 3 reseñas","Lejos del lago y sin extras"],"f":["fotos2/54c51846b8.jpg","fotos4/e2be601154.jpg","fotos2/6972fe7fc7.jpg","fotos3/c08eb4eb6e.jpg","fotos3/96c75b5fcd.jpg","fotos3/97e6147f62.jpg","fotos1/14f0bc44d7.jpg","fotos1/38f169cb68.jpg","fotos2/5ee3d7feb1.jpg"]},
+{"n":"Rumel","src":"Airbnb","id":"1663227746667679879","bk":"https://www.booking.com/hotel/ar/casa-de-montana-rumel.es.html","tot":1273,"s":[4,4,3,4,2,3],"rat":"9,4 · 43 en Booking","beds":"3 dorm · 2 baños · 140 m²","zona":"Puerto Manzano, cerca de una playita y el Río Bonito","map":"Azalea 73, Puerto Manzano, Villa La Angostura","lead":"Chalet en el bosque de Puerto Manzano, el más \"de película\" sin pagar de más.","pro":["Chalet en el bosque, muy lindo","Patio grande con parrilla propia","Playita del lago a minutos"],"con":["Sin pileta ni juegos","En Airbnb figura con 6 camas: confirmar 8 (en Booking dice 8)"],"f":["fotos1/05fb7bc78a.jpg","fotos2/59f0f3586f.jpg","fotos2/5adcab465b.jpg","fotos2/498eeefecc.jpg","fotos4/f347c9aee9.jpg","fotos1/0ff2867eb4.jpg","fotos4/ea4a41fd1e.jpg","fotos3/9fe029d698.jpg","fotos4/fa5fdff23f.jpg","fotos2/4ea13e16f8.jpg","fotos2/8626bc1808.jpg","fotos2/7d402c1959.jpg"]},
+{"n":"Casa Aluen","src":"Airbnb","id":"1269579751493627303","tot":1263,"s":[4,4,2,5,2,3],"rat":"5,0 · 5 reseñas","beds":"3 dorm · 7 camas · 2 baños","zona":"Las Balsas, 10 min a pie del lago","map":"Barrio Las Balsas, Villa La Angostura","lead":"Cabaña en Las Balsas, al lado de la salida al Bosque de Arrayanes.","pro":["Al lado de Arrayanes y Bahía Mansa","Chimenea, cocina exterior y parrilla a leña"],"con":["Sin vista","Pocas reseñas"],"f":["fotos1/1aaf842479.jpg","fotos2/640b5a8a71.jpg","fotos4/fd62110a4c.jpg","fotos4/e0197b6e73.jpg","fotos1/31657f186a.jpg","fotos4/d2ff5115bb.jpg","fotos1/35fcbc5699.jpg","fotos2/4c0cca757e.jpg","fotos3/c98f9e5b5d.jpg","fotos2/597f3b14e9.jpg","fotos1/37d03ea2bd.jpg","fotos3/ad70fdd145.jpg"]}]},{"k":"brc","n":"Bariloche","when":"7 al 10/1 · 3 noches","ci":"2027-01-07","co":"2027-01-10","note":"Actividades: Blest, Circuito Chico, Cervecería Patagonia y Filo de las Cabras al oeste; rafting del Manso al sur; salida del 10/1 hacia el este. Lo ideal es Bustillo entre el km 2 y el 12.","h":[{"n":"Departamento sobre el lago","src":"Airbnb","id":"1642907817061376935","tot":742,"s":[3,5,5,5,2,4],"rat":"4,5 · 14 reseñas","beds":"2 dorm · 6 camas + diván · 2 baños","zona":"Sobre el Nahuel Huapi, a 10 min del teleférico del Cerro Otto","map":"Teleférico Cerro Otto, San Carlos de Bariloche","lead":"Departamento grande con acceso directo a la playa del lago y vistas que las reseñas llaman inigualables.","pro":["Acceso directo a la playa del Nahuel Huapi","Vista al lago, lo más elogiado","Buen precio · cancelación gratis hasta el 6/1"],"con":["Solo 2 dormitorios: 4 en una pieza y 2 en el living","Se llega por 40 a 60 escalones","Limpieza 4,2 en las reseñas"],"f":["fotos1/00a93c46fe.jpg","fotos2/50c9eddd63.jpg","fotos1/2991a25b50.jpg","fotos2/5dd6b0104a.jpg","fotos3/c70eb25667.jpg","fotos4/db060a486f.jpg","fotos4/d872981f3f.jpg","fotos2/51b1d18161.jpg","fotos2/6c0fb4e0ca.jpg","fotos3/ae9d0ab6a6.jpg","fotos2/6be199a60f.jpg","fotos4/d08e656ddf.jpg","fotos1/1ac3831910.jpg","fotos2/48a69655ca.jpg","fotos3/a278c20134.jpg","fotos2/721e6e28c7.jpg","fotos2/5f2910d356.jpg","fotos1/28e2207bb3.jpg","fotos2/5a5da72bc0.jpg","fotos3/8e29ada264.jpg"],"star":"La elegida"},
+{"n":"Casa premium con pileta","src":"Airbnb","id":"1016620485430069301","tot":1597,"s":[5,5,3,5,5,2],"rat":"5,0 · 8 reseñas · Superanfitrión","beds":"4 dorm · 6 camas · 3 baños","zona":"Cerca de Av. Pioneros, 10 min a pie del lago","map":"Avenida Pioneros, San Carlos de Bariloche","lead":"La casa más completa del viaje para un grupo: pileta propia, fútbol y gimnasio.","pro":["Pileta climatizada privada","Cancha de fútbol, gimnasio, playroom y fogón","Bares y restaurantes de Pioneros cerca"],"con":["Cara","6 camas: confirmar 8"],"f":["fotos4/ee849ae7bf.jpg","fotos1/0031f28064.jpg","fotos2/45710b6051.jpg","fotos2/6388af4238.jpg","fotos1/1a137fd386.jpg","fotos3/a5c76c6ad2.jpg","fotos3/a58ce2b24f.jpg","fotos2/5eb69fecac.jpg","fotos1/278a47378c.jpg","fotos3/c4eb1340f0.jpg","fotos1/1b2deaca26.jpg","fotos1/15b0bb6ef6.jpg"]},
+{"n":"Casa en el km 6","src":"Airbnb","id":"22461150","tot":1325,"s":[4,5,4,5,3,3],"rat":"4,99 · 139 reseñas · top 10%","beds":"4 dorm · 6 camas · 2,5 baños","zona":"Bustillo km 6, a 5 min del lago","map":"Avenida Bustillo km 6, San Carlos de Bariloche","lead":"La casa con mejores reseñas de todas, a mitad de camino entre el centro y el Catedral.","pro":["139 reseñas con 4,99","Jardín grande con cancha y parrilla cubierta","Vista al lago, a 5 min caminando"],"con":["Sin pileta","6 camas: confirmar 8"],"f":["fotos1/1989e5f849.jpg","fotos3/baa6a817c0.jpg","fotos2/4b127c3c56.jpg","fotos2/548e4004d0.jpg","fotos2/3bc4312eb4.jpg","fotos3/bf7b0507d7.jpg","fotos2/7b0f43b467.jpg","fotos2/4b127c3c56.jpg","fotos3/bb4d6fc984.jpg","fotos4/f3f6fbcd68.jpg","fotos1/2a9296dc2c.jpg","fotos4/dcba8a0057.jpg"]},
+{"n":"La casa roja","src":"Airbnb","id":"945094200253554307","tot":516,"s":[3,5,3,5,2,5],"rat":"4,87 · 15 reseñas","beds":"4 dorm · 6 camas · 1 baño","zona":"A pasos del lago, cerca del centro","map":"San Carlos de Bariloche, Río Negro","lead":"Casa en el bosque a pasos del lago, muy barata.","pro":["Muy barata y bien ubicada","Chimenea y fogón","Rodeada de bosque"],"con":["Un solo baño para 8"],"f":["fotos3/8d7c1cecea.jpg","fotos2/5a18f292c4.jpg","fotos2/7ad11184ef.jpg","fotos1/16a4e05512.jpg","fotos2/68a0f2c8e3.jpg","fotos3/88d437bb54.jpg","fotos3/976f4096f7.jpg","fotos3/b189884273.jpg","fotos2/422b9c103e.jpg","fotos1/30b1839a33.jpg","fotos3/b06ac2a281.jpg","fotos3/976f4096f7.jpg"]},
+{"n":"Cabaña Raulí con jacuzzi","src":"Airbnb","id":"554319517238694179","tot":1104,"s":[4,2,4,3,4,3],"rat":"4,97 · 32 reseñas","beds":"4 dorm · 7 camas · 1,5 baños","zona":"Villa Los Coihues, cerca del Catedral y el Gutiérrez","map":"Villa Los Coihues, San Carlos de Bariloche","lead":"Cabaña alpina con jacuzzi para 6 mirando las montañas.","pro":["Jacuzzi para 6 con vista a la montaña","Cerca del Manso para el rafting"],"con":["Lejos de Circuito Chico, Blest y la Patagonia","1,5 baños"],"f":["fotos4/f2170a0492.jpg","fotos2/5cb7e45f54.jpg","fotos4/da9d15f4af.jpg","fotos4/db39906242.jpg","fotos2/4d4d7a0be1.jpg","fotos3/c24d0205f5.jpg","fotos3/c74cf37f1a.jpg","fotos2/6590f37809.jpg","fotos4/e0bcbcee2d.jpg","fotos3/95299e6d26.jpg","fotos2/6fd724b989.jpg","fotos1/02871ec6ba.jpg"]},
+{"n":"Ruca Quimei Malek","src":"Booking","url":"https://www.booking.com/hotel/ar/ruca-quimei-malek.es.html","tot":528,"s":[5,2,2,4,1,5],"rat":"9,8 · 11 reseñas","beds":"4 dorm · 8 camas · 3 baños · 250 m²","zona":"Península San Pedro, 16 km del centro","map":"Avenida del Campanario 1475, San Carlos de Bariloche","lead":"Casa grande y barata sobre el Circuito Chico.","pro":["Casa grande con 3 baños","Cerca de la Patagonia, el Filo de las Cabras y el Circuito Chico","Barata"],"con":["A 16 km del centro","Lejos del Manso y de la salida del 10/1"],"f":["fotos2/5dd03d6173.jpg","fotos2/44efb5f2d8.jpg","fotos4/d61ad55e7d.jpg","fotos4/f6dc6fc512.jpg","fotos4/fa2a7feedc.jpg","fotos1/0d2902b09d.jpg","fotos2/5f2a3df7bc.jpg","fotos2/5d8ab84aff.jpg","fotos3/bf2524d30d.jpg","fotos3/888a879101.jpg","fotos3/92f3f85fa7.jpg","fotos3/c47eb55855.jpg"]},
+{"n":"Dom 8","src":"Airbnb","id":"1061591731516617809","tot":420,"s":[3,5,1,4,1,5],"rat":"4,98 · 46 reseñas","beds":"3 dorm · 6 camas · 2 baños","zona":"Centro, 5 min de la plaza","map":"Plaza Perito Moreno, San Carlos de Bariloche","lead":"Cabaña céntrica y barata.","pro":["La más barata de Bariloche","En el centro"],"con":["Sin vista ni extras","6 camas"],"f":["fotos3/bd0ca489d2.jpg","fotos3/95825cabdc.jpg","fotos2/696998aedf.jpg","fotos2/55e5dac98b.jpg","fotos1/1c8c471ba2.jpg","fotos2/6e9ca56488.jpg","fotos4/e33fca04f9.jpg","fotos3/87f596b444.jpg","fotos2/3ee0f133bf.jpg","fotos4/f16b648082.jpg","fotos1/397df95dc6.jpg","fotos3/b8ecf2c9e7.jpg"]},
+{"n":"Casa con excelente vista","src":"Airbnb","id":"41449670","tot":872,"s":[4,3,4,3,1,4],"rat":"4,91 · 47 reseñas · Superanfitrión","beds":"5 dorm · 8 camas · 2 baños","zona":"Barrio residencial al este, 4 km del centro","map":"Paseo del Este, San Carlos de Bariloche","lead":"Casa de 5 dormitorios con vista, del lado de la salida del último día.","pro":["5 dormitorios y 8 camas de verdad","Vista y 2 cocheras con portón eléctrico"],"con":["Del lado opuesto al Circuito Chico y Blest","Sin extras"],"f":["fotos2/77a3deaffd.jpg","fotos4/fb9fb39414.jpg","fotos1/04435fddd9.jpg","fotos2/57cdd08ed8.jpg","fotos3/c9eaa2fbfb.jpg","fotos3/bb38609dec.jpg","fotos2/6dc01bba28.jpg","fotos4/eabcae1c4a.jpg","fotos3/bb38609dec.jpg","fotos3/b044a603e1.jpg","fotos2/57d09d967d.jpg","fotos1/0cfd36ef97.jpg"]}]}];
+CITIES[0].h.forEach(h=>{if(h.n==="Casa en Las Pendientes"){h.star="Confirmada ✓"}else{h.out=1}});
+const COMBOS=[{"n":"La del grupo","h":["Casa en Las Pendientes","Cuncumen","Departamento sobre el lago"],"rec":1,"note":"Las tres elegidas: vista al Lanín, Puerto Manzano con bares a pie y la playa del Nahuel Huapi."},
+{"n":"Económica","h":["Cabañas Aitue","Cuncumen","La casa roja"],"note":"Lo justo: baños ajustados y sin extras."},
+{"n":"Equilibrada","h":["Cabañas Aitue","La Villa del Montañés","Casa en el km 6"],"note":"Barato donde están 2 noches; pileta y juegos donde están 3."},
+{"n":"Con tu depto","h":["Casa en Las Pendientes","La Villa del Montañés","Departamento sobre el lago"],"note":"Igual que la del grupo, pero con la Villa del Montañés (pileta, sauna y juegos) en La Angostura."},
+{"n":"Con todo","h":["Casa en Las Pendientes","Cabaña 10 pax con pileta","Casa premium con pileta"],"note":"Pileta o juegos en las tres casas."}];
+const usd=n=>'USD '+n.toLocaleString('es-AR');
+let city=0,hi=0,ph=0;
+try{const s=JSON.parse(localStorage.getItem('pat-casa')||'null');if(s){city=s[0]|0;hi=s[1]|0}}catch(e){}
+const hl=document.getElementById('hl');
+function houseUrl(c,h){return h.id?AIR(h.id)+'?check_in='+c.ci+'&check_out='+c.co+'&adults=8':h.url+'?checkin='+c.ci+'&checkout='+c.co+'&group_adults=8&no_rooms=1&selected_currency=USD'}
+function photos(h){return h.f}
+function score(h){return h.s.reduce((a,b)=>a+b,0)}
+function renderCities(){const box=document.getElementById('cityChips');box.innerHTML='';
+ CITIES.forEach((c,i)=>{const b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed',i===city);b.textContent=c.n+' · '+c.when;b.onclick=()=>{city=i;hi=0;renderCities();renderList();pick(0)};box.appendChild(b)});
+ document.getElementById('cityNote').textContent=CITIES[city].note}
+function renderList(){const c=CITIES[city];hl.innerHTML='';
+ c.h.forEach((h,i)=>{const li=document.createElement('li');const b=document.createElement('button');b.className='day'+(h.out?' out':'');b.dataset.i=i;
+  b.innerHTML=`<span class="d">${score(h)}/30</span><span class="pin ${h.src==='Airbnb'?'src-air':'src-bkg'}"></span><span><span class="t">${h.star?'<span class="star" aria-label="destacada">★</span> ':''}${h.n}</span><br><span class="s">${usd(Math.round(h.tot/8))} c/u · ${h.src}${h.star?' · '+h.star:''}</span></span>`;
+  b.onclick=()=>pick(i,true);li.appendChild(b);hl.appendChild(li)})}
+function showPhoto(i){const h=CITIES[city].h[hi];const p=photos(h);ph=(i+p.length)%p.length;const img=document.getElementById('hphoto');img.src=p[ph];img.alt='Foto '+(ph+1)+' de '+h.n;
+ document.getElementById('hcred').textContent='Foto del anuncio en '+h.src;document.getElementById('hcount').textContent=(ph+1)+' / '+p.length;
+ document.querySelectorAll('#hthumbs button').forEach((b,j)=>{b.setAttribute('aria-pressed',j===ph);if(j===ph){const t=document.getElementById('hthumbs');t.scrollTo({left:b.offsetLeft-t.clientWidth/2+b.clientWidth/2,behavior:'smooth'})}})}
+document.getElementById('gprev').onclick=()=>showPhoto(ph-1);document.getElementById('gnext').onclick=()=>showPhoto(ph+1);
+document.getElementById('hpanel').addEventListener('keydown',e=>{if(e.target.closest('a'))return;if(e.key==='ArrowLeft'){showPhoto(ph-1);e.preventDefault()}else if(e.key==='ArrowRight'){showPhoto(ph+1);e.preventDefault()}});
+function pick(i,user){const c=CITIES[city];if(i<0||i>=c.h.length)return;hi=i;const h=c.h[i];
+ try{localStorage.setItem('pat-casa',JSON.stringify([city,hi]))}catch(e){}
+ document.querySelectorAll('#hl .day').forEach(x=>x.classList.toggle('on',+x.dataset.i===i));
+ const p=photos(h);document.getElementById('hthumbs').innerHTML=p.map((u,j)=>`<button type="button" aria-label="Ver foto ${j+1}"><img src="${u}" alt="" loading="lazy"></button>`).join('');
+ document.querySelectorAll('#hthumbs button').forEach((b,j)=>b.onclick=()=>showPhoto(j));showPhoto(0);
+ const nights=c.k==='sma'?2:3;
+ document.getElementById('heb').innerHTML=`<span class="tag" style="background:${h.src==='Airbnb'?'#e0565b':'var(--ref)'}">${h.src}</span><span>${c.n} · ${c.when}</span>`;
+ document.getElementById('httl').textContent=h.n;
+ document.getElementById('hlead').textContent=(h.out?'Descartada: en San Martín ya está confirmada la Casa en Las Pendientes. Queda acá por si sirve para otro viaje. ':'')+(h.star==='Confirmada ✓'?'Confirmada. ':'')+h.lead;
+ document.getElementById('hstats').innerHTML=[["Por persona",usd(Math.round(h.tot/8))],["Total "+nights+" noches",usd(h.tot)],["Reseñas",h.rat],["Camas",h.beds],["Dónde",h.zona]].map(s=>`<div class="stat"><b>${s[0]}</b>${s[1]}</div>`).join('');
+ document.getElementById('hbars').innerHTML=h.s.map((v,j)=>`<span>${SC[j]}</span><span class="tr"><i style="width:${v*20}%"></i></span><b>${v}/5</b>`).join('')+`<div class="tot"><span>Puntaje total</span><span>${score(h)}/30</span></div>`;
+ document.getElementById('hpro').innerHTML=h.pro.map(x=>`<li>${x}</li>`).join('');
+ document.getElementById('hcon').innerHTML=h.con.map(x=>`<li>${x}</li>`).join('');
+ document.getElementById('hlinks').innerHTML=`<a href="${houseUrl(c,h)}" target="_blank" rel="noopener">Ver en ${h.src} ↗</a>`+(h.bk?`<a href="${h.bk}?checkin=${c.ci}&checkout=${c.co}&group_adults=8&no_rooms=1&selected_currency=USD" target="_blank" rel="noopener">Ver en Booking ↗</a>`:'')+`<a href="${MAP(h.map)}" target="_blank" rel="noopener">Ver en el mapa ↗</a>`;
+ document.getElementById('hprev').disabled=i===0;document.getElementById('hnext').disabled=i===c.h.length-1;
+ if(user&&innerWidth<=820)document.getElementById('hpanel').scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('hprev').onclick=()=>pick(hi-1,true);
+document.getElementById('hnext').onclick=()=>pick(hi+1,true);
+function findHouse(n){for(const c of CITIES)for(const h of c.h)if(h.n===n)return h}
+document.getElementById('combos').innerHTML=COMBOS.map(cb=>{const hs=cb.h.map(findHouse);const t=hs.reduce((a,h)=>a+h.tot,0);
+ const out=hs.some(h=>h.out);if(out)cb.note='Descartada: usa otra casa en San Martín. '+cb.note;
+ return `<div class="combo${cb.rec?' rec':''}${out?' out':''}"><h3>${cb.n}${cb.rec?' ★':''}</h3><span class="amt">${usd(Math.round(t/8))} c/u</span><p>${usd(t)} en total por las 8 noches</p><ol>${hs.map(h=>`<li>${h.n} · ${usd(h.tot)}</li>`).join('')}</ol><p>${cb.note}</p></div>`}).join('');
+if(city>=CITIES.length)city=0;if(hi>=CITIES[city].h.length)hi=0;
+renderCities();renderList();pick(hi);
+function showPage(k){if(!['itinerario','autos','casas'].includes(k))k='itinerario';
+ document.getElementById('view-itin').hidden=k!=='itinerario';document.getElementById('view-autos').hidden=k!=='autos';document.getElementById('view-casas').hidden=k!=='casas';
+ document.querySelectorAll('.pages a').forEach(a=>{if(a.dataset.v===k)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+ try{localStorage.setItem('pat-page',k)}catch(e){}}
+document.querySelectorAll('.pages a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showPage(a.dataset.v);
+ try{history.replaceState(null,'','#'+a.dataset.v)}catch(err){}
+ const top=document.querySelector('.pages').getBoundingClientRect().top+window.scrollY-12;if(window.scrollY>top)window.scrollTo({top,behavior:'smooth'})}));
+addEventListener('hashchange',()=>showPage(location.hash.slice(1)));
+{let k=location.hash.slice(1);if(!k){try{k=localStorage.getItem('pat-page')||''}catch(e){}}showPage(k)}
+
+
+/* deslizar y visor a pantalla completa */
+function swipe(el,onL,onR){let x0=null,y0=null;el.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY},{passive:true});
+ el.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){dx<0?onL():onR()}},{passive:true})}
+swipe(document.querySelector('.gal2'),()=>showPhoto(ph+1),()=>showPhoto(ph-1));
+const lbEl=document.getElementById('lb');let lbLast=null;
+function lbShow(){const h=CITIES[city].h[hi],p=photos(h);document.getElementById('lbi').src=p[ph];document.getElementById('lbi').alt='Foto '+(ph+1)+' de '+h.n;
+ document.getElementById('lbt').textContent=h.n;document.getElementById('lbc').textContent=(ph+1)+' / '+p.length}
+function lbOpen(){lbLast=document.activeElement;lbShow();lbEl.hidden=false;document.body.classList.add('lb-open');document.getElementById('lbx').focus()}
+function lbClose(){lbEl.hidden=true;document.body.classList.remove('lb-open');if(lbLast)lbLast.focus()}
+function lbStep(d){showPhoto(ph+d);lbShow()}
+document.getElementById('hphoto').addEventListener('click',lbOpen);
+document.getElementById('lbx').onclick=lbClose;document.getElementById('lbp').onclick=()=>lbStep(-1);document.getElementById('lbn').onclick=()=>lbStep(1);
+lbEl.addEventListener('click',e=>{if(e.target===lbEl)lbClose()});
+swipe(document.getElementById('lbi'),()=>lbStep(1),()=>lbStep(-1));
+addEventListener('keydown',e=>{if(lbEl.hidden)return;if(e.key==='Escape')lbClose();else if(e.key==='ArrowRight')lbStep(1);else if(e.key==='ArrowLeft')lbStep(-1)});
+</script>
