@@ -226,7 +226,7 @@ def main():
     alb = (alb * 255).astype(np.uint8)
     nrm = np.stack([nx * .5 + .5, ny * .5 + .5, np.where(lake, 1.0, shadow)], -1)
     nrm = (np.clip(nrm, 0, 1) * 255).astype(np.uint8)
-    for lv, fac, qa, qn in [('', 1, 84, 80), ('-2048', 2, 84, 80), ('-1024', 4, 80, 82)]:
+    for lv, fac, qa, qn in [('', 1, 84, 80), ('-2048', 2, 82, 70), ('-1024', 4, 80, 82)]:
         A = Image.fromarray(alb); N = Image.fromarray(nrm)
         if fac > 1:
             A = A.resize((BW // fac, BH // fac), Image.LANCZOS); N = N.resize((BW // fac, BH // fac), Image.LANCZOS)

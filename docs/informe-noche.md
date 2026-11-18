@@ -245,3 +245,26 @@ El título sigue siendo "Patagonia 2027". Probé cinco opciones, todas tipograf�
 **Dónde se aplicó:** título de la portada, título del resumen ("27/12 → 10/1") y títulos grandes de secciones (Gastos, Pesca, "Las casas elegidas", "Dos Citroën Basalt", "Combinaciones…", "Lugares, en orden de viaje"…). Los títulos de cada día, los números de los datos y todos los textos de lectura siguen en Fraunces, Atkinson y Plex Mono. En el resumen, la flecha "→" la dibuja Fraunces (Caprasimo no la trae) y queda un poco más fina: es un detalle a revisar si molesta.
 
 La casa de La Angostura sigue como estaba (sin decidir).
+
+## Alta resolución, cámara suave, pie de página y colores de época (18/11)
+
+**1. Montaña en alta resolución**
+- **DEM:** la zona de detalle ahora usa **Copernicus DEM GLO-30** (30 m, TanDEM-X; más nítido que SRTM) y su **máscara de agua** (lagos y ríos reales). Zoom 13-14 de Terrain Tiles no suma información en esta zona: por debajo hay SRTM de 30 m reescalado. La zona se agrandó al este para que el Catedral entre entero: 52 × 33 km (−41,08 a −41,38; −71,98 a −71,36). El anillo exterior sigue con Terrain Tiles z9, liviano.
+- **Texturas:** albedo y **normal map de 4096 × 2624** (≈ 12 m por píxel) en escritorio, 2048 en el celular. El normal map lleva la sombra proyectada en el canal azul y la luz se calcula por píxel. Para que se marquen filos y canaletas por debajo de los 30 m del DEM, las normales suman un **microrrelieve sintético** suave (más fuerte en la roca empinada). Es detalle visual, no dato real.
+- **Geometría:** la zona de detalle está en bloques (64 × 64 celdas en escritorio, a la resolución nativa del DEM) con **LOD por distancia** (paso 1, 2, 4 u 8) y faldones de 400 m para que no queden grietas. El anillo se hunde 300 m adentro de la zona de detalle, así la costura no deja huecos.
+- **Carga progresiva:** primero una versión liviana (alturas 384, texturas 1024: **0,79 MB**) que aparece rápido; después la alta. Las alturas se funden en 1,4 s y los marcadores y el margen de la cámara se acomodan sin saltos.
+- **Peso total:** escritorio **6,3 MB**; celular **2,34 MB**, más three.js (0,17 MB comprimido) ≈ 2,5 MB. Ambos dentro del presupuesto.
+- **Rendimiento:** no pude medir fps en un celular real (las capturas usan render por software). En el celular dibuja ~380 mil vértices con LOD, texturas de 2048 y anisotropía 4. Conviene probarlo en el preview.
+
+**2. Cámara**
+- Spline Catmull-Rom centrípeta recorrida **por longitud de arco** (velocidad constante), con un perfil de velocidad que **acelera en el primer 14 % y frena en el último 14 %**. La mirada usa los mismos tramos, así el giro es continuo.
+- El seguimiento del scroll es un **resorte con amortiguación crítica, por tiempo** (igual en 30 o 120 fps). La portada pasó de 260 a **460 vh**: más scroll para el mismo tramo.
+- El margen sobre el terreno se calcula antes, sobre todo el recorrido, y se suaviza: no hay saltos de altura. Al subir, la cámara vuelve por la misma curva.
+- **Recorrido:** sobre Pampa Linda frente al Tronador y el Meiling → glaciares → giro por el norte → cruce al este → **cierre en el Cerro Catedral con el Refugio Frey**. El punto final lo elegí calculando la línea de vista sobre el DEM. La cámara llega al cierre en el 92 % del scroll y se queda quieta hasta que la portada se funde con la página.
+- Las etiquetas de los marcadores ya no se salen de la pantalla. Revisé el inicio, el 25 %, la mitad, el 75 % y el final en 390, 1280 y 2560 px: no se ve el borde del terreno.
+
+**3. Pie de página:** "Ing. Lippert · 2026", fecha de actualización del itinerario (sale de `ITIN_ACT` en `index.html`; hoy 18/11/2026), links a Itinerario, Casas, Autos, Gastos y Pesca, "Volver arriba" y créditos (fotos, relieve con la atribución de Copernicus, OpenStreetMap, Google Maps). Saqué la nota de créditos vieja del itinerario, que quedaba repetida.
+
+**4. Colores de época:** French red, cobalt, teal, aloe, seafoam e iced mocha (fuente oficial: historia de la empresa), más mostaza. Los apliqué en bandas por sección (Itinerario cobalto, Casas rojo, Autos mostaza, Gastos teal, Pesca espuma de mar), en los parches de datos del resumen y de Gastos, la banda de la portada, el botón del itinerario nuevo, el pie y las etiquetas del itinerario. Todo pasa AA en claro y oscuro (tabla en `docs/investigacion-estetica.md`, "Paleta 2"). Sin logo ni franjas.
+
+Capturas en `docs/capturas/08-alta-resolucion/`: la portada al inicio, a la mitad y al final del recorrido (el final está tomado en el 94 % del scroll, con la cámara ya quieta en el cierre), el resumen y el pie, en 390, 1280 y 2560 px.

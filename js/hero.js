@@ -342,7 +342,9 @@ async function start() {
       v.copy(m.top).project(camera);
       const sx = (v.x * 0.5 + 0.5) * W, sy = (-v.y * 0.5 + 0.5) * H;
       const off = v.z > 1 || sx < 40 || sx > W - 40 || sy < 70 || sy > H - 40 || occluded(m);
-      m.el.style.transform = `translate(${sx}px,${sy}px)`;
+      const half = (m.w || (m.w = m.el.firstElementChild.offsetWidth)) / 2;   // la etiqueta no se sale de la pantalla
+      const lx = Math.min(W - half - 12, Math.max(half + 12, sx));
+      m.el.style.transform = `translate(${lx}px,${sy}px)`;
       m.el.style.opacity = off ? 0 : 1;
     }
     hero.style.setProperty('--p', shown.toFixed(3));

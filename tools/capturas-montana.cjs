@@ -7,7 +7,7 @@ const schemes = (process.argv[3] || 'claro').split(',');
 const base = process.argv[4] || 'http://localhost:8080/';
 fs.mkdirSync(out, { recursive: true });
 const SIZES = [[390, 844], [1280, 800], [2560, 1080]];
-const STOPS = [['inicio', 0], ['mitad', 0.5], ['final', 1]];
+const STOPS = [['inicio', 0], ['mitad', 0.5], ['final', 0.94]];
 (async () => {
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   for (const sc of schemes) for (const [w, h] of SIZES) {

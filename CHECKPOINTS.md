@@ -33,3 +33,9 @@ Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Ch
 | 2026-11-18 | `checkpoint/07-correcciones-listas` | Mosaico bien encuadrado, crédito del relieve abajo de la banda, botón de menú compacto que se esconde al bajar (celular), permisos de pesca como opcionales en Gastos. |
 | 2026-11-18 | `checkpoint/08-antes-titulo` | Estado después de las correcciones del 18/11, antes de cambiar la tipografía del título. |
 | 2026-11-18 | `checkpoint/08-titulo-listo` | Título de la portada y títulos grandes de secciones en Caprasimo (estilo Cooper Black, afiche de los 70). |
+| 2026-11-18 | `checkpoint/09-antes-alta-resolucion` | Título en Caprasimo; antes de la montaña en alta resolución. |
+| 2026-11-18 | `checkpoint/09-alta-resolucion-lista` · `10-antes-camara` | Copernicus GLO-30, texturas de 4096, LOD por bloques, carga progresiva. |
+| 2026-11-18 | `checkpoint/10-camara-lista` · `11-antes-pie` | Cámara suave con cierre en el Catedral y el Frey. |
+| 2026-11-18 | `checkpoint/11-pie-listo` · `12-antes-colores` | Pie de página. |
+| 2026-11-18 | `checkpoint/12-colores-listos` | Colores de época en bloques, parches, banda, pie e itinerario. |
+| 2026-11-18 | `checkpoint/13-alta-resolucion-cierre` | Estado final: etiquetas dentro de la pantalla, normal map del celular más liviano, capturas e informe. |
