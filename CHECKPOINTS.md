@@ -44,9 +44,22 @@ Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Ch
 | 2026-11-18 | `checkpoint/15-mapa-listo` · `16-antes-portada-realista` | Mapas SVG de la Patagonia y de la ruta. |
 | 2026-11-18 | `checkpoint/16-portada-realista-lista` · `17-senderos-listos` | Bariloche y lagos en el 3D, WorldCover, agua con reflejo, senderos punteados (un solo commit para las partes 3 y 4). |
 | 2026-11-18 | `checkpoint/18-paleta-mapa-senderos-cierre` | Capturas, informe y CLAUDE.md al día. |
-| 2026-11-19 | `checkpoint/19-antes-itinerario-nuevo` | Estado con la paleta, el mapa doble y los senderos. |
-| 2026-11-19 | `checkpoint/19-itinerario-nuevo-listo` · `20-antes-dron-alto` | Itinerario nuevo: La Angostura 3 y 4/1, Frey 5/1, Bariloche 6 al 10/1, Meiling opcional. |
-| 2026-11-19 | `checkpoint/20-dron-alto-listo` · `21-antes-mapa-vintage` | Dron alto (Bariloche → Frey → Meiling), senderos con profundidad. |
-| 2026-11-19 | `checkpoint/21-mapa-vintage-listo` · `22-antes-pie-silueta` | Mapa único estilo atlas con zoom y rutas reales. |
-| 2026-11-19 | `checkpoint/22-pie-silueta-listo` | Pie con silueta real y franjas. |
-| 2026-11-19 | `checkpoint/23-dron-mapa-pie-cierre` | Estado final: cámara en vertical, capturas e informe. |
+| 2026-11-18 | `checkpoint/19-antes-itinerario-nuevo` | Estado con la paleta, el mapa doble y los senderos. |
+| 2026-11-18 | `checkpoint/19-itinerario-nuevo-listo` · `20-antes-dron-alto` | Itinerario nuevo: La Angostura 3 y 4/1, Frey 5/1, Bariloche 6 al 10/1, Meiling opcional. |
+| 2026-11-18 | `checkpoint/20-dron-alto-listo` · `21-antes-mapa-vintage` | Dron alto (Bariloche → Frey → Meiling), senderos con profundidad. |
+| 2026-11-18 | `checkpoint/21-mapa-vintage-listo` · `22-antes-pie-silueta` | Mapa único estilo atlas con zoom y rutas reales. |
+| 2026-11-18 | `checkpoint/22-pie-silueta-listo` | Pie con silueta real y franjas. |
+| 2026-11-18 | `checkpoint/23-dron-mapa-pie-cierre` | Estado final: cámara en vertical, capturas e informe. |
+| 2026-11-18 | `checkpoint/24-antes-carteles` | Estado publicado en producción con el primer merge (igual a `relato` 54ec9f1). |
+| 2026-11-18 | `checkpoint/24-carteles-listos` · `25-antes-mapa-fluido` | Carteles de la portada dentro de la pantalla, sin choques, compactos en el celular; crédito en dos líneas; sendero del Meiling sin nudo. |
+| 2026-11-18 | `checkpoint/25-mapa-fluido-listo` · `26-antes-pie-sin-nombres` | Mapa con zoom y arrastre por GPU (60 fps medidos), un dedo arrastra con zoom, botones + y −, límites. |
+| 2026-11-18 | `checkpoint/26-pie-sin-nombres-listo` | Pie solo con la silueta. Revisión automática OK. |
+
+## Publicaciones en `main` (producción)
+
+| Fecha | Rama de respaldo | Qué pasó |
+|---|---|---|
+| 2026-11-18 | `checkpoint/main-antes-del-merge-1` → `d49adcc` | `main` antes del primer merge (la web vieja). |
+| 2026-11-18 | — | Primer merge: `relato` a `main` en un commit (`7fb2438`). |
+| 2026-11-18 | `checkpoint/main-antes-del-merge` → `7fb2438` | `main` antes del segundo merge (rediseño sin los cambios de carteles, mapa y pie). |
+| 2026-11-18 | — | Segundo merge: carteles, mapa fluido y pie sin nombres (ver la línea siguiente). |
