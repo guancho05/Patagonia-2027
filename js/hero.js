@@ -13,8 +13,9 @@ const lowMem = navigator.deviceMemory && navigator.deviceMemory < 4;
 const mobile = matchMedia('(max-width: 820px), (pointer: coarse)').matches;
 
 // Calidad según el dispositivo: [alturas, sufijo de texturas, quads por bloque]
-const LIGHT = { alt: 384, tex: '-1024', chunk: 16 };
-const HIGH = mobile ? { alt: 768, tex: '-2048', chunk: 32 } : { alt: 1536, tex: '', chunk: 64 };
+const LIGHT = { alt: 480, tex: '-1024', chunk: 32 };
+const HIGH = mobile ? { alt: 960, tex: '-2048', chunk: 48 } : { alt: 1920, tex: '', chunk: 64 };
+const ROJO = '#e10d0c';   // rojo de la paleta: marcadores y senderos
 
 // Paleta (docs/investigacion-estetica.md) aplicada al cielo, la bruma y la luz.
 const SKY = { zenith: '#2a74a6', mid: '#79abc0', horizon: '#d9d7c6' };
@@ -84,6 +85,7 @@ async function start() {
   }, undefined, rej));
 
   // --- primera carga, liviana ---
+  const tW = await tex('data/terreno-cerca-agua.png');
   const [gO, gL, tO, tA0, tN0] = await Promise.all([
     heightsFrom('data/terreno-lejos-alt.png', 10), heightsFrom(`data/terreno-cerca-alt-${LIGHT.alt}.png`, 1),
     tex('data/terreno-lejos.jpg'), tex(`data/terreno-cerca-color${LIGHT.tex}.jpg`), tex(`data/terreno-cerca-normal${LIGHT.tex}.jpg`)]);
@@ -154,14 +156,15 @@ async function start() {
   const cMat = new THREE.ShaderMaterial({
     uniforms: {
       tA: { value: tA0 }, tN: { value: tN0 }, rc: { value: new THREE.Vector4(...rc) }, fogCol: { value: fogCol }, fogK: { value: 0.0026 },
-      sunDir: { value: sunDir }, sunCol: { value: sunCol }, skyCol: { value: skyCol }, morph: { value: 1 }
+      sunDir: { value: sunDir }, sunCol: { value: sunCol }, skyCol: { value: skyCol }, morph: { value: 1 },
+      tW: { value: tW }, skyZ: { value: new THREE.Color(SKY.zenith) }, skyM: { value: new THREE.Color(SKY.mid) }
     },
     side: THREE.DoubleSide,
     vertexShader: `attribute float h0; uniform float morph; varying vec3 vW; varying vec2 vUv; uniform vec4 rc;
       void main(){ vec3 p = position; p.y = mix(h0, position.y, morph); vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz;
         vUv = (vW.xz - rc.xy) / rc.zw; gl_Position = projectionMatrix * viewMatrix * w; }`,
     fragmentShader: `precision highp float;
-      uniform sampler2D tA, tN; uniform vec3 fogCol, sunDir, sunCol, skyCol; uniform float fogK; varying vec3 vW; varying vec2 vUv;
+      uniform sampler2D tA, tN, tW; uniform vec3 fogCol, sunDir, sunCol, skyCol, skyZ, skyM; uniform float fogK; varying vec3 vW; varying vec2 vUv;
       void main(){
         vec2 uv = clamp(vUv, 0.0, 1.0);
         vec3 alb = pow(texture2D(tA, uv).rgb, vec3(2.2));
@@ -171,7 +174,19 @@ async function start() {
         float dif = max(dot(N, sunDir), 0.0) * nt.b;
         vec3 c = alb * (sunCol * dif + skyCol * (0.55 + 0.45 * N.y));
         c = c / (1.0 + c * 0.35);
-        c = pow(clamp(c, 0.0, 1.0), vec3(1.0 / 2.2)) * 0.95 + vec3(0.035, 0.025, 0.012);${FOG}
+        c = pow(clamp(c, 0.0, 1.0), vec3(1.0 / 2.2)) * 0.95 + vec3(0.035, 0.025, 0.012);
+        // agua plana (lagos y ríos de OSM y Copernicus) con reflejo suave del cielo (Fresnel) y una ondulación mínima
+        float wa = texture2D(tW, uv).r;
+        if (wa > 0.01) {
+          vec3 V = normalize(cameraPosition - vW);
+          float rip = sin(vW.x * 3.1 + vW.z * 1.7) * sin(vW.z * 2.3 - vW.x * 0.9) * 0.02;
+          float vy = clamp(V.y + rip, 0.0, 1.0);
+          float fres = 0.04 + 0.96 * pow(1.0 - vy, 5.0);
+          vec3 refl = mix(fogCol, mix(skyM, skyZ, smoothstep(0.1, 0.7, vy)), smoothstep(0.0, 0.15, vy));
+          vec3 deep = vec3(0.06, 0.20, 0.27) * (0.75 + 0.35 * dot(vec3(0.0, 1.0, 0.0), sunDir));
+          vec3 wc = mix(deep, refl, clamp(0.18 + fres * 0.8, 0.0, 0.92));
+          c = mix(c, wc, wa);
+        }${FOG}
         gl_FragColor = vec4(mix(c, fogCol, clamp(f, 0.0, 1.0)), 1.0);
       }`
   });
@@ -247,17 +262,64 @@ async function start() {
     const top = new THREE.Vector3(x, y + lift, z);
     const parts = [];
     if (dot) {
-      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, y, z), top]), new THREE.LineBasicMaterial({ color: '#a3301d' }));
-      const s = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 12), new THREE.MeshBasicMaterial({ color: '#c4462c' }));
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, y, z), top]), new THREE.LineBasicMaterial({ color: ROJO }));
+      const s = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 12), new THREE.MeshBasicMaterial({ color: ROJO }));
       s.position.copy(top); scene.add(line, s); parts.push(line, s);
     }
-    const el = document.getElementById(elId);
-    if (el) markers.push({ el, top, key, lift, parts });
+    const el = typeof elId === 'string' ? document.getElementById(elId) : elId;
+    if (el) markers.push({ el, top, key, lift, parts, near: dot ? 95 : 260, trail: el.querySelector('.tr') });
   }
   marker('meiling', 'pin', 9, true);
   marker('frey', 'pinFrey', 4, true);
   marker('tronador', 'pinTronador', 2, false);
   marker('pampa', 'pinPampa', 2, false);
+  marker('bariloche', 'pinBariloche', 6, true);
+  // lagos: etiquetas creadas desde los datos (punto más alejado de la costa, calculado con OSM)
+  for (const l of meta.lagos || []) {
+    const x = X(l.lon), z = Zc(l.lat);
+    if (Math.abs(x) > rc[2] / 2 + 60 || Math.abs(z) > rc[3] / 2 + 60) continue;
+    const el = document.createElement('div'); el.className = 'pin sm lago'; el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = `<div><b>${l.name.replace(/^Laguna /, 'Laguna ')}</b></div>`; stage.appendChild(el);
+    P['lago:' + l.name] = { lat: l.lat, lon: l.lon }; marker('lago:' + l.name, el, 0.6, false);
+  }
+  // senderos de OSM: línea punteada roja de ancho fijo en pantalla, apoyada sobre el relieve; lo que tapa el cerro se ve más tenue
+  const trailMat = (occl) => new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, depthFunc: occl ? THREE.GreaterDepth : THREE.LessEqualDepth,
+    uniforms: { res: { value: new THREE.Vector2(1, 1) }, wpx: { value: mobile ? 5 : 4.5 }, col: { value: new THREE.Color(ROJO) }, alpha: { value: occl ? 0.45 : 1 } },
+    vertexShader: `attribute vec3 prev; attribute vec3 next; attribute float side; attribute float dist; uniform vec2 res; uniform float wpx; varying float vD;
+      void main(){ mat4 m = projectionMatrix * viewMatrix; vec4 c = m * vec4(position,1.0), a = m * vec4(prev,1.0), b = m * vec4(next,1.0);
+        float asp = res.x / res.y; vec2 sa = a.xy / a.w, sb = b.xy / b.w; vec2 d = (sb - sa) * vec2(asp, 1.0);
+        d = length(d) > 1e-6 ? normalize(d) : vec2(1.0, 0.0); vec2 n = vec2(-d.y, d.x); n.x /= asp;
+        c.xy += n * side * wpx / res.y * c.w; vD = dist; gl_Position = c; }`,
+    fragmentShader: `uniform vec3 col; uniform float alpha; varying float vD;
+      void main(){ if (mod(vD, 140.0) > 85.0) discard; gl_FragColor = vec4(col, alpha); }`
+  });
+  const trails = [];
+  function buildTrail(t) {
+    const n = t.pts.length, pos = new Float32Array(n * 6), prv = new Float32Array(n * 6), nxt = new Float32Array(n * 6), side = new Float32Array(n * 2), dist = new Float32Array(n * 2);
+    const V = t.pts.map(([la, lo]) => { const x = X(lo), z = Zc(la); return [x, yAt(x, z) + 0.18 * EX, z]; });
+    let acc = 0;
+    for (let i = 0; i < n; i++) {
+      if (i) acc += Math.hypot(V[i][0] - V[i - 1][0], V[i][1] - V[i - 1][1], V[i][2] - V[i - 1][2]) * 100;
+      const a = V[Math.max(0, i - 1)], b = V[Math.min(n - 1, i + 1)];
+      for (let k = 0; k < 2; k++) { pos.set(V[i], (i * 2 + k) * 3); prv.set(a, (i * 2 + k) * 3); nxt.set(b, (i * 2 + k) * 3); side[i * 2 + k] = k ? 1 : -1; dist[i * 2 + k] = acc; }
+    }
+    const idx = []; for (let i = 0; i < n - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('prev', new THREE.BufferAttribute(prv, 3));
+    g.setAttribute('next', new THREE.BufferAttribute(nxt, 3)); g.setAttribute('side', new THREE.BufferAttribute(side, 1)); g.setAttribute('dist', new THREE.BufferAttribute(dist, 1));
+    g.setIndex(idx); g.computeBoundingSphere();
+    return g;
+  }
+  const trailVis = trailMat(false), trailOcc = trailMat(true);
+  function addTrails() {
+    trails.splice(0).forEach(m => { scene.remove(m); m.geometry.dispose(); });
+    for (const t of meta.senderos || []) {
+      const g = buildTrail(t);
+      for (const [mt, ro] of [[trailOcc, 2], [trailVis, 3]]) { const m = new THREE.Mesh(g, mt); m.renderOrder = ro; m.frustumCulled = false; scene.add(m); trails.push(m); }
+    }
+  }
+  addTrails();
   function replant() {   // con las alturas nuevas, los marcadores se apoyan en el terreno de alta resolución
     for (const m of markers) {
       const p = P[m.key], x = X(p.lon), z = Zc(p.lat), y = yAt(x, z);
@@ -296,6 +358,7 @@ async function start() {
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
     renderer.setSize(w, h, false); camera.aspect = w / h;
+    trailVis.uniforms.res.value.set(w, h); trailOcc.uniforms.res.value.set(w, h);
     camera.fov = Math.min(60, (mobile ? 56 : 44) * Math.max(1, (h / w) * 0.75));
     camera.updateProjectionMatrix();
   }
@@ -337,11 +400,19 @@ async function start() {
     if (cMat.uniforms.morph.value < 1) cMat.uniforms.morph.value = Math.min(1, (now - morphFrom) / 1400);
     updateLOD();
     renderer.render(scene, camera);
-    const W = stage.clientWidth, H = stage.clientHeight;
-    for (const m of markers) {
+    const W = stage.clientWidth, H = stage.clientHeight, placed = [];
+    let smallShown = 0; const smallMax = mobile ? 3 : 7;
+    const order = markers.map(m => [m, camera.position.distanceTo(m.top)]).sort((a, b) => (b[0].parts.length - a[0].parts.length) || (a[1] - b[1]));
+    for (const [m, dist] of order) {
       v.copy(m.top).project(camera);
       const sx = (v.x * 0.5 + 0.5) * W, sy = (-v.y * 0.5 + 0.5) * H;
-      const off = v.z > 1 || sx < 40 || sx > W - 40 || sy < 70 || sy > H - 40 || occluded(m);
+      let off = v.z > 1 || sx < 40 || sx > W - 40 || sy < 70 || sy > H - 40 || occluded(m);
+      if (!m.parts.length) {   // etiquetas chicas: solo cerca, sin amontonarse
+        off = off || dist > m.near || smallShown >= smallMax || placed.some(([px, py]) => Math.abs(px - sx) < 120 && Math.abs(py - sy) < 26);
+        if (!off) smallShown++;
+      }
+      if (!off) placed.push([sx, sy]);
+      if (m.trail) m.el.classList.toggle('cerca', dist < m.near);
       const half = (m.w || (m.w = m.el.firstElementChild.offsetWidth)) / 2;   // la etiqueta no se sale de la pantalla
       const lx = Math.min(W - half - 12, Math.max(half + 12, sx));
       m.el.style.transform = `translate(${lx}px,${sy}px)`;
@@ -365,7 +436,7 @@ async function start() {
     const oldA = cMat.uniforms.tA.value, oldN = cMat.uniforms.tN.value;
     cMat.uniforms.tA.value = tA; cMat.uniforms.tN.value = tN; oldA.dispose(); oldN.dispose();
     cMat.uniforms.morph.value = 0; morphFrom = performance.now();
-    replant(); liftPrev = lift.slice(); computeLift();
+    replant(); addTrails(); liftPrev = lift.slice(); computeLift();
     hero.dataset.calidad = 'alta';
   } catch (e) { console.warn('Portada 3D: sigo con la versión liviana', e); }
 }

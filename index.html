@@ -599,6 +599,13 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .mp-mar-t{font-size:20px;font-style:italic;fill:#fff;stroke:none}
 .mp-lago-t{font-size:21px;font-style:italic;fill:#fff;stroke:#003da2;stroke-width:4}
 .mapa:first-child .mp-nota{fill:#fff;stroke:#003da2}
+/* ===== Portada: etiquetas de lagos y de senderos ===== */
+.stage .pin .tr{display:block;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .3s;color:var(--rojo)!important;font-weight:600}
+.stage .pin.cerca .tr{max-height:3em;opacity:1;margin-top:3px}
+.stage .pin.lago>div{background:rgba(0,61,162,.86);color:#fff;font-style:italic}
+.stage .pin.lago b{font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:none}
+@media (max-width:640px){.stage .pin.sm{display:block}.stage .pin.sm:not(.lago){display:none}.stage .pin.lago b{font-size:12px}}
+@media (prefers-reduced-motion:reduce){.stage .pin .tr{transition:none}}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
@@ -616,8 +623,9 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   <div class="stage" id="stage">
     <img class="poster" src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1800&q=80&auto=format&fit=crop" alt="El Tronador nevado sobre el bosque" fetchpriority="high">
     <canvas id="terrain" aria-hidden="true"></canvas>
-    <div class="pin" id="pin"><div><b>Refugio Otto Meiling</b><small>≈2.000 m · noche del 5/1</small></div></div>
-    <div class="pin" id="pinFrey"><div><b>Refugio Frey</b><small>≈1.700 m · noche del 3/1</small></div></div>
+    <div class="pin" id="pin"><div><b>Refugio Otto Meiling</b><small>≈2.000 m · noche del 5/1</small><small class="tr">Sendero desde Pampa Linda · 13 km · +1.050 m</small></div></div>
+    <div class="pin" id="pinFrey"><div><b>Refugio Frey</b><small>≈1.700 m · noche del 3/1</small><small class="tr">Sendero desde Villa Catedral · ≈10 km · +750 m</small></div></div>
+    <div class="pin" id="pinBariloche"><div><b>San Carlos de Bariloche</b><small>casa del 6 al 10/1</small></div></div>
     <div class="pin sm" id="pinTronador"><div><b>Cerro Tronador</b></div></div>
     <div class="pin sm" id="pinPampa"><div><b>Pampa Linda</b></div></div>
     <div class="shade" aria-hidden="true"></div>
@@ -1313,6 +1321,7 @@ function renderIntro(){try{
  const km=Object.values(LEGS[ver]).reduce((a,l)=>a+parseInt(l.km),0);document.getElementById('istatKm').textContent='≈'+(Math.round(km/10)*10).toLocaleString('es-AR');
  const rn=DAYS.filter(d=>d.k==='ref').length;document.getElementById('istatRef').textContent=rn;document.getElementById('istatRefL').textContent=rn===1?'noche en refugio':'noches en refugio';
  const md=DAYS.find(d=>d.k==='ref'&&/Meiling/.test(d.t));const pm=document.querySelector('#pin small');if(md&&pm)pm.textContent='≈2.000 m · noche del '+md.d;
+ {const bb=BASES.find(b=>b.n==='Bariloche'),pb=document.querySelector('#pinBariloche small');if(bb&&pb)pb.textContent='casa del '+DAYS[bb.d].d.split('/')[0]+' al 10/1'}
  const fd=DAYS.find(d=>d.k==='ref'&&/Frey/.test(d.t));const pf=document.querySelector('#pinFrey small');if(pf)pf.textContent=fd?'≈1.700 m · noche del '+fd.d:'≈1.700 m · no está en esta versión';
 }catch(e){console.warn(e)}}
 renderIntro();
