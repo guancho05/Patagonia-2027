@@ -27,3 +27,5 @@ Los tags no se pueden subir desde este entorno (el proxy corta el push), así qu
 | 2026-11-18 | `checkpoint/05-pesca-lista` | Etapa 4: página Pesca (reglamento 2026/27, permiso para uruguayos, lugares, guías, equipo), bloque "Pesca hoy" en los días y permisos en Gastos. |
 | 2026-11-18 | `checkpoint/06-antes-montana` | Igual que el anterior (punto de partida de la etapa 5). |
 | 2026-11-18 | `checkpoint/06-montana-lista` | Etapa 5: portada 3D del Tronador al Catedral (47 × 31 km con detalle + anillo de 168 × 149 km con bruma), textura horneada con sombras, nieve y lagos, recorrido del dron acotado, marcadores del Meiling (posición corregida) y del Frey. |
+
+Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Checkpoints y cómo volver"). Preview de Vercel de cada rama: Vercel → Deployments → filtrar por la rama.

@@ -1,6 +1,20 @@
 # Informe de la noche (18 → 19/11/2026)
 
-> Estado: **en curso**. Este archivo se completa al final con el resumen, las decisiones y lo que queda para decidir.
+> Estado: **terminado**. Las 6 etapas (0 a 5) están hechas y subidas a `relato`. `main` no se tocó.
+
+## Lo primero (resumen en un minuto)
+
+- **Etapa 0 · Orden:** `CLAUDE.md` con la estructura real y una regla de contenido permanente (solo info útil, nada de relleno, no inventar). `docs/prompts-claude-code.md` ahora es el resumen de estas etapas.
+- **Etapa 1 · Contenido:** chau "Bajá para volar" y los textos de relleno; cada día dice qué se hace, dónde, a qué hora y cuánto. El pantallazo (km, noches, refugios) se arma solo según la versión elegida. Tabla antes → después más abajo.
+- **Etapa 2 · Investigación de estética:** `docs/investigacion-estetica.md`: fotos de gente real sin pose, color de película, tapas con foto grande, tono de notas de campo, paleta sacada de tu foto, tipografías libres.
+- **Etapa 3 · Estética aplicada:** toda la web como catálogo de época, claro y oscuro: papel crema con grano, borde de papel y banda de datos en la portada, Fraunces + Atkinson + Plex Mono, rojo polar como acento, pies de foto con lugar y fecha, días como notas de campo. Arreglé de paso un bug viejo que aplastaba la línea de tiempo.
+- **Etapa 4 · Pesca:** página **Pesca** en el menú, bloque **Pesca hoy** en los días y permisos en **Gastos**. Dato clave: **para uruguayos hay un permiso de 10 días para países limítrofes a ARS 50.000 (≈ USD 32)** que vale en Neuquén, Río Negro y los Parques. Todo con el reglamento oficial 2026/27.
+- **Etapa 5 · Montaña:** el 3D ahora va del Tronador al Catedral (47 × 31 km con detalle, antes 17 × 17) más un anillo de 168 × 149 km con bruma: **ya no se ve el borde** en ninguna pantalla. Textura horneada con sombras, nieve, bosque y lagos. Marcadores del Meiling (posición corregida, estaba 2,8 km corrida) y del Frey.
+
+**Para mirar primero:** `docs/capturas/05-montana/antes/` contra `docs/capturas/05-montana/despues/`, y `docs/capturas/05-montana/paginas/` (todas las páginas en 390, 1280 y 2560, claro y oscuro).
+
+**Preview de Vercel de `relato`:** no lo pude sacar desde acá (no tengo acceso a Vercel ni a los deployments de GitHub en esta sesión). Está en Vercel → proyecto → Deployments → filtro por rama `relato`, o en GitHub en el último commit de `relato` → ícono de Vercel → "Details". Suele tener la forma `https://<proyecto>-git-relato-<cuenta>.vercel.app`.
+
 
 ## Plan
 
@@ -136,3 +150,69 @@ Investigación completa con fuentes en `docs/investigacion-pesca.md`. Lo princip
 - La textura se proyecta desde arriba: en las caras muy empinadas, de cerca, se ve algo estirada.
 - Las capturas usan render por software (SwiftShader); no pude medir fps en un celular real. Presupuesto: ~360 mil vértices en escritorio, ~70 mil en el celular, dos texturas.
 - La detección de lagos es automática: el Nahuel Huapi y el Mascardi salen bien; algún lago chico puede faltar.
+
+## Decisiones tomadas y por qué
+
+1. **Checkpoints como ramas**, no tags: el proxy de este entorno corta el push de tags. Mismo nombre que pedía el tag.
+2. **Sin las skills `frontend-design`, `threejs` y `gsap-scrolltrigger`**: no están instaladas en esta sesión. Seguí sus criterios a mano. No usé GSAP: el scroll ya movía bien la cámara con un solo loop de three.js; sumarlo era peso sin beneficio.
+3. **Etapa 1:** no toqué la lista de actividades (`a`) ni los datos (`st`), solo títulos, bajadas y descripciones; así no cambia ningún horario, precio ni reserva.
+4. **Tipografía:** Fraunces para títulos (inspirada en Windsor, Souvenir y Cooper, la familia de los 70) y no una parecida al logo de ninguna marca; Atkinson para datos (legibilidad en el celular); IBM Plex Mono para pies de foto (máquina de escribir).
+5. **Filtro de película solo en las fotos del viaje**, no en las de casas y autos, para no alterar cómo se ven los anuncios.
+6. **Pesca:** propuse el permiso del 31/12 al 9/1 porque cubre la mayor cantidad de días con pesca posible (Falkner, Traful, La Angostura y el día libre en Bariloche) con un solo permiso. La fila de Gastos suma los 8 permisos (≈ USD 254) aunque no todos pesquen: lo podés sacar si no.
+7. **Montaña: opción A** (three.js con datos propios y textura horneada) en vez de render previo o híbrido: ver tabla en la etapa 5.
+8. **Textura del terreno pintada (procedural) y no satelital:** las satelitales libres con licencia compatible son de baja resolución o con licencia no comercial, y el color pintado respeta la paleta de la etapa 3. Queda anotado como opción.
+9. **Coordenadas de los refugios** de OpenStreetMap (Nominatim); atribución agregada.
+10. El 3D arranca cuando el navegador queda libre (`requestIdleCallback`) en vez de en cuanto carga el script, para que el itinerario sea usable antes.
+11. Al terminar la etapa 5 subí un ajuste chico (alturas para el celular) y actualicé la rama `checkpoint/06-montana-lista` para que lo incluya (era un avance directo, no se perdió nada).
+
+## Checkpoints y cómo volver
+
+Todos son ramas en GitHub. Para **probar** uno sin tocar nada: `git switch -c prueba-X origin/checkpoint/NN-...` o abrir su preview en Vercel. Para **volver** `relato` a uno: pedímelo nombrando el checkpoint; lo hago con un commit nuevo (`git checkout origin/checkpoint/NN-... -- .` + commit), sin `reset --hard` ni force push.
+
+| Checkpoint | Qué tiene |
+|---|---|
+| `checkpoint/01-antes-orden` | `relato` como estaba al empezar la noche (78273c5). |
+| `checkpoint/01-orden-lista` · `02-antes-contenido` | Etapa 0 (CLAUDE.md, resumen de etapas). Web igual. |
+| `checkpoint/02-contenido-lista` · `03-antes-estetica` | Etapa 1: textos concretos. |
+| `checkpoint/03-investigacion-estetica-lista` · `04-antes-aplicar-estetica` | Etapa 2: investigación (web igual que la etapa 1). |
+| `checkpoint/04-aplicar-estetica-lista` · `05-antes-pesca` | Etapa 3: estética nueva. |
+| `checkpoint/05-pesca-lista` · `06-antes-montana` | Etapa 4: pesca. |
+| `checkpoint/06-montana-lista` | Etapa 5: montaña nueva (estado final). |
+
+## Pendiente o dudoso (para que decidas)
+
+1. **Casa de La Angostura:** "Las casas elegidas" (página Casas) y la combinación "La del grupo" siguen con **Cuncumen**, pero el itinerario nuevo y Gastos usan **Posta de los Colonos** como primera opción. No lo cambié porque es una decisión de reserva.
+2. **Permiso de pesca:** confirmar al comprar si la categoría limítrofe pide nacionalidad o residencia, qué documento acepta, si se elige la fecha de inicio y si toma tarjeta uruguaya. ¿Lo dejamos en Gastos para los 8 o solo para los que pesquen?
+3. **Salida de pesca guiada el 9/1:** ¿trolling en el Nahuel Huapi con dos botes de 4? Hay que pedir precio a Natural Travel (no lo publica).
+4. **Fogón en el Falkner y en Traful:** el texto del día lo menciona (estaba en los datos); en Parques Nacionales el fuego depende del índice de peligro del día. A confirmar con el camping.
+5. **Altura del Refugio Frey (≈1.700 m)** sale de una fuente turística, no oficial.
+6. **Rendimiento del 3D en un celular real:** las capturas son con render por software; conviene abrir el preview en un celular de gama media y ver si va fluido.
+7. **Capturas en el repo:** suman unos 60 MB de PNG. Si molestan, se pueden borrar de la rama más adelante (quedan en el historial).
+
+## Para revisión
+
+**Commit de inicio:** `78273c5` (Portada 3D: niebla y luz de atardecer ajustadas). **Último commit de código:** `a654d74` (alturas para el celular); después solo este informe y `CHECKPOINTS.md`.
+
+### Archivos cambiados por etapa (sin contar capturas)
+- **Etapa 0:** `CLAUDE.md`, `CHECKPOINTS.md`, `docs/prompts-claude-code.md`, `docs/informe-noche.md`, `tools/capturas.cjs`.
+- **Etapa 1:** `index.html` (textos; `renderIntro()`), `docs/informe-noche.md`, `CHECKPOINTS.md`.
+- **Etapa 2:** `docs/investigacion-estetica.md`, `CHECKPOINTS.md`.
+- **Etapa 3:** `index.html` (tokens, fuentes, CSS de catálogo, banda de la portada, pie de foto, arreglo `.pin`), `CLAUDE.md`, `tools/revisar.cjs`.
+- **Etapa 4:** `index.html` (página `#view-pesca`, `PZ`, `SPOTS`, `GUIDES`, `renderFish`, `renderPesca`, fila en `renderGastos`), `docs/investigacion-pesca.md`, `tools/capturas.cjs`, `CLAUDE.md`.
+- **Etapa 5:** `js/hero.js` (reescrito), `tools/terreno.py` (nuevo), `data/*` (nuevo), `index.html` (marcadores, créditos, fecha del Frey), `tools/capturas-montana.cjs`, `.gitignore`.
+
+### De dónde sale cada dato nuevo
+- **≈820 / ≈650 km** del pantallazo: suma de `km` de `LEGS.b` / `LEGS.a` (Google Maps, ya estaban), redondeada a 10.
+- **Noches en refugio:** cantidad de días con `k:"ref"` en la versión elegida.
+- **Permiso ARS 50.000 (E-L10):** art. 3 del Reglamento de Pesca Continental Patagónico 2026/27 ([PDF](https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf)) y [permisosdepesca.com.ar](https://www.permisosdepesca.com.ar/). **USD 32** = 50.000 / 1.575 (dólar billete venta [Banco Nación](https://www.bna.com.ar/Personas) del 17/11/2026). **USD 254 en Gastos** = 8 × 50.000 / 1.575, redondeado.
+- **Reglas por lugar** (cupos, solo mosca, devoluciones, fechas): anexos de Parques Nacionales, Neuquén y Río Negro del mismo reglamento (páginas en `docs/investigacion-pesca.md`).
+- **Guía del Limay USD 410:** [Southern Rivers Patagonia](https://southernriverspatagonia.com/daily-trips.html). **Tangol desde USD 362:** buscador, a confirmar.
+- **Relieve:** AWS Terrain Tiles (SRTM, GMTED2010 y otros), procesado con `tools/terreno.py`. **Posiciones** de Meiling, Frey, Pampa Linda y Mascardi: OpenStreetMap (Nominatim, 18/11/2026). **Cumbre del Tronador:** 41° 9′ 32″ S, 71° 53′ 29″ O ([Cultura de Montaña](https://revistadigital.culturademontania.org.ar/articulo/64710c4448e287641e940986)).
+- **Paleta:** muestreo de colores de tu foto de referencia (no se subió al repo) + ajuste a contraste AA (cálculo WCAG en el informe de estética).
+
+### Preguntas abiertas que necesitan decisión tuya
+1. ¿Cuncumen o Posta de los Colonos en "Las casas elegidas"?
+2. ¿Permisos de pesca para los 8 o solo para algunos? ¿Fechas 31/12 → 9/1?
+3. ¿Reservamos una salida de trolling el 9/1?
+4. ¿Te gusta el título "Patagonia 2027" en serif grande en la portada, o preferís otro nombre para el viaje para alejarse más de la marca?
+5. ¿Mergeamos `relato` a `main` después de verlo en el preview? (no lo hice)
