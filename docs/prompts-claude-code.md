@@ -5,6 +5,8 @@ Cada prompt le pide un plan primero: leelo, corregilo si hace falta, y recién a
 
 Trabajo en la rama `relato`: `main` sigue siendo el link que usan tus amigos hasta que el rediseño esté listo.
 
+Checkpoints: antes y después de cada paso Claude Code crea un tag (`checkpoint/NN-...`) y lo anota en `CHECKPOINTS.md`. Para volver atrás, decile por ejemplo: "mostrame los checkpoints y volvé al `checkpoint/02-antes-tronador-3d`".
+
 ---
 
 ## 1 · Dirección de arte y estructura (skill: frontend-design)

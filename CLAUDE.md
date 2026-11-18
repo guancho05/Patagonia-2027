@@ -23,3 +23,10 @@ Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aire
 - No perder funcionalidades existentes (dos versiones del itinerario, casas, autos, links a Windguru, Google Maps, Booking/Airbnb).
 - Estética "marca outdoor" propia: no usar nombre, logo, tipografías propietarias ni layouts copiados de Patagonia Inc. ni de otra marca.
 - Antes de programar: mostrar un plan y esperar aprobación.
+
+## Checkpoints (para poder volver atrás)
+- Commits chicos y frecuentes, con mensajes en español que digan qué cambió.
+- Antes de empezar cada paso de `docs/prompts-claude-code.md`, crear un tag con el estado actual: `checkpoint/NN-antes-<paso>` (ej. `checkpoint/02-antes-tronador-3d`). Al terminar el paso y con mi OK, otro tag `checkpoint/NN-<paso>-listo`. Subir los tags (`git push origin --tags`).
+- Mantener `CHECKPOINTS.md` con una línea por tag: fecha, tag, qué tiene esa versión y el link al preview de Vercel si existe.
+- Si pido volver a una versión: mostrarme la lista de checkpoints, confirmar cuál, y volver con un commit nuevo que restaure ese estado (`git revert` o `git checkout <tag> -- .` + commit). No usar `git reset --hard` ni `push --force` sobre `main` ni sobre ramas compartidas.
+- Para probar una versión vieja sin tocar nada: crear una rama desde el tag (`git switch -c prueba-<tag> <tag>`) y abrir su preview en Vercel.
