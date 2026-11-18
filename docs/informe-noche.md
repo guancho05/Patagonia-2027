@@ -392,4 +392,14 @@ Es una emulación: en un teléfono real el compositor usa la GPU, así que deber
 - Links: 49 externos bien formados, con Windguru, Google Maps, Booking y Airbnb.
 - Sin errores de JS ni scroll horizontal. Resultado: OK.
 
-**Merge:** rama `checkpoint/main-antes-del-merge` → `main` anterior; `relato` a `main` en un solo commit. Detalles y verificación de producción en `CHECKPOINTS.md`.
+**Merge a producción**
+- `checkpoint/main-antes-del-merge` apunta ahora al `main` del merge anterior (`7fb2438`). La que apuntaba a la web vieja quedó como `checkpoint/main-antes-del-merge-1` (`d49adcc`). Las dos se movieron sin force.
+- `main` = `5bed4f9`: un solo commit encima de `7fb2438`, con el mismo contenido que `relato` en ese momento (4aa42cc).
+- Vercel lo publicó en ~20 s. `docs/` y `tools/` no se publican (404).
+
+**Verificación en producción**
+- Revisión automática contra https://patagonia-2027-eosin.vercel.app: OK en 390x844 y 1280x800, claro y oscuro.
+- Mapa a 60 fps (p95 de 19 a 21 ms) con CPU ×4.
+- 3D en alta calidad a los 3,0 s (celular) y 3,8 s (escritorio).
+- Todos los carteles quedan a 12 px o más de los bordes. Sin scroll horizontal.
+- Capturas en `docs/capturas/12-carteles-mapa-pie/` (`tools/capturas-produccion.cjs`).

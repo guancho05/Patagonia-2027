@@ -62,4 +62,4 @@ Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Ch
 | 2026-11-18 | `checkpoint/main-antes-del-merge-1` → `d49adcc` | `main` antes del primer merge (la web vieja). |
 | 2026-11-18 | — | Primer merge: `relato` a `main` en un commit (`7fb2438`). |
 | 2026-11-18 | `checkpoint/main-antes-del-merge` → `7fb2438` | `main` antes del segundo merge (rediseño sin los cambios de carteles, mapa y pie). |
-| 2026-11-18 | — | Segundo merge: carteles, mapa fluido y pie sin nombres (ver la línea siguiente). |
+| 2026-11-18 | — | Segundo merge: `5bed4f9` en `main` (un commit, árbol igual a `relato` 4aa42cc): carteles, mapa fluido y pie sin nombres. Producción (https://patagonia-2027-eosin.vercel.app) publicada en ~20 s; revisión automática OK y mapa a ~60 fps en 390x844. |
