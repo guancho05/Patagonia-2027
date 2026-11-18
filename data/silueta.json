@@ -1,0 +1,69 @@
+{
+ "punto": {
+  "lat": -41.035,
+  "lon": -71.48,
+  "alt_m": 771
+ },
+ "acimut": [
+  171.3,
+  257.9
+ ],
+ "exageracion_vertical": 1.5,
+ "picos": [
+  {
+   "nombre": "Tronador",
+   "az": 247.9,
+   "x": 1415.3,
+   "y": 112.3,
+   "alt": 3431,
+   "xp": 88.46,
+   "yp": 51.05
+  },
+  {
+   "nombre": "Catedral Norte",
+   "az": 183.3,
+   "x": 221.6,
+   "y": 96.9,
+   "alt": 2059,
+   "xp": 13.85,
+   "yp": 44.05
+  },
+  {
+   "nombre": "López",
+   "az": 226.3,
+   "x": 1016.5,
+   "y": 34.4,
+   "alt": 2063,
+   "xp": 63.53,
+   "yp": 15.64
+  },
+  {
+   "nombre": "Goye",
+   "az": 192.3,
+   "x": 389.1,
+   "y": 77.5,
+   "alt": 1642,
+   "xp": 24.32,
+   "yp": 35.23
+  },
+  {
+   "nombre": "Bella Vista",
+   "az": 187.0,
+   "x": 290.8,
+   "y": 74.7,
+   "alt": 1794,
+   "xp": 18.18,
+   "yp": 33.95
+  },
+  {
+   "nombre": "Campanario",
+   "az": 176.2,
+   "x": 91.0,
+   "y": 123.9,
+   "alt": 1052,
+   "xp": 5.69,
+   "yp": 56.32
+  }
+ ],
+ "fuente": "Copernicus DEM GLO-30 y máscara de agua; cumbres de OpenStreetMap"
+}
