@@ -423,6 +423,37 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .hero-txt small{background:rgba(14,11,7,.38);padding:3px 8px}
 .credit .cph,.hero.static .credit .c3d{display:none}.hero.static .credit .cph{display:inline}
 @media (prefers-reduced-motion:reduce){.poster{transition:none}}
+
+/* ===== Etapa 4 · pesca ===== */
+.fish{padding:14px 16px;border:1px solid var(--raya);border-left:3px solid var(--abeto);border-radius:2px;background:var(--rio)}
+.fish.no{border-left-color:var(--stone);background:var(--papel)}
+.fish h3{margin:0 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--abeto);font-weight:500}
+:root[data-theme="dark"] .fish h3{color:var(--pasto)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fish h3{color:var(--pasto)}}
+.fish .nm{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.2}
+.fish dl{margin:8px 0 8px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.fish dt{font-family:var(--mono);font-size:12px;color:var(--tinta-2);padding-top:2px}.fish dd{margin:0}
+.fish a{font-size:14px;color:var(--lake);font-weight:700}
+.pz-head{position:relative;padding:8px 0 4px;max-width:70ch}
+.pz-head h2{font-family:var(--display);font-weight:600;font-size:clamp(44px,7vw,84px);line-height:.95;margin:0 0 10px}
+.pz-head .sub{margin:0;color:var(--tinta-2)}.pz-head .sub a{color:var(--lake)}
+.fly{width:150px;height:auto;color:var(--polar);display:block;margin:0 0 10px}
+.pz-permit{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px 32px;background:var(--rio);border:1px solid var(--raya);border-left:3px solid var(--abeto);border-radius:2px;padding:20px 22px}
+@media (max-width:820px){.pz-permit{grid-template-columns:minmax(0,1fr)}}
+.pz-permit>div{min-width:0;display:flex;flex-direction:column;gap:10px}
+.pz-permit h3{margin:0;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--tinta-2)}
+.pz-permit p{margin:0}
+.pz-big{font-family:var(--display);font-weight:600;font-size:clamp(40px,6vw,60px);line-height:.95}
+.pz-big span{display:block;font-family:var(--mono);font-size:13px;font-weight:400;color:var(--tinta-2);margin-top:6px}
+.pz-tab{margin-top:0}
+.pz-spots{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px}
+.pz-spots li{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;background:var(--hoja);border:1px solid var(--raya);border-top:3px solid var(--abeto);border-radius:2px;padding:14px 16px}
+.pz-d{font-family:var(--mono);font-size:12px;color:var(--polar)}
+.pz-spots b{font-family:var(--display);font-weight:600;font-size:21px;line-height:1.15;display:block}
+.pz-j{display:block;font-family:var(--mono);font-size:12px;color:var(--tinta-2);margin-top:2px}
+.pz-spots p{margin:8px 0 0;font-size:15px}.pz-spots i{font-style:normal;font-weight:700}
+#pzGuides a{color:var(--ink);font-weight:700}
+@media (max-width:640px){#pzGuides th:nth-child(3),#pzGuides td:nth-child(3){display:none}}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer"><i></i>Menú</button>
@@ -434,6 +465,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   <a href="#casas" data-go="casas"><b>Casas</b><span>San Martín y Bariloche confirmadas</span></a>
   <a href="#autos" data-go="autos"><b>Autos</b><span>2 Citroën Basalt · Hertz · 28/12 al 10/1</span></a>
   <a href="#gastos" data-go="gastos"><b>Gastos</b><span>Total y por persona, en USD</span></a>
+  <a href="#pesca" data-go="pesca"><b>Pesca</b><span>Permiso, reglas y lugares en la ruta</span></a>
 </aside>
 <section class="hero" id="hero" aria-label="Portada: el Tronador">
   <div class="stage" id="stage">
@@ -499,6 +531,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
         <div class="stats" id="stats"></div>
         <div id="stay"></div>
         <div class="leg" id="leg" hidden></div>
+        <div class="fish" id="fish" hidden></div>
         <ul class="acts" id="acts"></ul>
         <div class="links" id="links"></div>
         <div class="nav"><button id="prev">← Día anterior</button><button id="next">Día siguiente →</button></div>
@@ -514,6 +547,76 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <div class="gsum" id="gsum"></div>
     <div class="ptabw"><table class="gtab" id="gtab"></table></div>
     <p class="note">Suma solo lo que ya tiene precio. Los gastos "a cargar" se completan a medida que se reserven. Total dividido entre 8.</p>
+  </section>
+
+  <section class="view pesca" id="view-pesca" aria-labelledby="pesca-h" hidden>
+    <header class="pz-head">
+      <svg class="fly" viewBox="0 0 160 70" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 34h96c14 0 22 8 22 18s-8 14-16 14-12-5-12-10"/><path d="M108 56l-6-6"/><path d="M30 34c10-16 34-24 62-22-12 4-20 12-24 22"/><path d="M38 34c12-8 26-11 40-10"/><path d="M84 28v12M90 27v14M96 28v12"/><path d="M18 34c-4-6-8-8-12-8M18 34c-4 6-8 8-12 8"/></svg>
+      <p class="kicker">Temporada 1/11/2026 → 1/5/2027</p>
+      <h2 id="pesca-h">Pesca</h2>
+      <p class="sub">Truchas en la ruta del viaje. Reglas del <a href="https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf" target="_blank" rel="noopener">Reglamento de Pesca Continental Patagónico 2026/27 ↗</a>, que rige en Neuquén, Río Negro y los Parques Nacionales Lanín y Nahuel Huapi.</p>
+    </header>
+    <article class="pz-permit">
+      <div>
+        <h3>El permiso</h3>
+        <p class="pz-big">ARS 50.000 <span>por persona · ≈ USD 32</span></p>
+        <p>Categoría <b>no residente de país limítrofe, 10 días (E-L10)</b>: Uruguay es país limítrofe. Un solo permiso sirve en Neuquén, Río Negro y Parques Nacionales. Se compra online y se lleva en el celular (con QR) junto con el documento.</p>
+        <p><b>Propuesta:</b> del <b>31/12 al 9/1</b> (Falkner, Traful, La Angostura y Bariloche, incluido el día libre). Para pescar también en San Martín (28 y 29/12) hace falta otro permiso.</p>
+        <div class="links"><a href="https://www.permisosdepesca.com.ar/" target="_blank" rel="noopener">Comprar en permisosdepesca.com.ar ↗</a><a href="https://cazaypesca.neuquen.gob.ar/permisos/" target="_blank" rel="noopener">Caza y Pesca Neuquén ↗</a></div>
+      </div>
+      <div>
+        <h3>Otros valores oficiales</h3>
+        <table class="gtab pz-tab"><tbody>
+          <tr><td>Extranjero, 1 día</td><td class="n">ARS 50.000</td></tr>
+          <tr><td>Extranjero, 10 días</td><td class="n">ARS 140.000</td></tr>
+          <tr><td>Adicional trolling, 1 día</td><td class="n">ARS 25.000</td></tr>
+          <tr><td>Adicional río Correntoso, 1 día</td><td class="n">ARS 12.500</td></tr>
+        </tbody></table>
+        <p class="note">Dólar billete venta Banco Nación del 17/11/2026: ARS 1.575. A confirmar: si la categoría limítrofe pide nacionalidad o residencia, si acepta cédula o pasaporte, si los 10 días se cuentan desde la fecha elegida y si se paga con tarjeta uruguaya.</p>
+      </div>
+    </article>
+    <div class="know pz-rules">
+      <div class="k"><h3>Qué se puede</h3><ul>
+        <li>Solo de día, entre los crepúsculos de la mañana y la tarde.</li>
+        <li>Señuelo artificial con un solo anzuelo. Nada de carnada.</li>
+        <li>Spinning, mosca o trolling (trolling solo desde bote y con permiso adicional).</li>
+        <li>En Parques solo se pesca en los lagos y ríos del listado del reglamento.</li>
+      </ul></div>
+      <div class="k"><h3>Qué se devuelve</h3><ul>
+        <li>Todo lo que se pesca en ríos y arroyos, y hasta 200 m de sus bocas en los lagos.</li>
+        <li>El salmón encerrado, siempre. Las percas y pejerreyes en Parques.</li>
+        <li>Donde se devuelve: anzuelo simple sin rebaba (o aplastada).</li>
+        <li>En los lagos, cupo de 1 o 2 truchas por día según el lago.</li>
+      </ul></div>
+      <div class="k"><h3>Qué está prohibido</h3><ul>
+        <li>Botas o zapatos con suela de fieltro.</li>
+        <li>Equipo de afuera sin desinfectar: lavandina al 2 %, sal al 5 % o agua a más de 60 °C.</li>
+        <li>Pescar desde un bote a menos de 200 m de una boca de río.</li>
+        <li>Tirar vísceras, tanzas o señuelos.</li>
+      </ul></div>
+    </div>
+    <h2 class="sec2">Lugares, en orden de viaje</h2>
+    <ol class="pz-spots" id="pzSpots"></ol>
+    <h2 class="sec2">Salidas guiadas de medio día</h2>
+    <div class="ptabw"><table class="gtab" id="pzGuides"></table></div>
+    <div class="know pz-gear">
+      <div class="k"><h3>Llevar desde Uruguay</h3><ul>
+        <li>4 equipos de spinning livianos para turnarse (caña de unos 2 m de 2 tramos o telescópica, reel chico, nylon 0,25–0,30).</li>
+        <li>Cucharas giratorias n.º 0, 1 y 2 y ondulantes chicas, con un solo anzuelo simple.</li>
+        <li>Pinza para aplastar la rebaba, copo con red de goma, lentes polarizados.</li>
+        <li>Todo nuevo o desinfectado antes de entrar al agua.</li>
+      </ul></div>
+      <div class="k"><h3>Allá</h3><ul>
+        <li>Permiso: online antes de viajar.</li>
+        <li>Alquiler de equipo suelto: a confirmar. Las salidas guiadas incluyen equipo.</li>
+        <li>Cucharas y anzuelos: casas de pesca de San Martín y Bariloche.</li>
+      </ul></div>
+      <div class="k"><h3>Si alguien pesca con mosca</h3><ul>
+        <li>Caña #6 o #7 (en el Correntoso recomiendan #7 u #8 por el viento).</li>
+        <li>El río Correntoso, el Traful y el Limay superior son solo mosca.</li>
+      </ul></div>
+    </div>
+    <p class="note">Fuentes: Reglamento de Pesca Deportiva Continental Patagónico 2026/2027; permisosdepesca.com.ar; Banco Nación (cotización del 17/11/2026); páginas de los prestadores. Detalle y lo que falta confirmar en docs/investigacion-pesca.md del repositorio.</p>
   </section>
   <section class="view" id="view-autos" aria-labelledby="autos-h" hidden>
     <div class="rent">
@@ -822,7 +925,7 @@ function select(i,user){if(i<0||i>=DAYS.length)return;cur=i;save('pat-day',i);co
  document.getElementById('lead').textContent=d.lead;
  document.getElementById('stats').innerHTML=d.st.map(s=>`<div class="stat"><b>${s[0]}</b>${s[1]}</div>`).join('');
  document.getElementById('acts').innerHTML=d.a.map(a=>`<li><span class="h">${a[0]}</span><span>${a[1]}</span></li>`).join('');
- renderStay(i,d);renderLeg(d);document.getElementById('links').innerHTML=(d.l||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('');
+ renderStay(i,d);renderLeg(d);renderFish(d);document.getElementById('links').innerHTML=(d.l||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('');
  document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===DAYS.length-1;
  const cv=document.getElementById('scene');cv.setAttribute('aria-label','Ilustración: '+d.t);
  const uid=PHOTO[d.t];const pi=d.p===undefined?i:d.p;const pw=document.getElementById('phwrap');if(uid||(pi!=null&&PH[pi])){document.getElementById('photo').onerror=()=>{pw.hidden=true;cv.hidden=false;draw(d.sc)};document.getElementById('photo').src=uid?UNS(uid,mobileW()):PH[pi];document.getElementById('photo').alt='Foto: '+d.t;document.getElementById('cred').textContent=d.t+' · '+d.w+' '+d.d+(d.d.endsWith('/12')?'/2026':'/2027')+' · '+(uid?'Foto: Unsplash':'Foto: '+CR[pi]+' · Wikimedia Commons');pw.hidden=false;cv.hidden=true}else{pw.hidden=true;cv.hidden=false}
@@ -958,7 +1061,7 @@ document.getElementById('combos').innerHTML=COMBOS.map(cb=>{const hs=cb.h.map(fi
  return `<div class="combo${cb.rec?' rec':''}${out?' out':''}"><h3>${cb.n}${cb.rec?' ★':''}</h3><span class="amt">${usd(t==null?null:Math.round(t/8))} c/u</span><p>${usd(t)} en total por las 8 noches</p><ol>${hs.map(h=>`<li>${h.n} · ${usd(h.tot)}</li>`).join('')}</ol><p>${cb.note}</p></div>`}).join('');
 if(city>=CITIES.length)city=0;if(hi>=CITIES[city].h.length)hi=0;
 renderCities();renderList();pick(hi);
-function showPage(k){if(!['itinerario','autos','casas','gastos'].includes(k))k='itinerario';
+function showPage(k){if(!['itinerario','autos','casas','gastos','pesca'].includes(k))k='itinerario';document.getElementById('view-pesca').hidden=k!=='pesca';
  document.getElementById('view-itin').hidden=k!=='itinerario';document.getElementById('view-autos').hidden=k!=='autos';document.getElementById('view-casas').hidden=k!=='casas';document.getElementById('view-gastos').hidden=k!=='gastos';if(k==='gastos')renderGastos();
  document.querySelectorAll('.drawer a').forEach(a=>{if(a.dataset.go===k)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  document.querySelectorAll('.pages a').forEach(a=>{if(a.dataset.v===k)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
@@ -974,6 +1077,7 @@ function renderGastos(){try{
  const st=h=>h.star&&h.star.startsWith('Confirmada')?['Confirmada','ok']:h.star&&h.star.startsWith('Primera')?['Primera opción','op']:['Elegida',''];
  const rows=[["Autos: 2 Citroën Basalt (Hertz, 13 días, seguro completo)",["Cotizado",""],1810.88]];
  [["San Martín","Casa en Las Pendientes"],["La Angostura",vh],["Bariloche","Dúplex con vista al lago"]].forEach(([l,n])=>{const h=H(n);rows.push(["Casa "+l+": "+n,st(h),h.tot])});
+ rows.push(["Permisos de pesca: 8 × 10 días país limítrofe (ARS 50.000 c/u, dólar BNA del 17/11/2026)",["Precio oficial",""],Math.round(8*50000/1575)]);
  ["Vuelos Ezeiza ⇄ Chapelco","Barco Montevideo → Buenos Aires","Airbnb en Buenos Aires","Campings: Falkner y Traful","Refugio Frey","Refugio Otto Meiling","Rafting en el Manso","Nafta","Súper y comida"].forEach(n=>rows.push([n,["A cargar",""],null]));
  const known=rows.filter(r=>r[2]!=null),tot=known.reduce((a,r)=>a+r[2],0),conf=known.filter(r=>r[1][1]==='ok').reduce((a,r)=>a+r[2],0);
  const f=n=>'USD '+Math.round(n).toLocaleString('es-AR');
@@ -983,6 +1087,48 @@ function renderGastos(){try{
  document.getElementById('istatPP').textContent=f(tot/8);
 }catch(e){console.warn(e)}}
 renderGastos();
+
+/* pesca: reglamento 2026/27 (docs/investigacion-pesca.md) */
+const REG="https://chubutstorage.s3.amazonaws.com/Pesca/Reglamento%20PDCP%202026-27%20Baja.pdf";
+const FUERA="Fuera del permiso de 10 días propuesto (31/12 al 9/1): hace falta otro permiso.";
+const PZ={
+ "San Martín de los Andes":{l:"Lago Lácar, Playa Catritre",m:"Spinning o mosca desde la costa",h:"A la tarde, desde las 18:00",r:"2 truchas por día. "+FUERA},
+ "Playa Yuco y Pozones del Caleufú":{l:"Lago Lácar en Yuco · río Caleufú",m:"Lácar: spinning o mosca. Caleufú: mosca o spinning con buldo y mosca",h:"Primera hora en Yuco",r:"Caleufú: devolución de todas las truchas. "+FUERA},
+ "Ruta de los 7 Lagos hasta el Falkner":{l:"Lago Falkner, playa del camping",m:"Spinning o mosca desde la costa",h:"Atardecer",r:"2 truchas por día. "+FUERA},
+ "Año Nuevo en el Lago Falkner":{l:"Río Villarino, entre el Villarino y el Falkner",m:"Spinning o mosca desde la costa (prohibido navegar)",h:"Atardecer",r:"2 truchas por día. Primer día del permiso propuesto."},
+ "Villa Traful":{l:"Lago Traful, costa del camping",m:"Spinning o mosca desde la costa",h:"Atardecer",r:"Hasta 2 truchas arcoíris menores de 40 cm. El salmón encerrado se devuelve."},
+ "Bosque sumergido":{l:"Lago Traful",m:"Spinning o mosca desde la costa",h:"Atardecer, cuando baja el viento",r:"Prohibido pescar a menos de 100 m del bosque sumergido. Salmón encerrado: devolución."},
+ "Villa La Angostura":{l:"Río Correntoso · Lago Nahuel Huapi",m:"Correntoso: solo mosca. Spinning: en la costa del Nahuel Huapi, a más de 200 m de la boca",h:"Atardecer",r:"Correntoso: permiso adicional (ARS 12.500), anzuelo sin rebaba y devolución de todo."},
+ "Bajada del Frey y La Angostura":{l:"Río Correntoso · Lago Nahuel Huapi",m:"Correntoso: solo mosca. Spinning: en la costa del Nahuel Huapi, a más de 200 m de la boca",h:"Atardecer",r:"Correntoso: permiso adicional (ARS 12.500), anzuelo sin rebaba y devolución de todo."},
+ "Filo del Cerro Belvedere":{l:"Lago Espejo",m:"Spinning o mosca desde la costa",h:"A la tarde, después de bajar",r:"2 truchas por día. Prohibido el trolling."},
+ "Refugio Frey":{l:"Laguna Toncek",m:"No se pesca",h:"—",r:"No figura en el listado de Parques Nacionales: está cerrada a la pesca.",no:1},
+ "Ventisquero Negro y Bariloche":{l:"Río Manso superior (Pampa Linda)",m:"No se pesca",h:"—",r:"El Manso superior está cerrado a la pesca.",no:1},
+ "Día libre en Bariloche":{l:"Nahuel Huapi, Gutiérrez o Moreno · río Limay",m:"Spinning desde la costa, o trolling con salida guiada (2 botes de 4)",h:"Temprano o al atardecer. Limay: 6:00 a 21:30",r:"Gutiérrez y Nahuel Huapi: 2 truchas. Moreno: 1 menor de 35 cm. Limay superior: solo mosca y devolución. Trolling: permiso adicional (ARS 25.000)."}
+};
+function renderFish(d){const el=document.getElementById('fish');try{const f=PZ[d.t];if(!f){el.hidden=true;el.innerHTML='';return}el.hidden=false;el.classList.toggle('no',!!f.no);
+ el.innerHTML=`<h3>${f.no?'Pesca':'Pesca hoy'}</h3><div class="nm">${f.l}</div><dl><dt>Modalidad</dt><dd>${f.m}</dd><dt>Horario</dt><dd>${f.h}</dd><dt>Reglas</dt><dd>${f.r}</dd></dl><a href="#pesca" data-go="pesca">Permiso, reglas y equipo →</a>`}catch(e){el.hidden=true}}
+const SPOTS=[
+ ["28 y 29/12","Lago Lácar","PN Lanín","Truchas arcoíris y marrón","Spinning o mosca, desde la costa","Abierto hasta el 31/5/2027. 2 truchas por día."],
+ ["29/12","Río Caleufú","Neuquén","Truchas y percas","Mosca o spinning con buldo y mosca, según el tramo","Devolución de todas las truchas. Tramo de los pozones: a confirmar."],
+ ["30 y 31/12","Lago Falkner","PN Nahuel Huapi","Truchas","Spinning o mosca desde la playa; trolling desde el 16/12","2 truchas por día."],
+ ["30 y 31/12","Río Villarino (une el Villarino con el Falkner)","PN Nahuel Huapi","Truchas","Spinning o mosca, solo desde la costa","Prohibida toda navegación. 2 truchas por día."],
+ ["1 y 2/1","Lago Traful","PN Nahuel Huapi","Trucha arcoíris, salmón encerrado","Spinning o mosca desde la costa; trolling desde bote","Hasta 2 arcoíris menores de 40 cm. Salmón encerrado: devolución. Nada a menos de 100 m del bosque sumergido."],
+ ["3/1 (orig.) · 4/1 (nuevo)","Río Correntoso","Neuquén","Trucha arcoíris grande","Solo mosca, vadeando, por turnos","Permiso adicional (ARS 12.500 por día), anzuelo sin rebaba, devolución de todo, prohibido navegar."],
+ ["3/1 · 4/1","Lagos Nahuel Huapi y Correntoso","PN Nahuel Huapi","Truchas","Spinning o mosca desde la costa","Nahuel Huapi: 2 truchas. Correntoso: 1. Devolución a menos de 200 m de una boca de río."],
+ ["4/1 (orig.)","Lago Espejo","PN Nahuel Huapi","Truchas","Spinning o mosca desde la costa","2 truchas por día. Prohibido el trolling."],
+ ["9/1 (nuevo)","Nahuel Huapi, Gutiérrez y Moreno","PN Nahuel Huapi · Río Negro","Truchas","Spinning desde la costa o trolling guiado","Gutiérrez y Nahuel Huapi: 2 truchas. Moreno: 1 menor de 35 cm; devolución en la unión de los dos Morenos."],
+ ["9/1 (nuevo)","Río Limay superior","PN Nahuel Huapi","Truchas","Solo mosca, costa o bote sin motor","Devolución obligatoria. En enero, de 6:00 a 21:30."]];
+const GUIDES=[
+ ["Bariloche · Bahía López","Natural Travel","Trolling 4 h, equipo incluido, hasta 4 por bote","A confirmar","https://naturaltravelturismo.com/excursiones-bariloche/pesca-medio-dia/"],
+ ["Bariloche · río Limay","Southern Rivers Patagonia","Medio día, bote, guía, traslado y equipo","USD 410 por bote (1 o 2 personas)","https://southernriverspatagonia.com/daily-trips.html"],
+ ["Bariloche · Nahuel Huapi, Moreno o Gutiérrez","Tangol","5 h, spinning, mosca o trolling, máx. 2","Desde USD 362 por persona (a confirmar)","https://www.tangol.com/en/bariloche/day-tours/half-day-fishing-in-nahuel-huapi-moreno-or-gutierrez-lakes/t-2321"],
+ ["Villa La Angostura","Cordillera Fly","Iniciación en mosca, medio día","A confirmar","https://www.expedia.com/things-to-do/half-day-initiation-in-fly-fishing-in-villa-la-angostura.a49482849.activity-details"],
+ ["Villa Traful · San Martín","—","Sin tarifas publicadas","A confirmar",null]];
+function renderPesca(){try{
+ document.getElementById('pzSpots').innerHTML=SPOTS.map(x=>`<li><span class="pz-d">${x[0]}</span><div><b>${x[1]}</b><span class="pz-j">${x[2]} · ${x[3]}</span><p><i>${x[4]}.</i> ${x[5]}</p></div></li>`).join('');
+ document.getElementById('pzGuides').innerHTML='<thead><tr><th>Dónde</th><th>Prestador</th><th>Qué incluye</th><th class="n">Precio</th></tr></thead><tbody>'+GUIDES.map(g=>`<tr><td>${g[0]}</td><td>${g[4]?`<a href="${g[4]}" target="_blank" rel="noopener">${g[1]} ↗</a>`:g[1]}</td><td>${g[2]}</td><td class="n">${g[3]}</td></tr>`).join('')+'</tbody>';
+}catch(e){console.warn(e)}}
+renderPesca();
 /* pantallazo: datos de la versión elegida */
 function renderIntro(){try{
  const parts=BASES.map((b,i)=>{const n=(i<BASES.length-1?BASES[i+1].d:DAYS.length-1)-b.d;return b.n+' ('+n+(n===1?' noche':' noches')+')'});

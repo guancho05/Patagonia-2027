@@ -93,3 +93,14 @@ En `docs/investigacion-estetica.md`. Resumen: los catálogos de los 80 dejaron l
 - Arreglos de paso: (1) el estilo `.pin` de la portada pisaba los puntitos de la línea de tiempo y dejaba los títulos de los días en una columna de 20 px; (2) las etiquetas de colores (Confirmada, Casa, Refugio…) tenían texto blanco sobre colores claros en modo oscuro; ahora usan `--on-polar` y pasan AA; (3) etiqueta de Airbnb con rojo más oscuro (#b0303f) para que el texto blanco pase AA.
 - Revisión automática (`tools/revisar.cjs`): sin errores de JS y sin scroll horizontal en todas las páginas, 390 y 1280 px, claro y oscuro.
 - Capturas en `docs/capturas/03-estetica/` (incluida la portada con movimiento reducido).
+
+## Etapa 4 · Pesca
+
+Investigación completa con fuentes en `docs/investigacion-pesca.md`. Lo principal:
+
+- **Reglamento oficial 2026/27** (común a Neuquén, Río Negro, Chubut y Parques Nacionales): temporada del 1/11/2026 al 1/5/2027, solo de día, señuelo artificial con un anzuelo, devolución obligatoria en ríos y arroyos, salmón encerrado siempre se devuelve, prohibidas las suelas de fieltro, equipo de afuera nuevo o desinfectado. En Parques solo se pesca en los ambientes del listado.
+- **Permiso para uruguayos:** existe la categoría **no residente de país limítrofe, 10 días: ARS 50.000** (≈ USD 32 con el dólar billete venta BNA del 17/11/2026). Un solo permiso vale en Neuquén, Río Negro y Parques. Propuesta: del 31/12 al 9/1.
+- **Lugares en nuestros días:** Lácar (28-29/12), Falkner y río Villarino (30-31/12), Lago Traful (1-2/1), Correntoso (solo mosca, permiso adicional) y Nahuel Huapi (3 o 4/1), Espejo (4/1 en el original), Bariloche el 9/1 (lagos, trolling guiado o Limay solo mosca). En la laguna Toncek (Frey) y en el Manso superior (Pampa Linda) **no se pesca**.
+- **Guías:** Southern Rivers (Limay) USD 410 por bote de 1-2; Natural Travel (trolling en Bahía López, hasta 4 por bote) sin tarifa publicada; el resto, a confirmar.
+- **Web:** página **Pesca** en el menú (permiso, reglas, lugares en orden de viaje, guías, equipo, fuentes); bloque **Pesca hoy** en 12 días del itinerario (abajo del trayecto, sin tocar las actividades), incluidos los avisos de dónde no se puede; fila de **permisos de pesca** en Gastos: 8 × ARS 50.000 = ≈ USD 254.
+- Capturas en `docs/capturas/04-pesca/` (incluye `dia-pesca-*`, el día 1/1 con el bloque).

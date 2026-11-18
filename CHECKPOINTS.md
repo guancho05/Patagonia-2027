@@ -24,3 +24,5 @@ Los tags no se pueden subir desde este entorno (el proxy corta el push), así qu
 | 2026-11-18 | `checkpoint/04-antes-aplicar-estetica` | Igual que el anterior (punto de partida de la etapa 3). |
 | 2026-11-18 | `checkpoint/04-aplicar-estetica-lista` | Etapa 3: estética de catálogo de época (paleta, Fraunces + Atkinson + Plex Mono, borde de papel y banda de datos en la portada, notas de campo, pies de foto con lugar y fecha, grano y color de película). Arreglo de la línea de tiempo. |
 | 2026-11-18 | `checkpoint/05-antes-pesca` | Igual que el anterior (punto de partida de la etapa 4). |
+| 2026-11-18 | `checkpoint/05-pesca-lista` | Etapa 4: página Pesca (reglamento 2026/27, permiso para uruguayos, lugares, guías, equipo), bloque "Pesca hoy" en los días y permisos en Gastos. |
+| 2026-11-18 | `checkpoint/06-antes-montana` | Igual que el anterior (punto de partida de la etapa 5). |

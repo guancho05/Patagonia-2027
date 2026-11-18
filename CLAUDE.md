@@ -10,12 +10,13 @@ Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aire
 - Estructura de la página, de arriba abajo:
   1. Portada (`#hero`): canvas 3D con cámara tipo dron que avanza con el scroll y vuelve al subir; marcador del Refugio Otto Meiling.
   2. Pantallazo (`#portada`): datos del viaje, mosaico de fotos y botones de itinerario original / nuevo (`.vchoose`).
-  3. Plan (`#app`): vistas `#itinerario`, `#casas`, `#autos`, `#gastos` (y las que se sumen), cambiadas con `showPage(k)` y el menú lateral (`#drawer`, botón `#menuBtn`).
+  3. Plan (`#app`): vistas `#itinerario`, `#casas`, `#autos`, `#gastos`, `#pesca`, cambiadas con `showPage(k)` y el menú lateral (`#drawer`, botón `#menuBtn`).
 - Datos (en el `<script>` de `index.html`):
   - `DAYS_A` / `BASES_A`: itinerario original. `DAYS_B` / `BASES_B`: itinerario nuevo (Frey + plan B para el Meiling), por defecto; acá van los cambios. Selector `.vbtn`, guardado en `localStorage` `pat-ver`.
   - Cada día: `{d, w, k (casa|camp|ref|fly), t, s, lead, st, a, f, l?, sc, p?}`. `sc` = escena dibujada en canvas (`draw(sc)`), fallback sin foto. `p` = índice de foto en `PH`/`CR`.
   - `STAY` (casa de cada base por versión), `OTHER` (campings y refugios), `LEGS` (trayecto de cada día: origen, destino, tiempo, km, vía; mapa embebido de Google con relieve).
   - `CITIES` (casas por lugar, con puntajes, pros/contras y fotos), `CONF` (confirmadas: San Martín y Bariloche; el resto de ese lugar va tachado), `COMBOS`.
+  - Pesca: `PZ` (bloque "Pesca hoy" por título del día), `SPOTS` y `GUIDES` (página `#pesca`). Fuentes en `docs/investigacion-pesca.md`.
   - Gastos: `renderGastos()` arma la tabla desde autos, casas y la lista de gastos "a cargar".
   - `localStorage`: `pat-day`, `pat-ver`, `pat-casa`, `pat-page`. Siempre envuelto en try/catch.
 - Investigaciones y decisiones: `docs/investigacion-estetica.md`, `docs/investigacion-pesca.md`, `docs/informe-noche.md`. Capturas en `docs/capturas/<etapa>/`.

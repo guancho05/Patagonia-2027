@@ -7,7 +7,7 @@ const base = process.argv[3] || 'http://localhost:8080/';
 const fs = require('fs');
 fs.mkdirSync(out, { recursive: true });
 const SIZES = [[390, 844], [1280, 800], [2560, 1080]];
-const PAGES = (process.env.PAGES || 'portada,pantallazo,itinerario,casas,autos,gastos').split(',');
+const PAGES = (process.env.PAGES || 'portada,pantallazo,itinerario,dia-pesca,casas,autos,gastos,pesca').split(',');
 (async () => {
   const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   for (const scheme of ['light', 'dark']) for (const [w, h] of SIZES) {
@@ -23,6 +23,16 @@ const PAGES = (process.env.PAGES || 'portada,pantallazo,itinerario,casas,autos,g
         await page.evaluate(() => window.scrollTo(0, 0));
         await page.waitForTimeout(p === 'portada' ? 3500 : 300);
         if (p === 'pantallazo') { await page.evaluate(() => document.getElementById('portada').scrollIntoView()); await page.waitForTimeout(1200); }
+        await page.screenshot({ path: name });
+      } else if (p === 'dia-pesca') {
+        // Día 6 (1/1, Villa Traful): muestra el bloque "Pesca hoy"
+        await page.goto(base + '#itinerario', { waitUntil: 'networkidle' }).catch(() => {});
+        await page.evaluate(() => { try { localStorage.setItem('pat-day', '5') } catch (e) {} });
+        await page.goto(base + '#itinerario', { waitUntil: 'networkidle' }).catch(() => {});
+        await page.reload({ waitUntil: 'networkidle' }).catch(() => {});
+        await page.waitForTimeout(1200);
+        await page.evaluate(() => document.getElementById('fish').scrollIntoView({ block: 'center' }));
+        await page.waitForTimeout(500);
         await page.screenshot({ path: name });
       } else {
         await page.goto(base + '#' + p, { waitUntil: 'networkidle' }).catch(() => {});
