@@ -640,6 +640,21 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .mv-fino{stroke:none}
 .capa-det{opacity:0;visibility:hidden}.g-det{opacity:0}
 @media (prefers-reduced-motion:reduce){.mapa svg{scroll-behavior:auto}}
+/* carteles de la portada: el JS ubica la caja (esquina superior izquierda) dentro de la pantalla y la une al punto con una línea */
+.stage .pin>div{transform:none;position:relative;z-index:1;box-sizing:border-box;max-width:min(70vw,360px);white-space:normal}
+.stage .pin small{display:block}
+.stage .pin .tr{width:0;min-width:100%}
+.stage .pin .stem{position:absolute;left:-1px;top:0;width:2px;height:0;transform-origin:1px 0;background:var(--rojo);z-index:0}
+.stage .pin.sm .stem{display:none}
+@media (max-width:640px){
+ .stage .pin>div{padding:5px 8px 6px;background:var(--hoja);box-shadow:0 0 0 1px rgba(13,7,9,.3),0 4px 14px rgba(0,0,0,.3)}
+ .stage .pin b{font-size:14px;line-height:1.15}
+ .stage .pin small{font-size:10.5px;line-height:1.3;margin-top:1px}
+ .stage .pin.lago>div{background:var(--azul,#003da2);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+ .hero .credit{white-space:normal;overflow:visible;line-height:1.2}
+ .hero .credit span{overflow:visible}
+ .hero .credit .c3d{text-align:center}.hero .credit .c3d>span{display:block}.hero .credit .c3d>.sep{display:none}
+}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
@@ -665,7 +680,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <div class="shade" aria-hidden="true"></div>
     <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1></div>
     <p class="hero-band"><span><b>27/12/2026 → 10/1/2027</b></span><span>8 personas</span><span>14 noches</span><span>San Martín de los Andes → Bariloche</span></p>
-        <p class="credit"><span class="c3d">Relieve: Copernicus GLO-30 y AWS Terrain Tiles · Lugares: © OpenStreetMap</span><span class="cph">Foto: Unsplash</span></p>
+        <p class="credit"><span class="c3d"><span>Relieve: Copernicus GLO-30 y AWS Terrain Tiles</span><span class="sep"> · </span><span>Lugares: © OpenStreetMap</span></span><span class="cph">Foto: Unsplash</span></p>
   </div>
 </section>
 <section class="intro" id="portada" aria-labelledby="intro-h">
@@ -979,7 +994,7 @@ const CR=["","Falk2, CC BY-SA 4.0","Gervacio Rosales, CC BY 3.0","Claudio Elias,
 const BASES_A=[
  {n:"Buenos Aires",e:"1 noche corta",d:0},{n:"San Martín",e:"2 noches",d:1},{n:"Lago Falkner",e:"2 · Año Nuevo",d:3},{n:"Villa Traful",e:"2 noches",d:5},
  {n:"La Angostura",e:"3 noches",d:7},{n:"Otto Meiling",e:"1 · 2.000 m",d:10},{n:"Bariloche",e:"3 noches",d:11}];
-const ITIN_ACT="2026-11-19"; // fecha del último cambio en DAYS_A / DAYS_B (año-mes-día)
+const ITIN_ACT="2026-11-18"; // fecha del último cambio en DAYS_A / DAYS_B (año-mes-día)
 const KL={casa:"Casa",camp:"Camping",ref:"Refugio",fly:"Vuelo"};
 const KC={casa:"var(--casa)",camp:"var(--camp)",ref:"var(--ref)",fly:"var(--fly)"};
 const DAYS_A=[
