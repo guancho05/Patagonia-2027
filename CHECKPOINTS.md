@@ -39,3 +39,8 @@ Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Ch
 | 2026-11-18 | `checkpoint/11-pie-listo` · `12-antes-colores` | Pie de página. |
 | 2026-11-18 | `checkpoint/12-colores-listos` | Colores de época en bloques, parches, banda, pie e itinerario. |
 | 2026-11-18 | `checkpoint/13-alta-resolucion-cierre` | Estado final: etiquetas dentro de la pantalla, normal map del celular más liviano, capturas e informe. |
+| 2026-11-18 | `checkpoint/14-antes-paleta-logo` | Estado tras la alta resolución, antes de la paleta del logo. |
+| 2026-11-18 | `checkpoint/14-paleta-logo-lista` · `15-antes-mapa` | Paleta violeta, azul rey, rojo, negro y blanco. |
+| 2026-11-18 | `checkpoint/15-mapa-listo` · `16-antes-portada-realista` | Mapas SVG de la Patagonia y de la ruta. |
+| 2026-11-18 | `checkpoint/16-portada-realista-lista` · `17-senderos-listos` | Bariloche y lagos en el 3D, WorldCover, agua con reflejo, senderos punteados (un solo commit para las partes 3 y 4). |
+| 2026-11-18 | `checkpoint/18-paleta-mapa-senderos-cierre` | Capturas, informe y CLAUDE.md al día. |

@@ -268,3 +268,45 @@ La casa de La Angostura sigue como estaba (sin decidir).
 **4. Colores de época:** French red, cobalt, teal, aloe, seafoam e iced mocha (fuente oficial: historia de la empresa), más mostaza. Los apliqué en bandas por sección (Itinerario cobalto, Casas rojo, Autos mostaza, Gastos teal, Pesca espuma de mar), en los parches de datos del resumen y de Gastos, la banda de la portada, el botón del itinerario nuevo, el pie y las etiquetas del itinerario. Todo pasa AA en claro y oscuro (tabla en `docs/investigacion-estetica.md`, "Paleta 2"). Sin logo ni franjas.
 
 Capturas en `docs/capturas/08-alta-resolucion/`: la portada al inicio, a la mitad y al final del recorrido (el final está tomado en el 94 % del scroll, con la cámara ya quieta en el cierre), el resumen y el pie, en 390, 1280 y 2560 px.
+
+## Paleta del logo, mapa de la Patagonia, portada realista y senderos (18/11)
+
+**1. Paleta.** Saqué por conteo de píxeles los colores de la imagen de referencia: violeta `#4d0074`, azul rey `#003da2`, rojo `#e10d0c`, negro `#0d0709` y blanco. Sumé solo dos neutros, crema y gris, para lectura. La imagen no está en el repo ni publicada. Dónde va cada color:
+- **Bloques por sección:** Itinerario azul, Casas rojo, Autos violeta, Gastos azul, Pesca violeta.
+- **Parches de datos:** rojo, azul, violeta y negro.
+- **Pie:** violeta con filete rojo.
+- **Banda de la portada:** negra.
+
+El rojo con texto blanco da 4,92 (AA). Como texto chico sobre crema o negro no pasa AA, así que ahí no lo uso. Tabla completa en `docs/investigacion-estetica.md` ("Paleta 3"). Sin franjas, sin silueta de montaña y con el cielo del 3D en un degradé natural. Los títulos siguen en Caprasimo.
+
+**2. Mapa de la Patagonia.** Dos SVG propios en el resumen, generados con `tools/mapa.py`:
+- **Ubicación:** sur de Argentina y Chile, con la Patagonia en violeta (Neuquén, Río Negro, Chubut, Santa Cruz y Tierra del Fuego; Los Lagos, Aysén y Magallanes), el vuelo Buenos Aires → Chapelco y la caja de la zona del viaje.
+- **Detalle de la ruta:** las 8 paradas numeradas en el orden del itinerario nuevo y la vuelta a Chapelco. La línea es recta entre paradas, porque los km y tiempos reales están en cada día.
+
+Se insertan en la página para usar sus fuentes, y en el celular van uno debajo del otro con letra de ≥ 12 px.
+
+**3. Portada realista.**
+- **Zona de detalle:** pasó a **67 × 42 km** (−41,00 a −41,38; −71,98 a −71,18), con Bariloche y el sur del Nahuel Huapi. Mantiene ≈ 13 m por píxel en escritorio (textura de 5120 × 3216).
+- **Color del terreno:** elegí **ESA WorldCover 10 m** antes que Sentinel-2 cloudless. EOX hoy licencia sus mosaicos como CC BY-NC-SA (no comercial y con "compartir igual"), y además traen la luz y las sombras de la foto satelital, que chocan con las del 3D. Con WorldCover, el bosque, el pastizal, el suelo desnudo, lo urbano y la nieve están donde están, y la luz y los colores los controlo yo.
+- **Agua y glaciares:** lagos y glaciares con las formas de OSM (22 lagos, 7 glaciares), ríos de la máscara de agua de Copernicus. El agua es plana, con reflejo del cielo según el ángulo y una ondulación mínima.
+- **Marcadores:** San Carlos de Bariloche con el mismo estilo que los refugios ("casa del 6 al 10/1", según la versión).
+- **Etiquetas de lagos:** aparecen solo cerca de la cámara, sin amontonarse (máximo 3 en el celular y 7 en escritorio) y después de que se desvanece el título. Se ubican en el punto del lago más alejado de la costa.
+- **Peso:** escritorio ≈ 7,9 MB y celular ≈ 2,7 MB (+0,17 MB de three.js). El celular pasa un poco los 2,5 MB del pedido anterior porque la zona es 1,6 veces más grande. La primera carga liviana sigue en ≈ 0,9 MB.
+
+**4. Senderos.** Pampa Linda → Refugio Otto Meiling y Villa Catedral → Refugio Frey, trazados sobre la red de senderos de OSM: es el camino más corto entre el inicio y el refugio, pasando solo por senderos y huellas. Overpass no respondía desde este entorno; usé la API oficial de OSM y Nominatim. Se dibujan con una línea punteada roja de ancho fijo en pantalla, apoyada sobre el relieve, y el tramo tapado por un cerro se ve más tenue. Medido sobre Copernicus:
+
+| Sendero | OSM (planta) | Desnivel (DEM) | Itinerario | Etiqueta |
+|---|---|---|---|---|
+| Pampa Linda → Meiling | **11,3 km** | **+1.056 m** (847 → 1.878 m) | 13 km · ≈1.050 m | 13 km · +1.050 m |
+| Villa Catedral → Frey | 10,1 km | +735 m (1.055 → 1.752 m) | ≈10 km · ≈750 m | ≈10 km · +750 m |
+
+El desnivel coincide en los dos. **La distancia del Meiling no:** OSM da 11,3 km desde el nodo de Pampa Linda y el itinerario dice 13 km. Puede ser que el itinerario cuente desde el estacionamiento o por otra variante. La etiqueta muestra el dato del itinerario, como pediste; decidí vos si corregimos a ≈11 km.
+
+**Fuentes y licencias de los datos nuevos**
+- **ESA WorldCover 10 m 2021 v200:** © ESA WorldCover project / contiene datos modificados de Copernicus Sentinel (2021), procesados por el consorcio ESA WorldCover. CC BY 4.0. https://esa-worldcover.org
+- **Copernicus DEM GLO-30 y su máscara de agua:** © DLR e.V. 2010-2014 y © Airbus Defence and Space GmbH 2014-2018, provisto bajo COPERNICUS por la Unión Europea y la ESA.
+- **OpenStreetMap:** lagos, glaciares, senderos y lugares. © colaboradores de OpenStreetMap, ODbL. Vía Nominatim y la API v0.6, el 18/11/2026. Fuente cruda en `data/osm-fuente.json`.
+- **Natural Earth 1:10m:** países, provincias y regiones, lagos. Dominio público.
+- **Descartado:** Sentinel-2 cloudless (EOX), por licencia CC BY-NC-SA y por la luz incorporada.
+
+**Capturas** en `docs/capturas/10-paleta-mapa-senderos/`: portada al inicio, a la mitad y al final del recorrido, mapas, resumen y pie, en 390, 1280 y 2560 px.

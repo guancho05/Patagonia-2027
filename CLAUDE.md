@@ -20,7 +20,7 @@ Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aire
   - Gastos: `renderGastos()` arma la tabla desde autos, casas y la lista de gastos "a cargar".
   - `localStorage`: `pat-day`, `pat-ver`, `pat-casa`, `pat-page`. Siempre envuelto en try/catch.
 - Investigaciones y decisiones: `docs/investigacion-estetica.md`, `docs/investigacion-pesca.md`, `docs/informe-noche.md`. Capturas en `docs/capturas/<etapa>/`.
-- Estética: catálogo outdoor de época (ver `docs/investigacion-estetica.md`). Fuentes: Fraunces (títulos y relato, eje `SOFT`), Atkinson Hyperlegible (datos), IBM Plex Mono (pies de foto, fechas). Paleta en tokens `--papel`, `--hoja`, `--tinta`, `--polar`, `--abeto`, `--cielo`, etc.; los nombres viejos (`--bg`, `--sign`, `--wood`…) apuntan a los nuevos. Grano de papel con un SVG fijo (`body::before`) y color de película con `filter` en las fotos del viaje.
+- Estética: catálogo outdoor de época. Títulos grandes en Caprasimo (estilo Cooper Black), relato en Fraunces, datos en Atkinson Hyperlegible, pies en IBM Plex Mono. Paleta principal: violeta `#4d0074`, azul rey `#003da2`, rojo `#e10d0c`, negro `#0d0709` y blanco, con crema y gris solo para lectura (ver "Paleta 3" en `docs/investigacion-estetica.md`). No usar el logo ni su composición (franjas detrás de una silueta de montaña). Datos del 3D y de los mapas: `tools/terreno.py`, `tools/osm.py`, `tools/mapa.py` → `data/`.
 - Modo claro/oscuro con tokens en `:root` (`prefers-color-scheme` y `data-theme`).
 
 ## Reglas
