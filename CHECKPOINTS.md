@@ -22,3 +22,5 @@ Los tags no se pueden subir desde este entorno (el proxy corta el push), así qu
 | 2026-11-18 | `checkpoint/03-antes-estetica` | Igual que el anterior (punto de partida de las etapas 2 y 3). |
 | 2026-11-18 | `checkpoint/03-investigacion-estetica-lista` | Etapa 2: `docs/investigacion-estetica.md` (hallazgos con links, paleta, tipografías y principios). La web no cambia. |
 | 2026-11-18 | `checkpoint/04-antes-aplicar-estetica` | Igual que el anterior (punto de partida de la etapa 3). |
+| 2026-11-18 | `checkpoint/04-aplicar-estetica-lista` | Etapa 3: estética de catálogo de época (paleta, Fraunces + Atkinson + Plex Mono, borde de papel y banda de datos en la portada, notas de campo, pies de foto con lugar y fecha, grano y color de película). Arreglo de la línea de tiempo. |
+| 2026-11-18 | `checkpoint/05-antes-pesca` | Igual que el anterior (punto de partida de la etapa 4). |

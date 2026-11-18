@@ -19,6 +19,7 @@ Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aire
   - Gastos: `renderGastos()` arma la tabla desde autos, casas y la lista de gastos "a cargar".
   - `localStorage`: `pat-day`, `pat-ver`, `pat-casa`, `pat-page`. Siempre envuelto en try/catch.
 - Investigaciones y decisiones: `docs/investigacion-estetica.md`, `docs/investigacion-pesca.md`, `docs/informe-noche.md`. Capturas en `docs/capturas/<etapa>/`.
+- Estética: catálogo outdoor de época (ver `docs/investigacion-estetica.md`). Fuentes: Fraunces (títulos y relato, eje `SOFT`), Atkinson Hyperlegible (datos), IBM Plex Mono (pies de foto, fechas). Paleta en tokens `--papel`, `--hoja`, `--tinta`, `--polar`, `--abeto`, `--cielo`, etc.; los nombres viejos (`--bg`, `--sign`, `--wood`…) apuntan a los nuevos. Grano de papel con un SVG fijo (`body::before`) y color de película con `filter` en las fotos del viaje.
 - Modo claro/oscuro con tokens en `:root` (`prefers-color-scheme` y `data-theme`).
 
 ## Reglas

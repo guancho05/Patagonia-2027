@@ -77,3 +77,19 @@ No cambié precios, fechas, horarios, reservas ni la lista de actividades (`a`) 
 | 5/1 (nuevo) · texto | Si el pronóstico da bien: salen de La Angostura a las 8:30, entran al camino de Pampa Linda en la ventana de subida (10:30 a 14) y suben 13 km hasta el refugio, entre los glaciares Castaño Overa y Alerce. Duermen en carpa o adentro del refugio. Si da mal clima no se sube, y se elige uno de los planes B. | Si el pronóstico da bien: salida de La Angostura 8:30, camino a Pampa Linda en la ventana de subida (10:30 a 14) y 13 km hasta el refugio. Noche en carpa o adentro del refugio. Con mal clima no se sube y se elige un plan B. |
 | 9/1 (nuevo) · texto | Con la casa hasta el 10 queda un día sin agenda: pesca en el Nahuel Huapi o el Gutiérrez, Playa Bonita, subir al Cerro Otto o descansar. Cena de despedida y a dormir temprano, que el 10 se sale a las 6:30. | Día sin agenda fija: pesca en el Nahuel Huapi o el Gutiérrez, Playa Bonita o Cerro Otto. A la noche, valijas: el 10/1 se sale a las 6:30. |
 
+
+## Etapa 2 · Investigación de estética
+
+En `docs/investigacion-estetica.md`. Resumen: los catálogos de los 80 dejaron las fotos de estudio por "gente real haciendo cosas reales" (empleados, amigos, clientes), con grano y poca pose; la tapa es una foto grande con la marca chica; el texto es ensayo y nota de campo; los colores de película (Kodachrome: rojos fuertes, contraste alto, sombras profundas; impresión vieja: velo cálido). Paleta sacada de tu foto (rojo polar, verde abeto, oliva, caqui, cielo, crema) y ajustada a contraste AA. Tipografías libres: Fraunces (inspirada en Windsor, Souvenir y Cooper), Atkinson Hyperlegible y IBM Plex Mono.
+
+## Etapa 3 · Aplicar la estética
+
+- Tokens nuevos en `:root` (claro y oscuro); los nombres viejos apuntan a los nuevos, así nada del código de casas, autos o gastos se rompe.
+- Portada como tapa de catálogo: borde de papel alrededor de la escena 3D, título simple, **banda de datos** abajo (fechas, personas, noches, ruta), estilo folleto de parque.
+- Pantallazo: fecha grande, texto de relato en serif, banda verde con los 4 datos, mosaico como fotos impresas con pie (fecha y lugar) debajo.
+- Menú: lista numerada (01–05), pies en monoespaciada.
+- Itinerario: cada día como nota de campo (hora en rojo a la izquierda, renglones punteados), foto con borde de papel y **pie con lugar, fecha y crédito** (por ejemplo "Villa Traful · Vie 1/1/2027 · Foto: Unsplash").
+- Película: `filter` en las fotos del viaje (contraste 0,94 para levantar negros, saturación 1,16, sepia 0,09) y grano estático de papel con un SVG de 180 px fijo en toda la página (opacidad 7 % en claro, 9 % en oscuro). Las fotos de las casas y los autos quedan sin filtro para no alterar cómo se ven los anuncios.
+- Arreglos de paso: (1) el estilo `.pin` de la portada pisaba los puntitos de la línea de tiempo y dejaba los títulos de los días en una columna de 20 px; (2) las etiquetas de colores (Confirmada, Casa, Refugio…) tenían texto blanco sobre colores claros en modo oscuro; ahora usan `--on-polar` y pasan AA; (3) etiqueta de Airbnb con rojo más oscuro (#b0303f) para que el texto blanco pase AA.
+- Revisión automática (`tools/revisar.cjs`): sin errores de JS y sin scroll horizontal en todas las páginas, 390 y 1280 px, claro y oscuro.
+- Capturas en `docs/capturas/03-estetica/` (incluida la portada con movimiento reducido).
