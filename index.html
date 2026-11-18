@@ -457,9 +457,6 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .sil-w{position:relative;height:clamp(90px,12vw,190px)}
 .sil{position:absolute;inset:0;width:100%;height:100%;display:block}
 .sil-m{fill:#0d0709}
-.sil-l{position:absolute;transform:translate(-50%,calc(-100% - 6px));font:600 11px var(--mono);color:#0d0709;white-space:nowrap;text-align:center}
-.sil-l::after{content:"";display:block;width:1px;height:7px;margin:2px auto 0;background:#0d0709}
-@media (max-width:640px){.sil-l.menor{display:none}}
 .pie-sil figcaption{background:#0d0709;color:#bdb3ad;font:500 11px var(--mono);padding:8px max(16px,calc((100% - 1088px)/2)) 0}
 .pie-in{max-width:1120px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-left,0px)) 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr);gap:28px 40px;align-items:start}
 @media (max-width:820px){.pie-in{grid-template-columns:minmax(0,1fr)}}
@@ -1490,10 +1487,8 @@ function mapaZoom(fig,txt){
  new ResizeObserver(()=>{const w=box.clientWidth;if(!w||Math.abs(w-W)<1)return;W=w;H=W*AR;labels(kA,Z0[2]);commit()}).observe(box);
  }catch(e){console.warn('Mapa',e);box.innerHTML=txt}
 }
-/* silueta del pie: horizonte real (tools/silueta.py) y nombres de los picos */
-{const w=document.querySelector('.sil-w');if(w)Promise.all([fetch(w.dataset.src).then(r=>r.text()),fetch('data/silueta.json').then(r=>r.json())]).then(([svg,m])=>{
- const mayores=['Tronador','Catedral Norte','López'];
- w.innerHTML=svg+m.picos.filter(p=>!['Bella Vista','Campanario'].includes(p.nombre)).map(p=>`<span class="sil-l${mayores.includes(p.nombre)?'':' menor'}" style="left:${p.xp}%;top:${p.yp}%"><b>${p.nombre==='Catedral Norte'?'Cerro Catedral':p.nombre==='Tronador'?'Tronador':'Cerro '+p.nombre}</b></span>`).join('')}).catch(()=>{})}
+/* silueta del pie: horizonte real (tools/silueta.py), solo la silueta */
+{const w=document.querySelector('.sil-w');if(w)fetch(w.dataset.src).then(r=>r.ok?r.text():Promise.reject(r.status)).then(svg=>{w.innerHTML=svg}).catch(()=>{})}
 {const t=document.getElementById('itinAct');if(t){const [y,m,d]=ITIN_ACT.split('-');t.dateTime=ITIN_ACT;t.textContent=(+d)+'/'+(+m)+'/'+y}}
 document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>renderIntro()));
 /* menú lateral */
