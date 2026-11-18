@@ -3,29 +3,28 @@
 <title>Patagonia 2027</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: cartel de sendero arriba, franja de ruta con las 6 bases, línea de tiempo a la izquierda y panel del día a la derecha (apilado en el teléfono) */
 :root{
-  --bg:#eef1ec; --surface:#fbfcf9; --ink:#1d2a26; --muted:#5b6b64; --line:#cfd8d1;
-  --wood:#5a3b24; --sign:#f2c14e; --lake:#1f6f8b; --forest:#2f5d46; --ice:#cfe7ee;
-  --casa:#8a5a2b; --camp:#2f7a52; --ref:#2b6c9a; --fly:#7b4f8f;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --bg:#f3ede1; --surface:#fbf8f1; --ink:#22261f; --muted:#67665a; --line:#ddd4c2;
+  --wood:#3f4a30; --sign:#c4602d; --lake:#2f6f8f; --forest:#4f5d3a; --ice:#d9e6e4; --stone:#8a877d;
+  --casa:#a0602e; --camp:#4f6b3a; --ref:#2f6f8f; --fly:#6b5a7b;
+  --display:"Fraunces",Georgia,serif;
   --body:"Atkinson Hyperlegible",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#111816; --surface:#18221f; --ink:#e7eee9; --muted:#9fb0a8; --line:#2c3a35;
-  --wood:#3a2616; --sign:#f2c14e; --lake:#5fb3d0; --forest:#7fbf98; --ice:#24414a;
-  --casa:#d9a066; --camp:#6cc493; --ref:#7ab8e6; --fly:#c59ad8; color-scheme:dark}}
+  --bg:#161814; --surface:#1f221c; --ink:#ece6d8; --muted:#a7a493; --line:#34372e;
+  --wood:#2a3122; --sign:#e07a45; --lake:#6fb0cc; --forest:#9bb07a; --ice:#24414a; --stone:#8f8c80;
+  --casa:#d99a62; --camp:#93b878; --ref:#7fb6d6; --fly:#b9a3cc; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#111816; --surface:#18221f; --ink:#e7eee9; --muted:#9fb0a8; --line:#2c3a35;
-  --wood:#3a2616; --sign:#f2c14e; --lake:#5fb3d0; --forest:#7fbf98; --ice:#24414a;
-  --casa:#d9a066; --camp:#6cc493; --ref:#7ab8e6; --fly:#c59ad8; color-scheme:dark}
+  --bg:#161814; --surface:#1f221c; --ink:#ece6d8; --muted:#a7a493; --line:#34372e;
+  --wood:#2a3122; --sign:#e07a45; --lake:#6fb0cc; --forest:#9bb07a; --ice:#24414a; --stone:#8f8c80;
+  --casa:#d99a62; --camp:#93b878; --ref:#7fb6d6; --fly:#b9a3cc; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
-.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:24px;padding:28px max(16px,env(safe-area-inset-right,0px)) 56px max(16px,env(safe-area-inset-left,0px));scroll-margin-top:8px}
 /* cartel */
 .sign{background:var(--wood);color:var(--sign);border-radius:6px;padding:20px 24px;position:relative;
   background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px);
@@ -231,15 +230,141 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16p
 .lb-x:focus-visible,.lb-p:focus-visible,.lb-n:focus-visible{outline:2px solid var(--sign);outline-offset:2px}
 .lb-bot{display:flex;justify-content:center;gap:24px;padding-top:8px}
 body.lb-open{overflow:hidden}
+
+/* ===== Portada 3D ===== */
+.hero{height:260vh;position:relative}
+.hero.static{height:100svh}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(#26304a 0%,#7d5f68 42%,#e9b98f 72%,#efc9a2 100%)}
+.poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1s}
+.hero.live .poster{opacity:0}
+#terrain{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero.static #terrain,.hero.static .pin{display:none}
+.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,var(--bg));opacity:calc((var(--p,0) - .72)*3.6);pointer-events:none}
+.hero-txt{position:absolute;left:max(20px,6vw);right:20px;bottom:15vh;color:#fff8ec;text-shadow:0 2px 30px rgba(20,16,10,.45);opacity:calc(1 - var(--p,0)*2.4)}
+.hero-txt small{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+.hero-txt h1{font-family:var(--display);font-weight:800;font-size:clamp(64px,14vw,176px);line-height:.88;margin:10px 0 14px;letter-spacing:-.02em}
+.hero-txt p{margin:0;font-size:clamp(17px,2.2vw,22px);max-width:34ch}
+.cue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);color:#fff8ec;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:calc(1 - var(--p,0)*5)}
+.credit{position:absolute;right:10px;bottom:6px;margin:0;font-family:var(--mono);font-size:10px;color:rgba(255,248,236,.75)}
+.pin{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.pin>div{transform:translate(-50%,calc(-100% - 14px));background:rgba(251,248,241,.94);color:#22261f;border-left:3px solid #c4602d;padding:6px 10px;border-radius:4px;white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.pin b{display:block;font-family:var(--display);font-size:16px;line-height:1.1}.pin small{font-family:var(--mono);font-size:11px;color:#67665a}
+/* ===== Pantallazo ===== */
+.intro{padding:12vh 0 4vh}
+.intro-in{max-width:1120px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--sign);margin:0 0 10px}
+.intro h2{font-family:var(--display);font-weight:800;font-size:clamp(44px,8vw,104px);line-height:.92;letter-spacing:-.02em;margin:0 0 22px;max-width:12ch}
+.lede{font-size:clamp(18px,2.1vw,22px);line-height:1.55;max-width:58ch;margin:0 0 28px}
+.istats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border-block:1px solid var(--line);margin-bottom:36px}
+.istats div{background:var(--bg);padding:16px 12px 14px}
+.istats b{display:block;font-family:var(--display);font-weight:700;font-size:clamp(28px,4vw,44px);line-height:1}
+.istats span{font-size:13px;color:var(--muted)}
+@media (max-width:640px){.istats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mosaic{display:grid;grid-auto-flow:column;grid-auto-columns:min(78vw,360px);gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 16px 8px;scrollbar-width:none}
+.mosaic::-webkit-scrollbar{display:none}
+@media (min-width:1000px){.mosaic{grid-auto-flow:row;grid-template-columns:2fr 1fr 1fr;grid-auto-columns:auto;overflow:visible;padding:0;max-width:1400px;margin:0 auto}.mosaic figure:first-child{grid-row:span 2}}
+.mosaic figure{margin:0;position:relative;scroll-snap-align:center;overflow:hidden;border-radius:4px;background:var(--line)}
+.mosaic img{display:block;width:100%;height:100%;aspect-ratio:4/5;object-fit:cover}
+@media (min-width:1000px){.mosaic img{aspect-ratio:auto;min-height:260px}}
+.mosaic figcaption{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 12px;color:#fff8ec;background:linear-gradient(transparent,rgba(15,12,8,.7));font-family:var(--display);font-size:20px;font-weight:700;line-height:1.1}
+.mosaic figcaption small{display:block;font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.08em;opacity:.85;margin-bottom:4px}
+.vchoose{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:40px 0 0}
+@media (max-width:640px){.vchoose{grid-template-columns:minmax(0,1fr)}}
+.vchoose button{all:unset;cursor:pointer;display:block;padding:22px 22px 20px;border:1.5px solid var(--ink);border-radius:6px;background:var(--surface)}
+.vchoose button b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(26px,3.4vw,36px);line-height:1.05}
+.vchoose button span{display:block;margin-top:8px;color:var(--muted);font-size:15px}
+.vchoose button.new{background:var(--wood);border-color:var(--wood);color:#f3ede1}.vchoose button.new span{color:#d8d1bf}
+.vchoose button.new b::after{content:" →";color:var(--sign)}
+.vchoose button:focus-visible{outline:3px solid var(--sign);outline-offset:3px}
+/* ===== Menú lateral ===== */
+.menu-btn{position:fixed;top:max(12px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:40;border:0;border-radius:999px;padding:10px 16px;background:rgba(251,248,241,.92);color:#22261f;font:700 14px var(--body);box-shadow:0 4px 18px rgba(0,0,0,.18);cursor:pointer;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px)}
+.menu-btn i{display:block;width:16px;height:2px;background:currentColor;box-shadow:0 -5px currentColor,0 5px currentColor}
+.scrim{position:fixed;inset:0;background:rgba(15,12,8,.45);z-index:45}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(86vw,340px);background:var(--surface);z-index:50;padding:max(20px,env(safe-area-inset-top,0px)) 22px 24px;display:flex;flex-direction:column;gap:6px;box-shadow:-10px 0 40px rgba(0,0,0,.25);transform:translateX(105%);transition:transform .28s ease}
+.drawer:not(.open){visibility:hidden;box-shadow:none;transition:transform .28s ease,visibility 0s .28s}
+.drawer.open{transform:none}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+.drawer .dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.drawer .dh b{font-family:var(--display);font-size:24px}
+.drawer .dh button{border:0;background:none;font-size:28px;line-height:1;cursor:pointer;color:var(--ink)}
+.drawer a{display:block;text-decoration:none;color:var(--ink);padding:12px 0;border-bottom:1px solid var(--line)}
+.drawer a b{display:block;font-family:var(--display);font-weight:700;font-size:24px;line-height:1.1}
+.drawer a span{font-size:13px;color:var(--muted)}
+.drawer a[aria-current="page"] b{color:var(--sign)}
+.pages{display:none!important}
+/* ===== Dónde dormimos y trayecto ===== */
+.stay,.leg{margin:14px 20px 0;padding:14px 16px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg)}
+.stay h3,.leg h3{margin:0 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stay .nm{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.15}
+.stay .st{display:inline-block;margin-left:6px;font:700 11px var(--body);padding:2px 7px;border-radius:4px;color:#fff;background:var(--stone);vertical-align:middle}
+.stay .st.ok{background:var(--camp)}.stay .st.op{background:var(--sign)}
+.stay .pr{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:8px;font-family:var(--mono);font-size:13px}
+.stay .pr b{font-size:16px}
+.stay a{font-size:14px;color:var(--lake);font-weight:700}
+.leg .rt{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.2}
+.leg .nums{display:flex;flex-wrap:wrap;gap:4px 16px;margin:6px 0 10px;font-family:var(--mono);font-size:13px}
+.leg .nums b{font-size:16px}
+.leg iframe{display:block;width:100%;aspect-ratio:4/3;border:0;border-radius:6px;background:var(--line)}
+.leg .src{margin:6px 0 0;font-size:12px;color:var(--muted)}
+/* ===== Gastos ===== */
+.gastos h2{font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,52px);line-height:1;margin:0 0 6px}
+.gtab{width:100%;border-collapse:collapse;font-size:15px;margin-top:14px}
+.gtab th{text-align:left;font-size:12px;color:var(--muted);font-weight:700;padding:0 8px 6px 0;border-bottom:1.5px solid var(--line)}
+.gtab td{padding:10px 8px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.gtab td.n,.gtab th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.gtab tr.pend td{color:var(--muted)}
+.gtab tr.tot td{font-weight:700;border-bottom:0;font-size:17px}
+.gtag{display:inline-block;font:700 11px var(--body);padding:1px 6px;border-radius:4px;color:#fff;background:var(--stone)}
+.gtag.ok{background:var(--camp)}.gtag.op{background:var(--sign)}
+.gsum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+@media (max-width:640px){.gsum{grid-template-columns:minmax(0,1fr)}}
+.gsum div{background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:14px 16px}
+.gsum b{display:block;font-family:var(--display);font-weight:800;font-size:34px;line-height:1}
+.gsum span{font-size:13px;color:var(--muted)}
 </style>
 
-<div class="wrap">
-  <header class="sign">
-    <small>Parques Nacionales Lanín · Nahuel Huapi · Arrayanes</small>
-    <h1>Patagonia 2027<br>8 amigos · 14 noches</h1>
-    <p>Una tarde en Buenos Aires y, desde San Martín de los Andes, a Bariloche por la Ruta de los 7 Lagos, con Año Nuevo frente al Falkner y una noche al borde del glaciar del Tronador.</p>
-    <div class="facts"><span><b>27/12</b> → <b>10/01</b></span><span><b>5</b> noches de carpa/refugio</span><span><b>9</b> en casa</span><span>≈<b>800 km</b> de ruta</span><span>techo: <b>2.000 m</b></span></div>
-  </header>
+<button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer"><i></i>Menú</button>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Menú" aria-hidden="true">
+  <div class="dh"><b>Patagonia 2027</b><button type="button" id="drawerX" aria-label="Cerrar menú">×</button></div>
+  <a href="#portada" data-go="portada"><b>Portada</b><span>El Tronador y el viaje en un pantallazo</span></a>
+  <a href="#itinerario" data-go="itinerario"><b>Itinerario</b><span>Día por día, con casas y trayectos</span></a>
+  <a href="#casas" data-go="casas"><b>Casas</b><span>Confirmadas y opciones</span></a>
+  <a href="#autos" data-go="autos"><b>Autos</b><span>2 Citroën Basalt, Hertz</span></a>
+  <a href="#gastos" data-go="gastos"><b>Gastos</b><span>Total y por persona</span></a>
+</aside>
+<section class="hero" id="hero" aria-label="Portada: el Tronador">
+  <div class="stage" id="stage">
+    <img class="poster" src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1800&q=80&auto=format&fit=crop" alt="El Tronador nevado sobre el bosque" fetchpriority="high">
+    <canvas id="terrain" aria-hidden="true"></canvas>
+    <div class="pin" id="pin"><div><b>Refugio Otto Meiling</b><small>≈2.000 m · noche del 5/1</small></div></div>
+    <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1><p>8 amigos, 14 noches, del Lácar al Tronador.</p></div>
+    <div class="cue">Bajá para volar ↓</div>
+    <p class="credit">Relieve real: Terrain Tiles (AWS) · SRTM</p>
+  </div>
+</section>
+<section class="intro" id="portada" aria-labelledby="intro-h">
+  <div class="intro-in">
+    <p class="kicker">El viaje en un pantallazo</p>
+    <h2 id="intro-h">Del Lácar al Tronador</h2>
+    <p class="lede">Ocho amigos, dos autos y catorce noches. Una tarde en Buenos Aires, aterrizaje en Chapelco y la Ruta de los 7 Lagos hacia el sur: Año Nuevo frente al Falkner, carpa en Traful, las agujas del Frey, La Angostura, una noche a 2.000 metros en el Otto Meiling y el cierre en Bariloche, con rafting en el Manso.</p>
+    <div class="istats"><div><b>14</b><span>noches, 27/12 → 10/1</span></div><div><b>≈820</b><span>km de ruta en auto</span></div><div><b>2</b><span>refugios de montaña</span></div><div><b id="istatPP">—</b><span>por persona, lo cargado</span></div></div>
+  </div>
+  <div class="mosaic">
+    <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" loading="lazy"><figcaption><small>5/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1577931751802-068d861ba420?w=900&q=80&auto=format&fit=crop" alt="Lago Lácar" loading="lazy"><figcaption><small>28/12</small>San Martín de los Andes</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1677282658069-d9bd2e9f59c0?w=900&q=80&auto=format&fit=crop" alt="Pesca en el lago" loading="lazy"><figcaption><small>1 y 2/1</small>Villa Traful</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1591043345548-c5cd13e2be51?w=900&q=80&auto=format&fit=crop" alt="Laguna entre rocas" loading="lazy"><figcaption><small>3/1</small>Refugio Frey</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1575819453111-abb276cd4973?w=900&q=80&auto=format&fit=crop" alt="Lagos de Bariloche desde la altura" loading="lazy"><figcaption><small>6 al 10/1</small>Bariloche</figcaption></figure>
+  </div>
+  <div class="intro-in">
+    <div class="vchoose">
+      <button type="button" data-ver="a"><b>Itinerario original</b><span>El plan con el que arrancamos.</span></button>
+      <button type="button" class="new" data-ver="b"><b>Itinerario nuevo</b><span>Con el Frey y plan B para el Meiling. Acá van los próximos cambios hasta cerrar todo.</span></button>
+    </div>
+  </div>
+</section>
+<div class="wrap" id="app">
 
   <nav class="pages" aria-label="Páginas del viaje">
     <a href="#itinerario" data-v="itinerario"><b>Itinerario</b><span>14 noches, día por día</span></a>
@@ -248,7 +373,7 @@ body.lb-open{overflow:hidden}
   </nav>
 
   <div class="view" id="view-itin">
-  <div class="ver" role="group" aria-label="Versión del itinerario"><span>Versión</span><button type="button" class="vbtn" data-v="a" aria-pressed="true">Original</button><button type="button" class="vbtn" data-v="b" aria-pressed="false">Con Frey y plan B</button><p class="vnote" id="vnote"></p></div>
+  <div class="ver" role="group" aria-label="Versión del itinerario"><span>Versión</span><button type="button" class="vbtn" data-v="a" aria-pressed="true">Original</button><button type="button" class="vbtn" data-v="b" aria-pressed="false">Nuevo (propuesta)</button><p class="vnote" id="vnote"></p></div>
   <nav class="route" id="route" aria-label="Bases del viaje"></nav>
 
   <div class="filters" role="group" aria-label="Filtrar por tipo de noche">
@@ -269,15 +394,24 @@ body.lb-open{overflow:hidden}
         <h2 id="ttl"></h2>
         <p class="lead" id="lead"></p>
         <div class="stats" id="stats"></div>
+        <div id="stay"></div>
+        <div class="leg" id="leg" hidden></div>
         <ul class="acts" id="acts"></ul>
         <div class="links" id="links"></div>
         <div class="nav"><button id="prev">← Día anterior</button><button id="next">Día siguiente →</button></div>
       </div>
     </article>
   </div>
-  <p class="note">Las fotos de cada día son de Wikimedia Commons (autor y licencia en cada una); si alguna no carga, aparece el paisaje dibujado. Los botones “Ver fotos” abren más fotos en una pestaña nueva. Itinerario sujeto a cambios (camino a Pampa Linda, clima, reservas).</p>
+  <p class="note">Fotos: Unsplash y Wikimedia Commons. Mapas y tiempos de los trayectos: Google Maps. Relieve de la portada: Terrain Tiles de AWS (datos SRTM y otros).</p>
   </div>
 
+  <section class="view gastos" id="view-gastos" aria-labelledby="gastos-h" hidden>
+    <h2 id="gastos-h">Gastos</h2>
+    <p class="sub" id="gver"></p>
+    <div class="gsum" id="gsum"></div>
+    <div class="ptabw"><table class="gtab" id="gtab"></table></div>
+    <p class="note">Suma solo lo que ya tiene precio. Los gastos "a cargar" se completan a medida que se reserven. Total dividido entre 8.</p>
+  </section>
   <section class="view" id="view-autos" aria-labelledby="autos-h" hidden>
     <div class="rent">
       <div class="shots">
@@ -504,9 +638,9 @@ const DAYS_B=[0,1,2,3,4,5,6].map(i=>cp(i)).concat([
   l:[WG_FREY,["Registro de trekking","https://nahuelhuapi.gov.ar/refugio-frey-desde-villa-catedral/"],["Refugio Frey","https://refugiofreybariloche.com/"]],
   sc:{type:"peak",sky:"dusk",seed:71},p:null},
  cp(7,{d:"4/1",w:"Lun",t:"Bajada del Frey y La Angostura",s:"Bajada, ruta y atardecer en el Correntoso",
-  lead:"Bajan del Frey a la mañana (≈3 h), buscan los autos y siguen a La Angostura (≈1 h 15). Casa, ducha y almuerzo; a la tarde, el mirador Belvedere con la cascada Inacayal, y al atardecer, pesca en el Correntoso. A la noche miran el pronóstico y deciden el Meiling.",
-  st:[["Bajada","≈3 h"],["Catedral → La Angostura","≈100 km"],["Casa","1 noche (2 si hay plan B)"]],
-  a:[["8:00","Desayuno y bajada"],["11:30","Villa Catedral, autos y salida"],["13:00","La Angostura: casa y almuerzo"],["16:00","Mirador Belvedere + Cascada Inacayal"],["Atardecer","Desembocadura del Correntoso"],["Noche","Pronóstico y mochilas para el Meiling"]],
+  lead:"Bajan del Frey a la mañana (≈3 h), buscan los autos y siguen a La Angostura (≈2 h). Casa, ducha y almuerzo; a la tarde, el mirador Belvedere con la cascada Inacayal, y al atardecer, pesca en el Correntoso. A la noche miran el pronóstico y deciden el Meiling.",
+  st:[["Bajada","≈3 h"],["Catedral → La Angostura","102 km · 1 h 56"],["Casa","1 noche (2 si hay plan B)"]],
+  a:[["8:00","Desayuno y bajada"],["11:30","Villa Catedral, autos y salida"],["13:30","La Angostura: casa y almuerzo"],["16:00","Mirador Belvedere + Cascada Inacayal"],["Atardecer","Desembocadura del Correntoso"],["Noche","Pronóstico y mochilas para el Meiling"]],
   l:[WG_MEILING]}),
  cp(10,{d:"5/1",w:"Mar",t:"Otto Meiling, si hay clima",s:"Carpa o adentro del refugio · plan B si llueve",
   lead:"Si el pronóstico da bien: salen de La Angostura a las 8:30, entran al camino de Pampa Linda en la ventana de subida (10:30 a 14) y suben 13 km hasta el refugio, entre los glaciares Castaño Overa y Alerce. Duermen en carpa o adentro del refugio. Si da mal clima no se sube, y se elige uno de los planes B.",
@@ -526,13 +660,36 @@ const BASES_B=[
  {n:"Buenos Aires",e:"1 noche corta",d:0},{n:"San Martín",e:"2 noches",d:1},{n:"Lago Falkner",e:"2 · Año Nuevo",d:3},{n:"Villa Traful",e:"2 noches",d:5},
  {n:"Refugio Frey",e:"1 · carpa",d:7},{n:"La Angostura",e:"1 noche",d:8},{n:"Otto Meiling",e:"1 · si hay clima",d:9},{n:"Bariloche",e:"4 noches",d:10}];
 const VNOTE={a:"",b:"Frey el 3/1, una noche en La Angostura y el Meiling el 5/1 si el clima acompaña. Coincide con la casa de Bariloche reservada del 6 al 10/1."};
-let DAYS=DAYS_A,BASES=BASES_A,ver='a';
+const PHOTO={"Buenos Aires":"1638154642608-da44b991fb6b","San Martín de los Andes":"1577931751802-068d861ba420","Playa Yuco y Pozones del Caleufú":"1551494394-bef2583a09ce","Ruta de los 7 Lagos hasta el Falkner":"1664349976193-0b9cb8d74329","Año Nuevo en el Lago Falkner":"1598162461164-5cb059c382c6","Villa Traful":"1677282658035-b22f304341e7","Bosque sumergido":"1677282658069-d9bd2e9f59c0","Villa La Angostura":"1612611155301-ac3e1734c91c","Filo del Cerro Belvedere":"1630548718381-9aed78b3ef81","Kayak y Bosque de Arrayanes":"1630076794428-df2db35c8669","Refugio Otto Meiling":"1597456042783-b23651b782ce","Otto Meiling, si hay clima":"1597456042783-b23651b782ce","Ventisquero Negro y Bariloche":"1699578658501-e57dd78b25a0","Rafting en el río Manso":"1737466614751-373adf598fef","Filo de las Cabras y Circuito Chico":"1572084511042-5bf85cda87b2","Refugio Frey":"1591043345548-c5cd13e2be51","Bajada del Frey y La Angostura":"1612611155301-ac3e1734c91c","Día libre en Bariloche":"1598162480222-b2c3d92548d5"};
+const mobileW=()=>innerWidth<=820?Math.min(1200,Math.round(innerWidth*devicePixelRatio)):1400;
+const UNS=(id,w)=>'https://images.unsplash.com/photo-'+id+'?w='+w+'&q=80&auto=format&fit=crop';
+const LEG=(o,d,t,km,via)=>({o,d,t,km,via});
+const LEGS={
+ a:{"28/12":LEG("Aeropuerto Chapelco","San Martín de los Andes","30 min","23 km","RN40"),"30/12":LEG("San Martín de los Andes","Lago Falkner","51 min","48 km","RN40, Ruta de los 7 Lagos"),"1/1":LEG("Lago Falkner","Villa Traful","1 h 19 min","55 km","RN40 y RP65"),"3/1":LEG("Villa Traful","Villa La Angostura","1 h 26 min","57 km","RP65 y RN40"),"6/1":LEG("Villa La Angostura","Pampa Linda","3 h 15 min","157 km","RN40 y el camino de Pampa Linda (horarios)"),"7/1":LEG("Pampa Linda","San Carlos de Bariloche","1 h 59 min","73 km","RP82 y RN40"),"10/1":LEG("San Carlos de Bariloche","Aeropuerto Chapelco","3 h 23 min","241 km","RN237 y RN40")},
+ b:{"28/12":LEG("Aeropuerto Chapelco","San Martín de los Andes","30 min","23 km","RN40"),"30/12":LEG("San Martín de los Andes","Lago Falkner","51 min","48 km","RN40, Ruta de los 7 Lagos"),"1/1":LEG("Lago Falkner","Villa Traful","1 h 19 min","55 km","RN40 y RP65"),"3/1":LEG("Villa Traful","Villa Catedral","2 h 31 min","118 km","RP65 y RN237"),"4/1":LEG("Villa Catedral","Villa La Angostura","1 h 56 min","102 km","RN40"),"5/1":LEG("Villa La Angostura","Pampa Linda","3 h 15 min","157 km","RN40 y el camino de Pampa Linda (horarios)"),"6/1":LEG("Pampa Linda","San Carlos de Bariloche","1 h 59 min","73 km","RP82 y RN40"),"10/1":LEG("San Carlos de Bariloche","Aeropuerto Chapelco","3 h 23 min","241 km","RN237 y RN40")}};
+const QP={"Lago Falkner":"Camping Nuevo Falkner, Neuquén","Villa Catedral":"Villa Catedral, San Carlos de Bariloche","Pampa Linda":"Pampa Linda, Río Negro","Aeropuerto Chapelco":"Aeropuerto Chapelco, Neuquén"};
+const qp=n=>encodeURIComponent(QP[n]||n+', Argentina');
+function renderLeg(d){const el=document.getElementById('leg');const L=LEGS[ver][d.d];if(!L){el.innerHTML='';el.hidden=true;return}el.hidden=false;
+ el.innerHTML=`<h3>Trayecto del día</h3><div class="rt">${L.o} → ${L.d}</div><div class="nums"><span><b>${L.t}</b> manejando</span><span><b>${L.km}</b></span><span>por ${L.via}</span></div>`+
+ `<iframe title="Mapa con relieve: ${L.o} a ${L.d}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?saddr=${qp(L.o)}&daddr=${qp(L.d)}&t=p&hl=es&output=embed"></iframe>`+
+ `<p class="src">Tiempo y distancia de Google Maps, sin tráfico ni paradas. <a href="https://www.google.com/maps/dir/?api=1&origin=${qp(L.o)}&destination=${qp(L.d)}&travelmode=driving" target="_blank" rel="noopener">Abrir en Google Maps ↗</a></p>`}
+const STAY={a:{"San Martín":"Casa en Las Pendientes","La Angostura":"Cuncumen","Bariloche":"Dúplex con vista al lago"},b:{"San Martín":"Casa en Las Pendientes","La Angostura":"Hostería Posta de los Colonos","Bariloche":"Dúplex con vista al lago"}};
+const OTHER={"Buenos Aires":["Airbnb cerca del puerto","A reservar"],"Lago Falkner":["Camping Lago Falkner","Carpa · a cargar"],"Villa Traful":["Camping Paloma Araucana","Carpa · a cargar"],"Refugio Frey":["Carpa junto al Refugio Frey","Refugio · a cargar"],"Otto Meiling":["Refugio Otto Meiling (carpa o adentro)","Refugio · a cargar"]};
+function renderStay(i,d){const el=document.getElementById('stay');try{
+ if(d.k==='fly'){el.innerHTML='';return}
+ const bi=baseOf(i);const bn=bi<0?'':BASES[bi].n;const hn=STAY[ver][bn];
+ if(hn){const c=CITIES.find(c=>c.h.some(h=>h.n===hn));const h=c.h.find(h=>h.n===hn);const n=h.nts||{sma:2,vla:3,brc:4}[c.k];
+  const st=h.star&&h.star.startsWith('Confirmada')?['Confirmada','ok']:h.star&&h.star.startsWith('Primera')?['Primera opción','op']:['Elegida',''];
+  el.innerHTML=`<div class="stay"><h3>Dónde dormimos</h3><div class="nm">${h.n}<span class="st ${st[1]}">${st[0]}</span></div><div class="pr"><span><b>${usd(h.tot)}</b> total</span><span><b>${usd(h.tot==null?null:Math.round(h.tot/8))}</b> por persona</span><span>${n} ${n===1?'noche':'noches'} · ${h.src}</span></div><a href="#casas" data-go="casas">Ver la casa y las otras opciones →</a></div>`;return}
+ const o=OTHER[bn];el.innerHTML=o?`<div class="stay"><h3>Dónde dormimos</h3><div class="nm">${o[0]}</div><div class="pr"><span>${o[1]}</span></div></div>`:'';
+ }catch(e){el.innerHTML=''}}
+let DAYS=DAYS_A,BASES=BASES_A,ver='b';
 
 const tl=document.getElementById('tl'),route=document.getElementById('route');
 let cur=0,filter='all';
 function load(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}}
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-ver=load('pat-ver','a')==='b'?'b':'a';DAYS=ver==='b'?DAYS_B:DAYS_A;BASES=ver==='b'?BASES_B:BASES_A;
+ver=load('pat-ver','b')==='a'?'a':'b';DAYS=ver==='b'?DAYS_B:DAYS_A;BASES=ver==='b'?BASES_B:BASES_A;
 cur=Math.min(DAYS.length-1,Math.max(0,parseInt(load('pat-day','0'))||0));
 function build(){route.innerHTML='';tl.innerHTML='';
 document.getElementById('vnote').textContent=VNOTE[ver];
@@ -562,10 +719,10 @@ function select(i,user){if(i<0||i>=DAYS.length)return;cur=i;save('pat-day',i);co
  document.getElementById('lead').textContent=d.lead;
  document.getElementById('stats').innerHTML=d.st.map(s=>`<div class="stat"><b>${s[0]}</b>${s[1]}</div>`).join('');
  document.getElementById('acts').innerHTML=d.a.map(a=>`<li><span class="h">${a[0]}</span><span>${a[1]}</span></li>`).join('');
- document.getElementById('links').innerHTML=d.f.map(q=>`<a href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}" target="_blank" rel="noopener">Ver fotos: ${q.split(' ').slice(0,3).join(' ')} ↗</a>`).join('')+(d.l||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('');
+ renderStay(i,d);renderLeg(d);document.getElementById('links').innerHTML=(d.l||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('');
  document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===DAYS.length-1;
  const cv=document.getElementById('scene');cv.setAttribute('aria-label','Ilustración: '+d.t);
- const pi=d.p===undefined?i:d.p;const pw=document.getElementById('phwrap');if(pi!=null&&PH[pi]){document.getElementById('photo').onerror=()=>{pw.hidden=true;cv.hidden=false;draw(d.sc)};document.getElementById('photo').src=PH[pi];document.getElementById('photo').alt='Foto: '+d.t;document.getElementById('cred').textContent='Foto: '+CR[pi]+' · Wikimedia Commons';pw.hidden=false;cv.hidden=true}else{pw.hidden=true;cv.hidden=false}
+ const uid=PHOTO[d.t];const pi=d.p===undefined?i:d.p;const pw=document.getElementById('phwrap');if(uid||(pi!=null&&PH[pi])){document.getElementById('photo').onerror=()=>{pw.hidden=true;cv.hidden=false;draw(d.sc)};document.getElementById('photo').src=uid?UNS(uid,mobileW()):PH[pi];document.getElementById('photo').alt='Foto: '+d.t;document.getElementById('cred').textContent=(uid?'Foto: Unsplash':'Foto: '+CR[pi]+' · Wikimedia Commons');pw.hidden=false;cv.hidden=true}else{pw.hidden=true;cv.hidden=false}
  if(user&&matchMedia('(prefers-reduced-motion: no-preference)').matches){cv.classList.add('fade');setTimeout(()=>{draw(d.sc);cv.classList.remove('fade')},140)}else draw(d.sc);
  if(user&&innerWidth<=820)document.getElementById('panel').scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -698,15 +855,42 @@ document.getElementById('combos').innerHTML=COMBOS.map(cb=>{const hs=cb.h.map(fi
  return `<div class="combo${cb.rec?' rec':''}${out?' out':''}"><h3>${cb.n}${cb.rec?' ★':''}</h3><span class="amt">${usd(t==null?null:Math.round(t/8))} c/u</span><p>${usd(t)} en total por las 8 noches</p><ol>${hs.map(h=>`<li>${h.n} · ${usd(h.tot)}</li>`).join('')}</ol><p>${cb.note}</p></div>`}).join('');
 if(city>=CITIES.length)city=0;if(hi>=CITIES[city].h.length)hi=0;
 renderCities();renderList();pick(hi);
-function showPage(k){if(!['itinerario','autos','casas'].includes(k))k='itinerario';
- document.getElementById('view-itin').hidden=k!=='itinerario';document.getElementById('view-autos').hidden=k!=='autos';document.getElementById('view-casas').hidden=k!=='casas';
+function showPage(k){if(!['itinerario','autos','casas','gastos'].includes(k))k='itinerario';
+ document.getElementById('view-itin').hidden=k!=='itinerario';document.getElementById('view-autos').hidden=k!=='autos';document.getElementById('view-casas').hidden=k!=='casas';document.getElementById('view-gastos').hidden=k!=='gastos';if(k==='gastos')renderGastos();
+ document.querySelectorAll('.drawer a').forEach(a=>{if(a.dataset.go===k)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  document.querySelectorAll('.pages a').forEach(a=>{if(a.dataset.v===k)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
  try{localStorage.setItem('pat-page',k)}catch(e){}}
 document.querySelectorAll('.pages a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();showPage(a.dataset.v);
  try{history.replaceState(null,'','#'+a.dataset.v)}catch(err){}
  const top=document.querySelector('.pages').getBoundingClientRect().top+window.scrollY-12;if(window.scrollY>top)window.scrollTo({top,behavior:'smooth'})}));
-addEventListener('hashchange',()=>showPage(location.hash.slice(1)));
-{let k=location.hash.slice(1);if(!k){try{k=localStorage.getItem('pat-page')||''}catch(e){}}showPage(k)}
+addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(k&&k!=='portada')showPage(k)});
+{let k=location.hash.slice(1);if(!k||k==='portada'){try{k=localStorage.getItem('pat-page')||''}catch(e){}}showPage(k);if(location.hash&&location.hash!=='#portada')requestAnimationFrame(()=>document.getElementById('app').scrollIntoView())}
+/* gastos */
+function renderGastos(){try{
+ const vh=STAY[ver]["La Angostura"],H=n=>{for(const c of CITIES)for(const h of c.h)if(h.n===n)return h};
+ const st=h=>h.star&&h.star.startsWith('Confirmada')?['Confirmada','ok']:h.star&&h.star.startsWith('Primera')?['Primera opción','op']:['Elegida',''];
+ const rows=[["Autos: 2 Citroën Basalt (Hertz, 13 días, seguro completo)",["Cotizado",""],1810.88]];
+ [["San Martín","Casa en Las Pendientes"],["La Angostura",vh],["Bariloche","Dúplex con vista al lago"]].forEach(([l,n])=>{const h=H(n);rows.push(["Casa "+l+": "+n,st(h),h.tot])});
+ ["Vuelos Ezeiza ⇄ Chapelco","Barco Montevideo → Buenos Aires","Airbnb en Buenos Aires","Campings: Falkner y Traful","Refugio Frey","Refugio Otto Meiling","Rafting en el Manso","Nafta","Súper y comida"].forEach(n=>rows.push([n,["A cargar",""],null]));
+ const known=rows.filter(r=>r[2]!=null),tot=known.reduce((a,r)=>a+r[2],0),conf=known.filter(r=>r[1][1]==='ok').reduce((a,r)=>a+r[2],0);
+ const f=n=>'USD '+Math.round(n).toLocaleString('es-AR');
+ document.getElementById('gver').textContent='Según el itinerario '+(ver==='b'?'nuevo':'original')+'. Cambiá la versión en el Itinerario o en la portada.';
+ document.getElementById('gsum').innerHTML=`<div><b>${f(tot/8)}</b><span>por persona, todo lo que tiene precio</span></div><div><b>${f(conf/8)}</b><span>por persona, solo lo confirmado</span></div><div><b>${f(tot)}</b><span>total del grupo</span></div>`;
+ document.getElementById('gtab').innerHTML='<thead><tr><th>Gasto</th><th>Estado</th><th class="n">Total</th><th class="n">Por persona</th></tr></thead><tbody>'+rows.map(r=>`<tr class="${r[2]==null?'pend':''}"><td>${r[0]}</td><td><span class="gtag ${r[1][1]}">${r[1][0]}</span></td><td class="n">${r[2]==null?'—':f(r[2])}</td><td class="n">${r[2]==null?'—':f(r[2]/8)}</td></tr>`).join('')+`<tr class="tot"><td colspan="2">Total con precio</td><td class="n">${f(tot)}</td><td class="n">${f(tot/8)}</td></tr></tbody>`;
+ document.getElementById('istatPP').textContent=f(tot/8);
+}catch(e){console.warn(e)}}
+renderGastos();
+/* menú lateral */
+const drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),mbtn=document.getElementById('menuBtn');
+function menu(open){drawer.classList.toggle('open',open);drawer.setAttribute('aria-hidden',!open);scrim.hidden=!open;mbtn.setAttribute('aria-expanded',open);if(open)drawer.querySelector('a').focus()}
+mbtn.onclick=()=>menu(true);scrim.onclick=()=>menu(false);document.getElementById('drawerX').onclick=()=>menu(false);
+addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer.classList.contains('open'))menu(false)});
+function go(k){menu(false);if(k==='portada'){document.getElementById('portada').scrollIntoView({behavior:'smooth'});return}
+ showPage(k);try{history.replaceState(null,'','#'+k)}catch(e){}document.getElementById('app').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-go]');if(!a)return;e.preventDefault();go(a.dataset.go)});
+document.querySelectorAll('.vchoose button').forEach(b=>b.onclick=()=>{const v=b.dataset.ver;const vb=document.querySelector('.vbtn[data-v="'+v+'"]');if(vb&&vb.getAttribute('aria-pressed')!=='true')vb.click();go('itinerario')});
+document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>renderGastos()));
+select(cur,false);
 
 
 /* deslizar y visor a pantalla completa */
@@ -725,3 +909,4 @@ lbEl.addEventListener('click',e=>{if(e.target===lbEl)lbClose()});
 swipe(document.getElementById('lbi'),()=>lbStep(1),()=>lbStep(-1));
 addEventListener('keydown',e=>{if(lbEl.hidden)return;if(e.key==='Escape')lbClose();else if(e.key==='ArrowRight')lbStep(1);else if(e.key==='ArrowLeft')lbStep(-1)});
 </script>
+<script type="module" src="js/hero.js"></script>
