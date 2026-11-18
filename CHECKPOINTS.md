@@ -8,3 +8,11 @@ El primero es una rama y no un tag (desde la sesión donde se creó no se podía
 |---|---|---|
 | 2026-11-17 | `checkpoint/00-antes-del-rediseno` (rama) | Web actual antes del rediseño: un solo index.html, itinerario original y versión con Frey y plan B, casas (San Martín y Bariloche confirmadas, Posta de los Colonos como primera opción en La Angostura), autos, Windguru. |
 | 2026-11-17 | rama `relato` (primera versión) | Portada con el Tronador en 3D (relieve real) y cámara tipo dron con el scroll, pantallazo del viaje, botones de itinerario original y nuevo, menú lateral (itinerario, casas, autos, gastos), casa y trayecto de cada día con mapa con relieve, página de gastos, fotos de Unsplash. |
+
+## Noche del 18/11/2026 (modo autónomo)
+
+Los tags no se pueden subir desde este entorno (el proxy corta el push), así que **todos los checkpoints de esta noche son ramas** con el nombre del tag. Para volver o probar uno: `git switch -c prueba-X origin/checkpoint/NN-...` y abrir su preview en Vercel.
+
+| Fecha | Checkpoint (rama) | Qué tiene |
+|---|---|---|
+| 2026-11-18 | `checkpoint/01-antes-orden` | Estado de `relato` al empezar la noche (commit 78273c5): primera versión del rediseño. |

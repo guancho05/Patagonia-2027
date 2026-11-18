@@ -2,18 +2,24 @@
 
 Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aires, San Martín de los Andes, Lago Falkner, Villa Traful, Refugio Frey, Villa La Angostura, Refugio Otto Meiling en el Tronador, Bariloche). La usan los 8 desde el celular para ver el plan.
 
-## Cómo está hoy
-- Un solo `index.html` (~100 KB): HTML + CSS + JS vanilla inline, sin build ni dependencias.
-- Deploy: Vercel publica `main` de `guancho05/Patagonia-2027` tal cual (sitio estático). **El link de Vercel lo usan los amigos: no romper `main`.** Trabajar en una rama y revisar en el preview de Vercel antes de mergear.
-- Fotos: en Cloudinary, cloud `wdfk5jij`, URL `https://res.cloudinary.com/wdfk5jij/image/upload/f_auto,q_auto/<id>`. Para tamaños usar transformaciones (`w_1600`, `c_fill`, etc.) en vez de subir copias. Algunas fotos de casas se cargan directo de Airbnb/Booking.
-- Páginas (tabs con hash): `#itinerario`, `#autos`, `#casas` (`showPage`).
-- Datos (en el `<script>`):
-  - `DAYS_A` / `BASES_A`: itinerario original. `DAYS_B` / `BASES_B`: versión "Con Frey y plan B" (por defecto la que coincide con las reservas). Selector `.vbtn`, guardado en `localStorage` `pat-ver`.
-  - Cada día: `{d, w, k (casa|camp|ref|fly), t, s, lead, st, a, f, l?, sc, p?}`. `sc` = escena del paisaje dibujado en canvas (`draw(sc)`), que es el fallback cuando no hay foto. `p` = índice de foto en `PH`/`CR`.
-  - `CITIES` (casas por lugar, con puntajes, pros/contras y fotos), `CONF` (casas confirmadas: San Martín y Bariloche; el resto de ese lugar se muestra tachado), `COMBOS`.
+## Cómo está hoy (rama `relato`)
+- `index.html` (~130 KB): HTML + CSS + JS vanilla inline, sin build. Contiene todos los datos del viaje y las páginas.
+- `js/hero.js`: portada 3D del Tronador (ES module, carga diferida). Usa `vendor/three.module.min.js` (three.js servido desde el repo, licencia en `vendor/three-LICENSE.txt`). El relieve sale de datos de elevación (ver `tools/` y `data/` si existen). Si no hay WebGL2, hay `prefers-reduced-motion`, Save-Data o poca memoria, muestra una foto fija (`.hero.static`).
+- Deploy: Vercel publica `main` de `guancho05/Patagonia-2027` tal cual (sitio estático). **El link de Vercel lo usan los amigos: no romper `main`.** Las ramas tienen su preview en Vercel.
+- Fotos: del itinerario, de Unsplash (`UNS(id,w)`) o Wikimedia en Cloudinary (`PH`/`CR`); de las casas, Cloudinary (cloud `wdfk5jij`, `https://res.cloudinary.com/wdfk5jij/image/upload/f_auto,q_auto/<id>`) o directo de Airbnb/Booking. Para tamaños, transformaciones (`w_1600`, `c_fill`) en vez de copias.
+- Estructura de la página, de arriba abajo:
+  1. Portada (`#hero`): canvas 3D con cámara tipo dron que avanza con el scroll y vuelve al subir; marcador del Refugio Otto Meiling.
+  2. Pantallazo (`#portada`): datos del viaje, mosaico de fotos y botones de itinerario original / nuevo (`.vchoose`).
+  3. Plan (`#app`): vistas `#itinerario`, `#casas`, `#autos`, `#gastos` (y las que se sumen), cambiadas con `showPage(k)` y el menú lateral (`#drawer`, botón `#menuBtn`).
+- Datos (en el `<script>` de `index.html`):
+  - `DAYS_A` / `BASES_A`: itinerario original. `DAYS_B` / `BASES_B`: itinerario nuevo (Frey + plan B para el Meiling), por defecto; acá van los cambios. Selector `.vbtn`, guardado en `localStorage` `pat-ver`.
+  - Cada día: `{d, w, k (casa|camp|ref|fly), t, s, lead, st, a, f, l?, sc, p?}`. `sc` = escena dibujada en canvas (`draw(sc)`), fallback sin foto. `p` = índice de foto en `PH`/`CR`.
+  - `STAY` (casa de cada base por versión), `OTHER` (campings y refugios), `LEGS` (trayecto de cada día: origen, destino, tiempo, km, vía; mapa embebido de Google con relieve).
+  - `CITIES` (casas por lugar, con puntajes, pros/contras y fotos), `CONF` (confirmadas: San Martín y Bariloche; el resto de ese lugar va tachado), `COMBOS`.
+  - Gastos: `renderGastos()` arma la tabla desde autos, casas y la lista de gastos "a cargar".
   - `localStorage`: `pat-day`, `pat-ver`, `pat-casa`, `pat-page`. Siempre envuelto en try/catch.
-- Fuentes actuales: Big Shoulders Display, Atkinson Hyperlegible, JetBrains Mono (Google Fonts).
-- Modo claro/oscuro con tokens en `:root`.
+- Investigaciones y decisiones: `docs/investigacion-estetica.md`, `docs/investigacion-pesca.md`, `docs/informe-noche.md`. Capturas en `docs/capturas/<etapa>/`.
+- Modo claro/oscuro con tokens en `:root` (`prefers-color-scheme` y `data-theme`).
 
 ## Reglas
 - Todo el texto visible en español rioplatense, con tildes y ñ. `<meta charset="utf-8">` siempre.
@@ -22,11 +28,16 @@ Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aire
 - Sin paso de build salvo que se justifique en el plan: preferir ES modules desde CDN con versiones fijas (importmap).
 - No perder funcionalidades existentes (dos versiones del itinerario, casas, autos, links a Windguru, Google Maps, Booking/Airbnb).
 - Estética "marca outdoor" propia: no usar nombre, logo, tipografías propietarias ni layouts copiados de Patagonia Inc. ni de otra marca.
-- Antes de programar: mostrar un plan y esperar aprobación.
+- Antes de programar: mostrar un plan y esperar aprobación (salvo que el pedido diga explícitamente que se trabaja en modo autónomo; en ese caso el plan va en `docs/informe-noche.md`).
+- **Contenido (regla permanente):**
+  - Solo información útil del viaje: fechas, lugares, horarios, distancias, precios, reservas y qué se hace cada día, en una o dos frases concretas.
+  - Nada de relleno, slogans ni llamados del tipo "Bajá para volar".
+  - Las actividades se van a ir definiendo: no inventar detalles. Lo que no está confirmado se marca "a confirmar".
+  - Todo dato de la realidad (reglamentos, temporadas, precios, horarios) con fuente y link; si no se pudo verificar, "a confirmar".
 
 ## Checkpoints (para poder volver atrás)
 - Commits chicos y frecuentes, con mensajes en español que digan qué cambió.
-- Antes de empezar cada paso de `docs/prompts-claude-code.md`, crear un tag con el estado actual: `checkpoint/NN-antes-<paso>` (ej. `checkpoint/02-antes-tronador-3d`). Al terminar el paso y con mi OK, otro tag `checkpoint/NN-<paso>-listo`. Subir los tags (`git push origin --tags`).
+- Antes de empezar cada paso de `docs/prompts-claude-code.md`, crear un tag con el estado actual: `checkpoint/NN-antes-<paso>` (ej. `checkpoint/02-antes-tronador-3d`). Al terminar el paso y con mi OK, otro tag `checkpoint/NN-<paso>-listo`. Subir los tags (`git push origin --tags`). Si el entorno no deja subir tags (pasa en las sesiones en la nube), crear ramas con el mismo nombre (`git push origin HEAD:refs/heads/checkpoint/NN-...`) y aclararlo en `CHECKPOINTS.md`.
 - Mantener `CHECKPOINTS.md` con una línea por tag: fecha, tag, qué tiene esa versión y el link al preview de Vercel si existe.
 - Si pido volver a una versión: mostrarme la lista de checkpoints, confirmar cuál, y volver con un commit nuevo que restaure ese estado (`git revert` o `git checkout <tag> -- .` + commit). No usar `git reset --hard` ni `push --force` sobre `main` ni sobre ramas compartidas.
 - Para probar una versión vieja sin tocar nada: crear una rama desde el tag (`git switch -c prueba-<tag> <tag>`) y abrir su preview en Vercel.
