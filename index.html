@@ -606,6 +606,13 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .stage .pin.lago b{font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:.02em;text-transform:none}
 @media (max-width:640px){.stage .pin.sm{display:block}.stage .pin.sm:not(.lago){display:none}.stage .pin.lago b{font-size:12px}}
 @media (prefers-reduced-motion:reduce){.stage .pin .tr{transition:none}}
+/* opcional Meiling */
+.opt{padding:14px 16px;border:1px dashed var(--violeta);border-radius:2px;background:var(--hoja)}
+.opt h3{display:inline-block;margin:0 0 8px;padding:3px 8px;border-radius:2px;background:var(--violeta);color:#fff;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.opt p{margin:0 0 8px;font-size:15px}
+.opt dl{margin:0 0 10px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.opt dt{font-family:var(--mono);font-size:12px;color:var(--tinta-2);padding-top:2px}.opt dd{margin:0}
+.base.opc i{border-style:dashed}.base.opc{opacity:.8}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
@@ -646,16 +653,16 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <figure class="mapa"><div class="mapa-svg" data-src="data/mapa-ruta.svg" aria-busy="true"></div><figcaption>Ruta del itinerario nuevo, en orden. Trazado recto entre paradas: tiempos y km reales en cada día. Lagos: © OpenStreetMap; países: Natural Earth.</figcaption></figure>
   </div>
   <div class="mosaic">
-    <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" style="object-position:58% 64%" loading="lazy"><figcaption><small>5/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" style="object-position:58% 64%" loading="lazy"><figcaption><small>opcional, 6 a 9/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
     <figure><img src="https://images.unsplash.com/photo-1577931751802-068d861ba420?w=720&h=900&q=80&auto=format&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.76&fp-z=1.9" alt="Lago Lácar, la playa y el muelle de San Martín de los Andes" style="object-position:50% 55%" loading="lazy"><figcaption><small>28/12</small>San Martín de los Andes</figcaption></figure>
     <figure><img src="https://images.unsplash.com/photo-1677282658069-d9bd2e9f59c0?w=900&q=80&auto=format&fit=crop" alt="Pesca en el lago" style="object-position:55% 58%" loading="lazy"><figcaption><small>1 y 2/1</small>Villa Traful</figcaption></figure>
-    <figure><img src="https://images.unsplash.com/photo-1591043345548-c5cd13e2be51?w=900&q=80&auto=format&fit=crop" alt="Laguna entre rocas" style="object-position:48% 50%" loading="lazy"><figcaption><small>3/1</small>Refugio Frey</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1591043345548-c5cd13e2be51?w=900&q=80&auto=format&fit=crop" alt="Laguna entre rocas" style="object-position:48% 50%" loading="lazy"><figcaption><small>5/1</small>Refugio Frey</figcaption></figure>
     <figure><img src="https://images.unsplash.com/photo-1575819453111-abb276cd4973?w=900&q=80&auto=format&fit=crop" alt="Lagos de Bariloche desde la altura" style="object-position:45% 62%" loading="lazy"><figcaption><small>6 al 10/1</small>Bariloche</figcaption></figure>
   </div>
   <div class="intro-in">
     <div class="vchoose">
       <button type="button" data-ver="a"><b>Itinerario original</b><span>Sin Frey. 3 noches en La Angostura, Meiling el 6/1, Bariloche del 7 al 10/1.</span></button>
-      <button type="button" class="new" data-ver="b"><b>Itinerario nuevo</b><span>Frey el 3/1, Meiling el 5/1 si hay clima, Bariloche del 6 al 10/1 (coincide con las reservas).</span></button>
+      <button type="button" class="new" data-ver="b"><b>Itinerario nuevo</b><span>La Angostura 3 y 4/1, Frey el 5/1, Bariloche del 6 al 10/1 y Meiling opcional.</span></button>
     </div>
   </div>
 </section>
@@ -693,6 +700,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
         <div id="stay"></div>
         <div class="leg" id="leg" hidden></div>
         <div class="fish" id="fish" hidden></div>
+        <div class="opt" id="opt" hidden></div>
         <ul class="acts" id="acts"></ul>
         <div class="links" id="links"></div>
         <div class="nav"><button id="prev">← Día anterior</button><button id="next">Día siguiente →</button></div>
@@ -935,7 +943,7 @@ const CR=["","Falk2, CC BY-SA 4.0","Gervacio Rosales, CC BY 3.0","Claudio Elias,
 const BASES_A=[
  {n:"Buenos Aires",e:"1 noche corta",d:0},{n:"San Martín",e:"2 noches",d:1},{n:"Lago Falkner",e:"2 · Año Nuevo",d:3},{n:"Villa Traful",e:"2 noches",d:5},
  {n:"La Angostura",e:"3 noches",d:7},{n:"Otto Meiling",e:"1 · 2.000 m",d:10},{n:"Bariloche",e:"3 noches",d:11}];
-const ITIN_ACT="2026-11-18"; // fecha del último cambio en DAYS_A / DAYS_B (año-mes-día)
+const ITIN_ACT="2026-11-19"; // fecha del último cambio en DAYS_A / DAYS_B (año-mes-día)
 const KL={casa:"Casa",camp:"Camping",ref:"Refugio",fly:"Vuelo"};
 const KC={casa:"var(--casa)",camp:"var(--camp)",ref:"var(--ref)",fly:"var(--fly)"};
 const DAYS_A=[
@@ -1021,51 +1029,55 @@ const WG_FREY=["Windguru · Frey (Refugio Lynch, Catedral)","https://www.windgur
 DAYS_A[10].l=[WG_MEILING,["Refugio Otto Meiling","https://refugiomeiling.com/"]];
 const cp=(i,o)=>Object.assign({},DAYS_A[i],{p:i},o);
 const DAYS_B=[0,1,2,3,4,5,6].map(i=>cp(i)).concat([
- {d:"3/1",w:"Dom",k:"ref",t:"Refugio Frey",s:"Trekking y carpa en la laguna Toncek",
-  lead:"Salida temprano de Traful a Villa Catedral (≈2 h 30 de manejo). Sendero al Refugio Frey: ≈10 km y 750 m de desnivel hasta la laguna Toncek. Noche en carpa junto al refugio; los autos quedan en el estacionamiento de Catedral.",
+ cp(7),
+ {d:"4/1",w:"Lun",k:"casa",t:"Día en La Angostura",s:"Filo del Belvedere, kayak o Bosque de Arrayanes",
+  lead:"Día en La Angostura con las actividades de la versión original, a elegir: Filo del Cerro Belvedere (≈3 h de subida, ≈800 m de desnivel), kayak en el Nahuel Huapi o Bosque de Arrayanes (12 km de ida, vuelta en barco).",
+  st:[["Filo del Belvedere","≈3 h · ≈800 m"],["Arrayanes","12 km ida · vuelta en barco"],["Kayak","Nahuel Huapi"]],
+  a:[["8:30","Filo del Belvedere: inicio del sendero, marcas rojas en los troncos"],["11:30","Filo y cruz de la cumbre; bajada y Lago Espejo"],["Mañana","O kayak en el Nahuel Huapi"],["Tarde","O Bosque de Arrayanes (vuelta en barco)"],["Noche","Mochilas para el Frey"]],
+  f:["Filo Cerro Belvedere","Bosque de Arrayanes Quetrihué","Villa La Angostura kayak"],sc:{type:"forest",sky:"day",seed:73},p:9},
+ {d:"5/1",w:"Mar",k:"ref",t:"Refugio Frey",s:"Trekking y carpa en la laguna Toncek",
+  lead:"Salida de La Angostura a Villa Catedral (1 h 56, 102 km). Sendero al Refugio Frey: ≈10 km y 750 m de desnivel hasta la laguna Toncek. Noche en carpa junto al refugio; los autos quedan en el estacionamiento de Catedral.",
   st:[["Sendero","≈10 km"],["Desnivel","≈750 m"],["Dificultad","Media"]],
-  a:[["7:30","Desarme del camping y salida de Traful"],["10:00","Villa Catedral: autos en el estacionamiento"],["10:30","Inicio del sendero al Frey"],["≈14:30","Refugio Frey y laguna Toncek"],["Tarde","Armar carpas; el que quiera, sube a la laguna Schmoll"],["Noche","Cena en el refugio o en las carpas"]],
+  a:[["7:30","Salida de La Angostura"],["10:00","Villa Catedral: autos en el estacionamiento"],["10:30","Inicio del sendero al Frey"],["≈14:30","Refugio Frey y laguna Toncek"],["Tarde","Armar carpas; el que quiera, sube a la laguna Schmoll"],["Noche","Cena en el refugio o en las carpas"]],
   f:["Refugio Frey laguna Toncek","Agujas Frey Cerro Catedral"],
   l:[WG_FREY,["Registro de trekking","https://nahuelhuapi.gov.ar/refugio-frey-desde-villa-catedral/"],["Refugio Frey","https://refugiofreybariloche.com/"]],
   sc:{type:"peak",sky:"dusk",seed:71},p:null},
- cp(7,{d:"4/1",w:"Lun",t:"Bajada del Frey y La Angostura",s:"Bajada, ruta y atardecer en el Correntoso",
-  lead:"Bajada del Frey (≈3 h), autos en Catedral y 102 km a La Angostura. A la tarde, mirador Belvedere y cascada Inacayal; al atardecer, pesca en el Correntoso. A la noche se decide el Meiling según el pronóstico.",
-  st:[["Bajada","≈3 h"],["Catedral → La Angostura","102 km · 1 h 56"],["Casa","1 noche (2 si hay plan B)"]],
-  a:[["8:00","Desayuno y bajada"],["11:30","Villa Catedral, autos y salida"],["13:30","La Angostura: casa y almuerzo"],["16:00","Mirador Belvedere + Cascada Inacayal"],["Atardecer","Desembocadura del Correntoso"],["Noche","Pronóstico y mochilas para el Meiling"]],
-  l:[WG_MEILING]}),
- cp(10,{d:"5/1",w:"Mar",t:"Otto Meiling, si hay clima",s:"Carpa o adentro del refugio · plan B si llueve",
-  lead:"Si el pronóstico da bien: salida de La Angostura 8:30, camino a Pampa Linda en la ventana de subida (10:30 a 14) y 13 km hasta el refugio. Noche en carpa o adentro del refugio. Con mal clima no se sube y se elige un plan B.",
-  st:[["Subida","13 km · ≈1.050 m"],["Noche","Carpa o refugio"],["Se decide","La noche del 4/1"]],
-  a:[["8:30","Salida de La Angostura"],["10:30","Camino a Pampa Linda (se sube de 10:30 a 14)"],["≈13:00","Pampa Linda, inicio del sendero"],["≈18:00","Refugio Otto Meiling"],["Plan B 1","Mal clima: una noche más en La Angostura, si la casa está libre (Arrayanes y kayak)"],["Plan B 2","Volver a acampar a Traful, en otro camping"],["Plan B 3","Adelantar un día la casa de Bariloche, si está libre"]],
-  l:[WG_MEILING,["Refugio Otto Meiling","https://refugiomeiling.com/"]]}),
- cp(11,{d:"6/1",w:"Mié"}),
- cp(13,{d:"7/1",w:"Jue"}),
- cp(12,{d:"8/1",w:"Vie"}),
+ {d:"6/1",w:"Mié",k:"casa",t:"Bajada del Frey y Bariloche",s:"Bajada (≈3 h) y casa de Bariloche",
+  lead:"Bajada del Frey (≈3 h) y autos en Villa Catedral. Llegada a la casa de Bariloche, confirmada del 6 al 10/1.",
+  st:[["Bajada","≈3 h"],["Catedral → Bariloche","a confirmar"],["Casa","Bariloche, 6 al 10/1"]],
+  a:[["8:00","Desayuno y bajada"],["11:30","Villa Catedral, autos y salida"],["Tarde","Casa de Bariloche"]],
+  f:["Refugio Frey bajada","Bariloche"],sc:{type:"lake",sky:"dusk",seed:101},p:null,opt:"la llegada tranquila a Bariloche (el mismo día que la bajada del Frey: justo con la ventana de subida de 10:30 a 14)"},
+ {d:"7/1",w:"Jue",k:"casa",t:"Circuito Chico en bici",s:"Llao Llao y Bahía López en bici (≈4 h)",
+  lead:"Circuito Chico en bici por Llao Llao y Bahía López (≈4 h). Almuerzo en Colonia Suiza.",
+  st:[["Bici","≈4 h"],["Almuerzo","Colonia Suiza"]],
+  a:[["13:45","Almuerzo en Colonia Suiza"],["15:15","Circuito Chico en bici"]],
+  f:["Circuito Chico Bariloche Llao Llao"],sc:{type:"lake",sky:"day",seed:107},p:null,opt:"el Circuito Chico en bici"},
+ cp(12,{d:"8/1",w:"Vie",opt:"el rafting en el Manso"}),
  {d:"9/1",w:"Sáb",k:"casa",t:"Día libre en Bariloche",s:"Pesca, playa o Cerro Otto",
   lead:"Día sin agenda fija: pesca en el Nahuel Huapi o el Gutiérrez, Playa Bonita o Cerro Otto. A la noche, valijas: el 10/1 se sale a las 6:30.",
   st:[["Agenda","Libre"],["Opciones","Pesca · playa · Cerro Otto"],["Salida 10/1","6:30"]],
   a:[["Mañana","Pesca o Playa Bonita"],["Tarde","Cerro Otto o compras en el centro"],["Noche","Cena de despedida y valijas"]],
-  f:["Playa Bonita Bariloche","Cerro Otto Bariloche"],sc:{type:"lake",sky:"day",seed:113},p:null},
+  f:["Playa Bonita Bariloche","Cerro Otto Bariloche"],sc:{type:"lake",sky:"day",seed:113},p:null,opt:"el día libre (solo para bajar, si se subió el 8/1)"},
  cp(14)]);
 const BASES_B=[
  {n:"Buenos Aires",e:"1 noche corta",d:0},{n:"San Martín",e:"2 noches",d:1},{n:"Lago Falkner",e:"2 · Año Nuevo",d:3},{n:"Villa Traful",e:"2 noches",d:5},
- {n:"Refugio Frey",e:"1 · carpa",d:7},{n:"La Angostura",e:"1 noche",d:8},{n:"Otto Meiling",e:"1 · si hay clima",d:9},{n:"Bariloche",e:"4 noches",d:10}];
-const VNOTE={a:"",b:"Frey el 3/1, una noche en La Angostura y el Meiling el 5/1 si el clima acompaña. Coincide con la casa de Bariloche reservada del 6 al 10/1."};
-const PHOTO={"Buenos Aires":"1638154642608-da44b991fb6b","San Martín de los Andes":"1577931751802-068d861ba420","Playa Yuco y Pozones del Caleufú":"1551494394-bef2583a09ce","Ruta de los 7 Lagos hasta el Falkner":"1664349976193-0b9cb8d74329","Año Nuevo en el Lago Falkner":"1598162461164-5cb059c382c6","Villa Traful":"1677282658035-b22f304341e7","Bosque sumergido":"1677282658069-d9bd2e9f59c0","Villa La Angostura":"1612611155301-ac3e1734c91c","Filo del Cerro Belvedere":"1630548718381-9aed78b3ef81","Kayak y Bosque de Arrayanes":"1630076794428-df2db35c8669","Refugio Otto Meiling":"1597456042783-b23651b782ce","Otto Meiling, si hay clima":"1597456042783-b23651b782ce","Ventisquero Negro y Bariloche":"1699578658501-e57dd78b25a0","Rafting en el río Manso":"1737466614751-373adf598fef","Filo de las Cabras y Circuito Chico":"1572084511042-5bf85cda87b2","Refugio Frey":"1591043345548-c5cd13e2be51","Bajada del Frey y La Angostura":"1612611155301-ac3e1734c91c","Día libre en Bariloche":"1598162480222-b2c3d92548d5"};
+ {n:"La Angostura",e:"2 noches",d:7},{n:"Refugio Frey",e:"1 · carpa",d:9},{n:"Bariloche",e:"4 noches",d:10},{n:"Otto Meiling",e:"opcional · 6 a 9/1",d:10,o:1}];
+const VNOTE={a:"",b:"La Angostura el 3 y 4/1, Refugio Frey el 5/1 y casa de Bariloche del 6 al 10/1 (confirmada); el Otto Meiling es opcional entre el 6 y el 9/1, solo con muy buen pronóstico."};
+const PHOTO={"Buenos Aires":"1638154642608-da44b991fb6b","San Martín de los Andes":"1577931751802-068d861ba420","Playa Yuco y Pozones del Caleufú":"1551494394-bef2583a09ce","Ruta de los 7 Lagos hasta el Falkner":"1664349976193-0b9cb8d74329","Año Nuevo en el Lago Falkner":"1598162461164-5cb059c382c6","Villa Traful":"1677282658035-b22f304341e7","Bosque sumergido":"1677282658069-d9bd2e9f59c0","Villa La Angostura":"1612611155301-ac3e1734c91c","Filo del Cerro Belvedere":"1630548718381-9aed78b3ef81","Kayak y Bosque de Arrayanes":"1630076794428-df2db35c8669","Refugio Otto Meiling":"1597456042783-b23651b782ce","Otto Meiling, si hay clima":"1597456042783-b23651b782ce","Ventisquero Negro y Bariloche":"1699578658501-e57dd78b25a0","Rafting en el río Manso":"1737466614751-373adf598fef","Filo de las Cabras y Circuito Chico":"1572084511042-5bf85cda87b2","Refugio Frey":"1591043345548-c5cd13e2be51","Bajada del Frey y La Angostura":"1612611155301-ac3e1734c91c","Día libre en Bariloche":"1598162480222-b2c3d92548d5","Circuito Chico en bici":"1575819453111-abb276cd4973","Bajada del Frey y Bariloche":"1591043345548-c5cd13e2be51"};
 const mobileW=()=>innerWidth<=820?Math.min(1200,Math.round(innerWidth*devicePixelRatio)):1400;
 const UNS=(id,w)=>'https://images.unsplash.com/photo-'+id+'?w='+w+'&q=80&auto=format&fit=crop';
 const LEG=(o,d,t,km,via)=>({o,d,t,km,via});
 const LEGS={
  a:{"28/12":LEG("Aeropuerto Chapelco","San Martín de los Andes","30 min","23 km","RN40"),"30/12":LEG("San Martín de los Andes","Lago Falkner","51 min","48 km","RN40, Ruta de los 7 Lagos"),"1/1":LEG("Lago Falkner","Villa Traful","1 h 19 min","55 km","RN40 y RP65"),"3/1":LEG("Villa Traful","Villa La Angostura","1 h 26 min","57 km","RP65 y RN40"),"6/1":LEG("Villa La Angostura","Pampa Linda","3 h 15 min","157 km","RN40 y el camino de Pampa Linda (horarios)"),"7/1":LEG("Pampa Linda","San Carlos de Bariloche","1 h 59 min","73 km","RP82 y RN40"),"10/1":LEG("San Carlos de Bariloche","Aeropuerto Chapelco","3 h 23 min","241 km","RN237 y RN40")},
- b:{"28/12":LEG("Aeropuerto Chapelco","San Martín de los Andes","30 min","23 km","RN40"),"30/12":LEG("San Martín de los Andes","Lago Falkner","51 min","48 km","RN40, Ruta de los 7 Lagos"),"1/1":LEG("Lago Falkner","Villa Traful","1 h 19 min","55 km","RN40 y RP65"),"3/1":LEG("Villa Traful","Villa Catedral","2 h 31 min","118 km","RP65 y RN237"),"4/1":LEG("Villa Catedral","Villa La Angostura","1 h 56 min","102 km","RN40"),"5/1":LEG("Villa La Angostura","Pampa Linda","3 h 15 min","157 km","RN40 y el camino de Pampa Linda (horarios)"),"6/1":LEG("Pampa Linda","San Carlos de Bariloche","1 h 59 min","73 km","RP82 y RN40"),"10/1":LEG("San Carlos de Bariloche","Aeropuerto Chapelco","3 h 23 min","241 km","RN237 y RN40")}};
+ b:{"28/12":LEG("Aeropuerto Chapelco","San Martín de los Andes","30 min","23 km","RN40"),"30/12":LEG("San Martín de los Andes","Lago Falkner","51 min","48 km","RN40, Ruta de los 7 Lagos"),"1/1":LEG("Lago Falkner","Villa Traful","1 h 19 min","55 km","RN40 y RP65"),"3/1":LEG("Villa Traful","Villa La Angostura","1 h 26 min","57 km","RP65 y RN40"),"5/1":LEG("Villa La Angostura","Villa Catedral","1 h 56 min","102 km","RN40"),"6/1":LEG("Villa Catedral","San Carlos de Bariloche","a confirmar","a confirmar","a confirmar"),"10/1":LEG("San Carlos de Bariloche","Aeropuerto Chapelco","3 h 23 min","241 km","RN237 y RN40")}};
 const QP={"Lago Falkner":"Camping Nuevo Falkner, Neuquén","Villa Catedral":"Villa Catedral, San Carlos de Bariloche","Pampa Linda":"Pampa Linda, Río Negro","Aeropuerto Chapelco":"Aeropuerto Chapelco, Neuquén"};
 const qp=n=>encodeURIComponent(QP[n]||n+', Argentina');
 function renderLeg(d){const el=document.getElementById('leg');const L=LEGS[ver][d.d];if(!L){el.innerHTML='';el.hidden=true;return}el.hidden=false;
- el.innerHTML=`<h3>Trayecto del día</h3><div class="rt">${L.o} → ${L.d}</div><div class="nums"><span><b>${L.t}</b> manejando</span><span><b>${L.km}</b></span><span>por ${L.via}</span></div>`+
+ el.innerHTML=`<h3>Trayecto del día</h3><div class="rt">${L.o} → ${L.d}</div><div class="nums">${L.t==='a confirmar'?'<span><b>Tiempo, km y ruta: a confirmar</b></span>':`<span><b>${L.t}</b> manejando</span><span><b>${L.km}</b></span><span>por ${L.via}</span>`}</div>`+
  `<iframe title="Mapa con relieve: ${L.o} a ${L.d}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?saddr=${qp(L.o)}&daddr=${qp(L.d)}&t=p&hl=es&output=embed"></iframe>`+
  `<p class="src">Tiempo y distancia de Google Maps, sin tráfico ni paradas. <a href="https://www.google.com/maps/dir/?api=1&origin=${qp(L.o)}&destination=${qp(L.d)}&travelmode=driving" target="_blank" rel="noopener">Abrir en Google Maps ↗</a></p>`}
-const STAY={a:{"San Martín":"Casa en Las Pendientes","La Angostura":"Cuncumen","Bariloche":"Dúplex con vista al lago"},b:{"San Martín":"Casa en Las Pendientes","La Angostura":"Hostería Posta de los Colonos","Bariloche":"Dúplex con vista al lago"}};
-const OTHER={"Buenos Aires":["Airbnb cerca del puerto","A reservar"],"Lago Falkner":["Camping Lago Falkner","Carpa · a cargar"],"Villa Traful":["Camping Paloma Araucana","Carpa · a cargar"],"Refugio Frey":["Carpa junto al Refugio Frey","Refugio · a cargar"],"Otto Meiling":["Refugio Otto Meiling (carpa o adentro)","Refugio · a cargar"]};
+const STAY={a:{"San Martín":"Casa en Las Pendientes","La Angostura":"Cuncumen","Bariloche":"Dúplex con vista al lago"},b:{"San Martín":"Casa en Las Pendientes","Bariloche":"Dúplex con vista al lago"}};
+const OTHER={"Buenos Aires":["Airbnb cerca del puerto","A reservar"],"Lago Falkner":["Camping Lago Falkner","Carpa · a cargar"],"Villa Traful":["Camping Paloma Araucana","Carpa · a cargar"],"Refugio Frey":["Carpa junto al Refugio Frey","Refugio · a cargar"],"Otto Meiling":["Refugio Otto Meiling (carpa o adentro)","Refugio · a cargar"],"La Angostura":["Casa en La Angostura (3 y 4/1)","A confirmar"]};
 function renderStay(i,d){const el=document.getElementById('stay');try{
  if(d.k==='fly'){el.innerHTML='';return}
  const bi=baseOf(i);const bn=bi<0?'':BASES[bi].n;const hn=STAY[ver][bn];
@@ -1085,7 +1097,7 @@ cur=Math.min(DAYS.length-1,Math.max(0,parseInt(load('pat-day','0'))||0));
 function build(){route.innerHTML='';tl.innerHTML='';
 document.getElementById('vnote').textContent=VNOTE[ver];
 document.querySelectorAll('.vbtn').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===ver));
-BASES.forEach((b,i)=>{const el=document.createElement('button');el.className='base';el.dataset.d=b.d;
+BASES.forEach((b,i)=>{const el=document.createElement('button');el.className='base'+(b.o?' opc':'');el.dataset.d=b.d;
  el.innerHTML=`<i>${i+1}</i><span>${b.n}</span><em>${b.e}</em>`;el.onclick=()=>select(b.d,true);route.appendChild(el)});
 DAYS.forEach((d,i)=>{const li=document.createElement('li');const b=document.createElement('button');b.className='day';b.dataset.i=i;
  b.innerHTML=`<span class="d">${d.d}</span><span class="pin k-${d.k}"></span><span><span class="t">${d.t}</span><br><span class="s">${d.s}</span></span>`;
@@ -1101,7 +1113,7 @@ document.querySelectorAll('#view-itin .chip').forEach(c=>c.onclick=()=>{filter=c
 document.getElementById('prev').onclick=()=>select(cur-1,true);
 document.getElementById('next').onclick=()=>select(cur+1,true);
 
-function baseOf(i){let b=0;BASES.forEach((x,j)=>{if(i>=x.d)b=j});return i===DAYS.length-1?-1:b}
+function baseOf(i){let b=0;BASES.forEach((x,j)=>{if(!x.o&&i>=x.d)b=j});return i===DAYS.length-1?-1:b}
 function select(i,user){if(i<0||i>=DAYS.length)return;cur=i;save('pat-day',i);const d=DAYS[i];
  tl.querySelectorAll('.day').forEach(x=>x.classList.toggle('on',+x.dataset.i===i));
  const bi=baseOf(i);document.querySelectorAll('.base').forEach((x,j)=>x.classList.toggle('on',j===bi));const ob=route.querySelector('.base.on');if(ob)route.scrollTo({left:ob.offsetLeft-route.clientWidth/2+ob.clientWidth/2,behavior:user?'smooth':'auto'});
@@ -1110,7 +1122,7 @@ function select(i,user){if(i<0||i>=DAYS.length)return;cur=i;save('pat-day',i);co
  document.getElementById('lead').textContent=d.lead;
  document.getElementById('stats').innerHTML=d.st.map(s=>`<div class="stat"><b>${s[0]}</b>${s[1]}</div>`).join('');
  document.getElementById('acts').innerHTML=d.a.map(a=>`<li><span class="h">${a[0]}</span><span>${a[1]}</span></li>`).join('');
- renderStay(i,d);renderLeg(d);renderFish(d);document.getElementById('links').innerHTML=(d.l||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('');
+ renderStay(i,d);renderLeg(d);renderFish(d);renderOpt(d);document.getElementById('links').innerHTML=(d.l||[]).map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]} ↗</a>`).join('');
  document.getElementById('prev').disabled=i===0;document.getElementById('next').disabled=i===DAYS.length-1;
  const cv=document.getElementById('scene');cv.setAttribute('aria-label','Ilustración: '+d.t);
  const uid=PHOTO[d.t];const pi=d.p===undefined?i:d.p;const pw=document.getElementById('phwrap');if(uid||(pi!=null&&PH[pi])){document.getElementById('photo').onerror=()=>{pw.hidden=true;cv.hidden=false;draw(d.sc)};document.getElementById('photo').src=uid?UNS(uid,mobileW()):PH[pi];document.getElementById('photo').alt='Foto: '+d.t;document.getElementById('cred').textContent=d.t+' · '+d.w+' '+d.d+(d.d.endsWith('/12')?'/2026':'/2027')+' · '+(uid?'Foto: Unsplash':'Foto: '+CR[pi]+' · Wikimedia Commons');pw.hidden=false;cv.hidden=true}else{pw.hidden=true;cv.hidden=false}
@@ -1261,9 +1273,9 @@ function renderGastos(){try{
  const vh=STAY[ver]["La Angostura"],H=n=>{for(const c of CITIES)for(const h of c.h)if(h.n===n)return h};
  const st=h=>h.star&&h.star.startsWith('Confirmada')?['Confirmada','ok']:h.star&&h.star.startsWith('Primera')?['Primera opción','op']:['Elegida',''];
  const rows=[["Autos: 2 Citroën Basalt (Hertz, 13 días, seguro completo)",["Cotizado",""],1810.88]];
- [["San Martín","Casa en Las Pendientes"],["La Angostura",vh],["Bariloche","Dúplex con vista al lago"]].forEach(([l,n])=>{const h=H(n);rows.push(["Casa "+l+": "+n,st(h),h.tot])});
+ [["San Martín","Casa en Las Pendientes"],["La Angostura",vh],["Bariloche","Dúplex con vista al lago"]].forEach(([l,n])=>{if(!n){rows.push(["Casa "+l+" (3 y 4/1): a confirmar",["A confirmar",""],null]);return}const h=H(n);rows.push(["Casa "+l+": "+n,st(h),h.tot])});
  rows.push(["Permisos de pesca: 8 × 10 días país limítrofe (ARS 50.000 c/u, dólar BNA del 17/11/2026). No se suma al total",["Opcional",""],Math.round(8*50000/1575),1]);
- ["Vuelos Ezeiza ⇄ Chapelco","Barco Montevideo → Buenos Aires","Airbnb en Buenos Aires","Campings: Falkner y Traful","Refugio Frey","Refugio Otto Meiling","Rafting en el Manso","Nafta","Súper y comida"].forEach(n=>rows.push([n,["A cargar",""],null]));
+ ["Vuelos Ezeiza ⇄ Chapelco","Barco Montevideo → Buenos Aires","Airbnb en Buenos Aires","Campings: Falkner y Traful","Refugio Frey",ver==='b'?"Refugio Otto Meiling (opcional)":"Refugio Otto Meiling","Rafting en el Manso","Nafta","Súper y comida"].forEach(n=>rows.push([n,["A cargar",""],null]));
  const known=rows.filter(r=>r[2]!=null&&!r[3]),tot=known.reduce((a,r)=>a+r[2],0),conf=known.filter(r=>r[1][1]==='ok').reduce((a,r)=>a+r[2],0);
  const f=n=>'USD '+Math.round(n).toLocaleString('es-AR');
  document.getElementById('gver').textContent='Según el itinerario '+(ver==='b'?'nuevo':'original')+'. Cambiá la versión en el Itinerario o en la portada.';
@@ -1285,6 +1297,7 @@ const PZ={
  "Bosque sumergido":{l:"Lago Traful",m:"Spinning o mosca desde la costa",h:"Atardecer, cuando baja el viento",r:"Prohibido pescar a menos de 100 m del bosque sumergido. Salmón encerrado: devolución."},
  "Villa La Angostura":{l:"Río Correntoso · Lago Nahuel Huapi",m:"Correntoso: solo mosca. Spinning: en la costa del Nahuel Huapi, a más de 200 m de la boca",h:"Atardecer",r:"Correntoso: permiso adicional (ARS 12.500), anzuelo sin rebaba y devolución de todo."},
  "Bajada del Frey y La Angostura":{l:"Río Correntoso · Lago Nahuel Huapi",m:"Correntoso: solo mosca. Spinning: en la costa del Nahuel Huapi, a más de 200 m de la boca",h:"Atardecer",r:"Correntoso: permiso adicional (ARS 12.500), anzuelo sin rebaba y devolución de todo."},
+ "Día en La Angostura":{l:"Lago Espejo",m:"Spinning o mosca desde la costa",h:"A la tarde, si se hace el Belvedere",r:"2 truchas por día. Prohibido el trolling."},
  "Filo del Cerro Belvedere":{l:"Lago Espejo",m:"Spinning o mosca desde la costa",h:"A la tarde, después de bajar",r:"2 truchas por día. Prohibido el trolling."},
  "Refugio Frey":{l:"Laguna Toncek",m:"No se pesca",h:"—",r:"No figura en el listado de Parques Nacionales: está cerrada a la pesca.",no:1},
  "Ventisquero Negro y Bariloche":{l:"Río Manso superior (Pampa Linda)",m:"No se pesca",h:"—",r:"El Manso superior está cerrado a la pesca.",no:1},
@@ -1298,9 +1311,9 @@ const SPOTS=[
  ["30 y 31/12","Lago Falkner","PN Nahuel Huapi","Truchas","Spinning o mosca desde la playa; trolling desde el 16/12","2 truchas por día."],
  ["30 y 31/12","Río Villarino (une el Villarino con el Falkner)","PN Nahuel Huapi","Truchas","Spinning o mosca, solo desde la costa","Prohibida toda navegación. 2 truchas por día."],
  ["1 y 2/1","Lago Traful","PN Nahuel Huapi","Trucha arcoíris, salmón encerrado","Spinning o mosca desde la costa; trolling desde bote","Hasta 2 arcoíris menores de 40 cm. Salmón encerrado: devolución. Nada a menos de 100 m del bosque sumergido."],
- ["3/1 (orig.) · 4/1 (nuevo)","Río Correntoso","Neuquén","Trucha arcoíris grande","Solo mosca, vadeando, por turnos","Permiso adicional (ARS 12.500 por día), anzuelo sin rebaba, devolución de todo, prohibido navegar."],
+ ["3/1","Río Correntoso","Neuquén","Trucha arcoíris grande","Solo mosca, vadeando, por turnos","Permiso adicional (ARS 12.500 por día), anzuelo sin rebaba, devolución de todo, prohibido navegar."],
  ["3/1 · 4/1","Lagos Nahuel Huapi y Correntoso","PN Nahuel Huapi","Truchas","Spinning o mosca desde la costa","Nahuel Huapi: 2 truchas. Correntoso: 1. Devolución a menos de 200 m de una boca de río."],
- ["4/1 (orig.)","Lago Espejo","PN Nahuel Huapi","Truchas","Spinning o mosca desde la costa","2 truchas por día. Prohibido el trolling."],
+ ["4/1","Lago Espejo","PN Nahuel Huapi","Truchas","Spinning o mosca desde la costa","2 truchas por día. Prohibido el trolling."],
  ["9/1 (nuevo)","Nahuel Huapi, Gutiérrez y Moreno","PN Nahuel Huapi · Río Negro","Truchas","Spinning desde la costa o trolling guiado","Gutiérrez y Nahuel Huapi: 2 truchas. Moreno: 1 menor de 35 cm; devolución en la unión de los dos Morenos."],
  ["9/1 (nuevo)","Río Limay superior","PN Nahuel Huapi","Truchas","Solo mosca, costa o bote sin motor","Devolución obligatoria. En enero, de 6:00 a 21:30."]];
 const GUIDES=[
@@ -1314,13 +1327,19 @@ function renderPesca(){try{
  document.getElementById('pzGuides').innerHTML='<thead><tr><th>Dónde</th><th>Prestador</th><th>Qué incluye</th><th class="n">Precio</th></tr></thead><tbody>'+GUIDES.map(g=>`<tr><td>${g[0]}</td><td>${g[4]?`<a href="${g[4]}" target="_blank" rel="noopener">${g[1]} ↗</a>`:g[1]}</td><td>${g[2]}</td><td class="n">${g[3]}</td></tr>`).join('')+'</tbody>';
 }catch(e){console.warn(e)}}
 renderPesca();
+/* opcional: Otto Meiling (versión nueva, días 6 a 9/1) */
+function renderOpt(d){const el=document.getElementById('opt');if(!d.opt||ver!=='b'){el.hidden=true;el.innerHTML='';return}el.hidden=false;
+ el.innerHTML=`<h3>Opcional: Otto Meiling</h3><p>Solo con muy buen pronóstico. Son 2 días: se sube y se duerme en el refugio (13 km, +1.050 m desde Pampa Linda) y se baja al día siguiente; la casa de Bariloche se mantiene.</p>`+
+ `<dl><dt>Camino a Pampa Linda</dt><dd>Se sube de 10:30 a 14 y se baja desde las 16</dd><dt>Bariloche ⇄ Pampa Linda</dt><dd>1 h 59 · 73 km por RP82 y RN40</dd><dt>Reemplaza</dt><dd>${d.opt}</dd></dl>`+
+ `<div class="links"><a href="${WG_MEILING[1]}" target="_blank" rel="noopener">${WG_MEILING[0]} ↗</a><a href="https://refugiomeiling.com/" target="_blank" rel="noopener">Refugio Otto Meiling ↗</a></div>`}
 /* pantallazo: datos de la versión elegida */
 function renderIntro(){try{
- const parts=BASES.map((b,i)=>{const n=(i<BASES.length-1?BASES[i+1].d:DAYS.length-1)-b.d;return b.n+' ('+n+(n===1?' noche':' noches')+')'});
+ const BB=BASES.filter(b=>!b.o);const parts=BB.map((b,i)=>{const n=(i<BB.length-1?BB[i+1].d:DAYS.length-1)-b.d;return b.n+' ('+n+(n===1?' noche':' noches')+')'}).concat(BASES.filter(b=>b.o).map(b=>b.n+' ('+b.e+')'));
  document.getElementById('introLede').textContent='Barco a Buenos Aires el 27/12, vuelo a Chapelco el 28/12 y dos autos hasta el 10/1. Itinerario '+(ver==='b'?'nuevo':'original')+': '+parts.join(', ')+'.';
- const km=Object.values(LEGS[ver]).reduce((a,l)=>a+parseInt(l.km),0);document.getElementById('istatKm').textContent='≈'+(Math.round(km/10)*10).toLocaleString('es-AR');
+ const km=Object.values(LEGS[ver]).reduce((a,l)=>a+(parseInt(l.km)||0),0);document.getElementById('istatKm').textContent='≈'+(Math.round(km/10)*10).toLocaleString('es-AR');
  const rn=DAYS.filter(d=>d.k==='ref').length;document.getElementById('istatRef').textContent=rn;document.getElementById('istatRefL').textContent=rn===1?'noche en refugio':'noches en refugio';
- const md=DAYS.find(d=>d.k==='ref'&&/Meiling/.test(d.t));const pm=document.querySelector('#pin small');if(md&&pm)pm.textContent='≈2.000 m · noche del '+md.d;
+ const md=DAYS.find(d=>d.k==='ref'&&/Meiling/.test(d.t));const pm=document.querySelector('#pin small');if(pm)pm.textContent=md?'≈2.000 m · noche del '+md.d:'≈2.000 m · opcional, 6 a 9/1';
+ {const tr=document.querySelector('#pin .tr');if(tr)tr.textContent=(md?'':'Opcional · ')+'Sendero desde Pampa Linda · 13 km · +1.050 m'}
  {const bb=BASES.find(b=>b.n==='Bariloche'),pb=document.querySelector('#pinBariloche small');if(bb&&pb)pb.textContent='casa del '+DAYS[bb.d].d.split('/')[0]+' al 10/1'}
  const fd=DAYS.find(d=>d.k==='ref'&&/Frey/.test(d.t));const pf=document.querySelector('#pinFrey small');if(pf)pf.textContent=fd?'≈1.700 m · noche del '+fd.d:'≈1.700 m · no está en esta versión';
 }catch(e){console.warn(e)}}
