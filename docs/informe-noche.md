@@ -311,14 +311,14 @@ El desnivel coincide en los dos. **La distancia del Meiling no:** OSM da 11,3 km
 
 **Capturas** en `docs/capturas/10-paleta-mapa-senderos/`: portada al inicio, a la mitad y al final del recorrido, mapas, resumen y pie, en 390, 1280 y 2560 px.
 
-## Itinerario nuevo, dron alto, mapa único y pie (19/11)
+## Itinerario nuevo, dron alto, mapa único y pie (18/11)
 
 **1. Itinerario (solo la versión nueva; la original no cambió)**
 - **Días:** 3/1 Traful → La Angostura (1 h 26, 57 km; actividades del 3/1 original) · 4/1 día en La Angostura (Filo del Belvedere, kayak o Arrayanes, las del original) · 5/1 La Angostura → Villa Catedral (1 h 56, 102 km) y Refugio Frey · 6/1 bajada y casa de Bariloche · 7/1 Circuito Chico en bici · 8/1 rafting · 9/1 libre.
 - **Filo de las Cabras:** salió de la versión nueva. Queda en el original y en la descripción de una casa descartada ("Ruca Quimei Malek"), que es un dato del anuncio y no del itinerario.
 - **Otto Meiling opcional:** bloque "Opcional: Otto Meiling" en los días 6 a 9, con la ventana del camino a Pampa Linda (se sube de 10:30 a 14, se baja desde las 16), el trayecto Bariloche ⇄ Pampa Linda (1 h 59, 73 km, el ya medido) y qué actividad reemplaza en cada día. En la barra de bases aparece con borde punteado y no cuenta como noche.
 - **A confirmar:** el trayecto Villa Catedral → Bariloche (no medido en Google Maps; OSRM da ≈19 km y ≈26 min, solo como referencia) y la casa de La Angostura del 3 y 4/1 (en Gastos figura como "a confirmar"; la Posta de los Colonos estaba cotizada para 1 noche).
-- **Lo que se actualizó con el cambio:** resumen (ahora 1 noche en refugio y ≈530 km medidos), marcadores 3D (Frey "noche del 5/1", Meiling "opcional, 6 a 9/1", sendero del Meiling marcado como opcional), mosaico, botón y nota de la versión nueva, Gastos (Meiling opcional) y Pesca (el Correntoso queda el 3/1 y el Espejo el 4/1). Fecha de actualización del itinerario: 19/11/2026.
+- **Lo que se actualizó con el cambio:** resumen (ahora 1 noche en refugio y ≈530 km medidos), marcadores 3D (Frey "noche del 5/1", Meiling "opcional, 6 a 9/1", sendero del Meiling marcado como opcional), mosaico, botón y nota de la versión nueva, Gastos (Meiling opcional) y Pesca (el Correntoso queda el 3/1 y el Espejo el 4/1). Fecha de actualización del itinerario: 18/11/2026 (decía 19/11 por error; corregido).
 
 **2. Portada:** dron más alto (5,2 a 7,8 km) con vista oblicua. Arranca sobre Bariloche y el Nahuel Huapi, pasa encima del sendero Villa Catedral → Frey (encuadrado completo a los 0,42 del scroll) y termina sobre el sendero Pampa Linda → Meiling, con el Tronador atrás. Los senderos usan test de profundidad con un pequeño desplazamiento: quedan ocultos detrás de los filos y no parpadean. Los bloques por donde pasa un sendero nunca simplifican el relieve más de un paso, para que el terreno no lo tape. En pantallas verticales la cámara se aleja por su línea de mirada para que los senderos entren enteros. Revisé el inicio, la mitad y el final en 390 y 1280 px: no se ve el borde del terreno.
 
@@ -347,3 +347,49 @@ El desnivel coincide en los dos. **La distancia del Meiling no:** OSM da 11,3 km
 **Fuentes nuevas:** OSRM (router.project-osrm.org) sobre datos de OpenStreetMap (ODbL) para las rutas del mapa; cumbres de OpenStreetMap vía Nominatim; Copernicus GLO-30 y su máscara de agua para la silueta.
 
 **Revisión:** dos versiones del itinerario (15 días cada una), casas (6 tachadas, links de Airbnb, Booking y Google Maps), autos (2 carritos), Gastos, Pesca (10 lugares, 5 guías) y links (Windguru, Google Maps, registro de trekking, refugios). Sin errores de JS ni scroll horizontal (`tools/revisar.cjs`). Capturas en `docs/capturas/11-dron-mapa-pie/`.
+
+## Carteles de la portada, mapa fluido, pie sin nombres y merge (18/11, noche)
+
+Trabajo autónomo pedido sin esperar OK, con checkpoint (rama) antes y después de cada parte.
+
+**1. Carteles de la portada 3D** (`js/hero.js`, CSS en `index.html`)
+- **Posición:** el JS calcula la caja de cada cartel y la limita a 12 px de cada borde. Si el punto está cerca de un borde, la caja se corre hacia adentro y una línea roja la une con el punto (también en diagonal). Si arriba no entra, va abajo del punto; si tampoco, no se muestra.
+- **Choques:** ningún cartel pisa a otro ni al botón de menú, al título (mientras se ve), a la banda de datos (mientras se ve) o al crédito. Si dos chocan, queda el más cercano al punto que mira la cámara en ese momento. El que ya se ve tiene una ventaja chica para que no parpadeen.
+- **Tamaño:** se mide con `ResizeObserver`, sin forzar cálculos de estilo en cada cuadro.
+- **Celular:** título en 14 px y dato en 10,5 px en una segunda línea corta. Ancho máximo del 70 % de la pantalla. Fondo opaco (`--hoja` con `--tinta`): contraste de 7:1 a 16:1 sobre cualquier parte del relieve, en claro y en oscuro. Los lagos van en azul rey opaco con blanco.
+- **Línea del sendero:** el texto del sendero ya no estira la caja; se acomoda al ancho del título.
+- **Crédito:** en el celular va en dos líneas ("Relieve: Copernicus GLO-30 y AWS Terrain Tiles" / "Lugares: © OpenStreetMap"), sin "…".
+- **Sendero del Meiling:** el "nudo" eran los zigzags reales de la cuesta, que vistos desde el dron se pisan. `tools/senderos.py` los reemplaza por su línea central (suavizado gaussiano fuerte solo donde el sendero vuelve sobre sí mismo, ±600 m). El inicio, el final y el corredor no cambian. La distancia y el desnivel que muestran los carteles siguen saliendo del trazado original de OSM. `tools/terreno.py` llama a la misma función si se regenera.
+- **Revisado** en 360, 390 y 1280 px a lo largo de todo el recorrido del dron.
+
+**2. Mapa fluido** (`index.html`)
+- **Antes:** cada cuadro del zoom cambiaba el `viewBox` y el navegador redibujaba el SVG entero (235 KB, con un filtro de ruido encima).
+- **Ahora:** dos capas que se mueven y escalan solo con `transform` (GPU), con `requestAnimationFrame`:
+  - **Capa A, vista general simplificada:** sin el detalle fino recortado, sin la capa de la ruta y sin la retícula fina; se dibuja una sola vez.
+  - **Capa B, mapa completo con detalle:** se redibuja nítida una sola vez por gesto, 140 ms después de soltar. Tiene media pantalla de margen a cada lado para que al arrastrar no aparezcan bordes vacíos. Con "Ver la ruta" y los botones + y −, la capa B se dibuja primero en el destino, así se ve nítida mientras se acerca.
+- **Textura de papel:** pasó a ser una imagen CSS de 220 px que se repite (el mismo ruido, sin recalcular un filtro al hacer zoom).
+- **Gestos:**
+  - Celular: sin zoom, un dedo mueve la página. Con zoom, un dedo arrastra el mapa. Dos dedos pellizcan.
+  - Escritorio: arrastre con el mouse, Ctrl/⌘ + rueda (o rueda sola si ya hay zoom; sin zoom, la rueda mueve la página) y botones + y −.
+- **Límites:** con poco zoom, todo el mapa. Con zoom de detalle, la zona del viaje con un margen: no se puede terminar mirando el océano.
+- **Botones:** + y − y "Vista general" van sobre el mapa, siempre visibles. Abajo quedan "Ver la ruta" y "Vista general", deshabilitados cuando no corresponden.
+- **Medición** (`tools/medir-mapa-fps.cjs`): 390x844, gestos táctiles simulados por CDP a ritmo de dedo (un evento cada 16 ms). Cuenta los cuadros presentados por el compositor en el trazado de Chrome (Chromium sin GPU, compositor por software).
+
+| Gesto (CPU ×4, "gama media") | Antes | Ahora |
+|---|---|---|
+| Pellizco para acercar | 21 fps, p95 126 ms | 60 fps, p95 18 ms |
+| Arrastre con un dedo (con zoom) | no existía (movía la página) | 60 fps, p95 19 ms |
+| Pellizco para alejar | — | 59 fps, p95 22 ms |
+| Un dedo sin zoom | mueve la página | mueve la página (≈260 px en la prueba) |
+
+Es una emulación: en un teléfono real el compositor usa la GPU, así que debería andar igual o mejor, pero no lo probé en un aparato físico.
+
+**3. Pie:** quedan solo las siluetas; saqué los nombres de los cerros (`data/silueta.json` ya no se descarga).
+
+**Revisión automática** (`tools/revisar.cjs`, ampliado): celular y escritorio, claro y oscuro.
+- Itinerario: las dos versiones con 15 días cada una; cada día se abre con título y descripción.
+- Casas: las 34 opciones recorridas. Autos, Gastos y Pesca con contenido.
+- Links: 49 externos bien formados, con Windguru, Google Maps, Booking y Airbnb.
+- Sin errores de JS ni scroll horizontal. Resultado: OK.
+
+**Merge:** rama `checkpoint/main-antes-del-merge` → `main` anterior; `relato` a `main` en un solo commit. Detalles y verificación de producción en `CHECKPOINTS.md`.

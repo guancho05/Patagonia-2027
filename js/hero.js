@@ -258,6 +258,9 @@ async function start() {
   // Marcadores
   const P = meta.places;
   const markers = [];
+  // tamaño de cada cartel sin forzar un cálculo de estilos en cada cuadro
+  const sizeObs = new ResizeObserver(es => { for (const e of es) { const m = markers.find(k => k.box === e.target); if (!m) continue;
+    const b = e.borderBoxSize && e.borderBoxSize[0]; m.bw = b ? b.inlineSize : e.target.offsetWidth; m.bh = b ? b.blockSize : e.target.offsetHeight; } });
   function marker(key, elId, lift, dot) {
     const p = P[key], x = X(p.lon), z = Zc(p.lat), y = yAt(x, z);
     const top = new THREE.Vector3(x, y + lift, z);
@@ -268,7 +271,10 @@ async function start() {
       s.position.copy(top); scene.add(line, s); parts.push(line, s);
     }
     const el = typeof elId === 'string' ? document.getElementById(elId) : elId;
-    if (el) markers.push({ el, top, key, lift, parts, near: dot ? 95 : 260, trail: el.querySelector('.tr') });
+    if (!el) return;
+    const stem = document.createElement('i'); stem.className = 'stem'; el.appendChild(stem);
+    const m = { el, box: el.firstElementChild, stem, top, key, lift, parts, near: dot ? 95 : 260, trail: el.querySelector('.tr'), bw: 0, bh: 0, on: false };
+    sizeObs.observe(m.box); markers.push(m);
   }
   marker('meiling', 'pin', 9, true);
   marker('frey', 'pinFrey', 4, true);
@@ -392,6 +398,62 @@ async function start() {
     return false;
   }
   let morphFrom = 0;
+  // Carteles: siempre dentro de la pantalla (12 px de margen), anclados hacia adentro con una línea al punto;
+  // sin pisarse entre sí ni con el menú, el título, la banda de datos o el crédito. Si chocan, queda el más cercano
+  // al punto que mira la cámara en ese momento (el centro del recorrido).
+  const MARGIN = 12, GAP = 14;
+  const obstacles = [];
+  function rectIn(el, sr, pad) {
+    if (!el) return; const r = el.getBoundingClientRect();
+    if (r.width && r.bottom > sr.top && r.top < sr.bottom) obstacles.push([r.left - sr.left - pad, r.top - sr.top - pad, r.right - sr.left + pad, r.bottom - sr.top + pad]);
+  }
+  const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+  const menuBtn = document.getElementById('menuBtn'), heroTitle = hero.querySelector('.hero-txt'), band = hero.querySelector('.hero-band'), credit = hero.querySelector('.credit');
+  function placeLabels() {
+    const W = stage.clientWidth, H = stage.clientHeight, sr = stage.getBoundingClientRect();
+    obstacles.length = 0;
+    rectIn(menuBtn, sr, 6); rectIn(credit, sr, 2);
+    if (shown < 0.28) rectIn(heroTitle, sr, 6);
+    if (shown < 0.55) rectIn(band, sr, 6);
+    const placed = [];
+    let smallShown = 0; const smallMax = mobile ? 3 : 7;
+    // prioridad: primero los marcadores con punto; dentro de cada grupo, el más cercano a donde mira la cámara
+    // (los que ya se ven tienen una ventaja chica para que no parpadeen)
+    const order = markers.map(m => [m, camera.position.distanceTo(m.top), Math.hypot(m.top.x - lp.x, m.top.z - lp.z) * (m.on ? 0.8 : 1)])
+      .sort((a, b) => (b[0].parts.length - a[0].parts.length) || (a[2] - b[2]));
+    for (const [m, dist] of order) {
+      v.copy(m.top).project(camera);
+      const sx = (v.x * 0.5 + 0.5) * W, sy = (-v.y * 0.5 + 0.5) * H;
+      let off = !m.bw || v.z > 1 || sx < 0 || sx > W || sy < 0 || sy > H || occluded(m);
+      if (!m.parts.length) off = off || dist > m.near || smallShown >= smallMax;
+      let bx = 0, by = 0;
+      if (!off) {
+        const bw = Math.min(m.bw, W - 2 * MARGIN), bh = m.bh;
+        bx = Math.min(W - MARGIN - bw, Math.max(MARGIN, sx - bw / 2));
+        // arriba del punto; si no entra o choca, abajo; si tampoco, no se muestra
+        let ok = false;
+        for (const cy of [sy - GAP - bh, sy + GAP]) {
+          if (cy < MARGIN || cy + bh > H - MARGIN) continue;
+          const r = [bx - 4, cy - 4, bx + bw + 4, cy + bh + 4];
+          if (obstacles.some(o => hit(r, o)) || placed.some(o => hit(r, o))) continue;
+          by = cy; placed.push(r); ok = true; break;
+        }
+        off = !ok;
+        if (!off && !m.parts.length) smallShown++;
+      }
+      m.on = !off;
+      if (m.trail) m.el.classList.toggle('cerca', dist < m.near);
+      if (off) { m.el.style.opacity = 0; continue; }
+      m.el.style.transform = `translate(${bx.toFixed(1)}px,${by.toFixed(1)}px)`;
+      m.el.style.opacity = 1;
+      // línea del punto al borde más cercano de la caja
+      const px = sx - bx, py = sy - by, bw = Math.min(m.bw, W - 2 * MARGIN);
+      const ex = Math.min(bw - 3, Math.max(3, px)), ey = py < 0 ? 0 : m.bh;
+      const dx = ex - px, dy = ey - py, len = Math.hypot(dx, dy);
+      m.stem.style.transform = `translate(${px.toFixed(1)}px,${py.toFixed(1)}px) rotate(${(Math.atan2(dy, dx) * 180 / Math.PI - 90).toFixed(1)}deg)`;
+      m.stem.style.height = len.toFixed(1) + 'px';
+    }
+  }
   function frame(now) {
     if (!visible || document.hidden) { running = false; return; }
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
@@ -404,24 +466,7 @@ async function start() {
     if (cMat.uniforms.morph.value < 1) cMat.uniforms.morph.value = Math.min(1, (now - morphFrom) / 1400);
     updateLOD();
     renderer.render(scene, camera);
-    const W = stage.clientWidth, H = stage.clientHeight, placed = [];
-    let smallShown = 0; const smallMax = mobile ? 3 : 7;
-    const order = markers.map(m => [m, camera.position.distanceTo(m.top)]).sort((a, b) => (b[0].parts.length - a[0].parts.length) || (a[1] - b[1]));
-    for (const [m, dist] of order) {
-      v.copy(m.top).project(camera);
-      const sx = (v.x * 0.5 + 0.5) * W, sy = (-v.y * 0.5 + 0.5) * H;
-      let off = v.z > 1 || sx < 40 || sx > W - 40 || sy < 70 || sy > H - 40 || occluded(m);
-      if (!m.parts.length) {   // etiquetas chicas: solo cerca, sin amontonarse
-        off = off || dist > m.near || smallShown >= smallMax || placed.some(([px, py]) => Math.abs(px - sx) < 120 && Math.abs(py - sy) < 26);
-        if (!off) smallShown++;
-      }
-      if (!off) placed.push([sx, sy]);
-      if (m.trail) m.el.classList.toggle('cerca', dist < m.near);
-      const half = (off ? 0 : m.el.firstElementChild.offsetWidth) / 2;   // la etiqueta no se sale de la pantalla
-      const lx = Math.min(W - half - 12, Math.max(half + 12, sx));
-      m.el.style.transform = `translate(${lx}px,${sy}px)`;
-      m.el.style.opacity = off ? 0 : 1;
-    }
+    placeLabels();
     hero.style.setProperty('--p', shown.toFixed(3));
     requestAnimationFrame(frame);
   }

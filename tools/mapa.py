@@ -126,8 +126,6 @@ def main():
 
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:.0f} {H:.1f}" class="mv" role="img" aria-labelledby="mv-t" data-zoom="{" ".join(f"{v:.3f}" for v in zoom)}">',
          '<title id="mv-t">Mapa de la Patagonia y de la ruta del viaje</title>',
-         '<defs><filter id="papel" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3" seed="4"/>'
-         '<feColorMatrix values="0 0 0 0 .35  0 0 0 0 .28  0 0 0 0 .2  0 0 0 .5 0"/><feComposite in2="SourceGraphic" operator="in"/></filter></defs>',
          f'<rect width="{W:.0f}" height="{H:.1f}" class="mv-mar"/>',
          f'<path d="{path(others, .9, 2)}" class="mv-otros"/>',
          f'<path d="{path(geo("Argentina"), .8, 1.5)}" class="mv-arg"/>', f'<path d="{path(clip(geo("Argentina")), .05, 0, prec=3)}" class="mv-arg mv-fino"/>',
@@ -153,8 +151,7 @@ def main():
         lon = lon10 / 10; x = P(lon, LAT0)[0]; gf.append(f'M{x:.2f},{zoom[1]:.2f}V{zoom[1] + zoom[3]:.2f}')
         s.append(k(x, zoom[1] + zoom[3], t(4, -6, f'{-lon:.1f}°O'.replace('.', ','), 'mv-grad'), 'g-det'))
     s.append(f'<path d="{"".join(gf)}" class="mv-grat mv-grat-f g-det"/>')
-    # textura de papel
-    s.append(f'<rect width="{W:.0f}" height="{H:.1f}" filter="url(#papel)" class="mv-papel"/>')
+    # (la textura de papel la pone la página con CSS: una imagen chica que se repite, más liviana al hacer zoom)
     # ---- capa general ----
     ba, ch = P(L['buenos_aires']['lon'], L['buenos_aires']['lat']), P(L['chapelco']['lon'], L['chapelco']['lat'])
     mx, my = (ba[0] + ch[0]) / 2, (ba[1] + ch[1]) / 2 - 60

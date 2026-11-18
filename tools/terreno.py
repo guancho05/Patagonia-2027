@@ -311,6 +311,8 @@ def main():
     meta['places']['bariloche'] = {'lat': osm['lugares']['bariloche']['lat'], 'lon': osm['lugares']['bariloche']['lon'], 'label': 'San Carlos de Bariloche'}
     meta['lagos'] = lake_labels(osm['lagos'])
     meta['senderos'] = [trail_profile(t, dem) for t in osm['senderos']]
+    from senderos import generalizar   # dibujo sin zigzags que se pisen (km y desnivel quedan del trazado original)
+    for t, src in zip(meta['senderos'], osm['senderos']): t['pts'] = generalizar(src['pts'])[0]
     meta['fuente'].update({'cobertura': 'ESA WorldCover 10 m 2021 v200 (CC BY 4.0)', 'osm': 'OpenStreetMap (ODbL): lagos, glaciares, senderos, lugares'})
     json.dump(meta, open(os.path.join(OUT, 'terreno.json'), 'w'), ensure_ascii=False, indent=1)
     for f in sorted(os.listdir(OUT)):
