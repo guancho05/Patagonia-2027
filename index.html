@@ -451,6 +451,21 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .hero-txt h1{letter-spacing:-.035em;line-height:.88}
 .intro h2{letter-spacing:-.03em;line-height:.92}
 .gastos h2,.pz-head h2,.sec2,.picked h2,.v-top h2{letter-spacing:-.02em}
+/* ===== Pie de página ===== */
+.pie{background:var(--abeto);color:var(--on-abeto);margin-top:40px;padding:40px max(16px,env(safe-area-inset-left,0px)) calc(28px + env(safe-area-inset-bottom,0px))}
+.pie-in{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr);gap:28px 40px;align-items:start}
+@media (max-width:820px){.pie-in{grid-template-columns:minmax(0,1fr)}}
+.pie h2{font-family:var(--afiche);font-weight:400;font-size:36px;line-height:1;margin:0 0 10px;letter-spacing:-.02em}
+.pie p{margin:0;font-size:15px}
+.pie-act{margin-top:6px!important;font-family:var(--mono);font-size:12px!important;opacity:.85}
+.pie-nav{display:flex;flex-direction:column;gap:2px}
+.pie-nav a{color:inherit;text-decoration:none;font-weight:700;padding:6px 0;border-bottom:1px solid rgba(242,234,217,.22)}
+.pie-nav a:hover{text-decoration:underline}
+.pie-nav a:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.pie-up{margin-top:6px}
+.pie-cred{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:13px;line-height:1.45}
+.pie-cred dt{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.8;padding-top:2px}
+.pie-cred dd{margin:0}
 /* ===== Etapa 4 · pesca ===== */
 .fish{padding:14px 16px;border:1px solid var(--raya);border-left:3px solid var(--abeto);border-radius:2px;background:var(--rio)}
 .fish.no{border-left-color:var(--stone);background:var(--papel)}
@@ -568,7 +583,6 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
       </div>
     </article>
   </div>
-  <p class="note">Fotos: Unsplash y Wikimedia Commons. Mapas y tiempos de los trayectos: Google Maps. Relieve de la portada: Terrain Tiles de AWS (datos SRTM, GMTED2010 y otros), procesado con tools/terreno.py; ubicación de refugios y lugares: © colaboradores de OpenStreetMap.</p>
   </div>
 
   <section class="view gastos" id="view-gastos" aria-labelledby="gastos-h" hidden>
@@ -770,6 +784,29 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   </section>
 </div>
 
+<footer class="pie" id="pie" aria-labelledby="pie-h">
+  <div class="pie-in">
+    <div class="pie-firma">
+      <h2 id="pie-h">Patagonia 2027</h2>
+      <p>Ing. Lippert · 2026</p>
+      <p class="pie-act">Itinerario actualizado el <time id="itinAct"></time></p>
+    </div>
+    <nav class="pie-nav" aria-label="Secciones del plan">
+      <a href="#itinerario" data-go="itinerario">Itinerario</a>
+      <a href="#casas" data-go="casas">Casas</a>
+      <a href="#autos" data-go="autos">Autos</a>
+      <a href="#gastos" data-go="gastos">Gastos</a>
+      <a href="#pesca" data-go="pesca">Pesca</a>
+      <a href="#hero" data-go="arriba" class="pie-up">Volver arriba ↑</a>
+    </nav>
+    <dl class="pie-cred">
+      <dt>Fotos</dt><dd>Unsplash y Wikimedia Commons (autor en cada foto); casas, de sus anuncios en Airbnb y Booking.</dd>
+      <dt>Relieve</dt><dd>Copernicus DEM GLO-30 (© DLR e.V. 2010-2014 y © Airbus Defence and Space GmbH 2014-2018, provisto bajo COPERNICUS por la Unión Europea y la ESA) y AWS Terrain Tiles (SRTM y otros).</dd>
+      <dt>Lugares</dt><dd>© colaboradores de OpenStreetMap.</dd>
+      <dt>Mapas</dt><dd>Google Maps (trayectos, tiempos y distancias).</dd>
+    </dl>
+  </div>
+</footer>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Fotos" hidden>
   <div class="lb-top"><div><b id="lbt"></b><br><span id="lbc"></span></div><button type="button" class="lb-x" id="lbx" aria-label="Cerrar">×</button></div>
   <img id="lbi" alt="">
@@ -781,6 +818,7 @@ const CR=["","Falk2, CC BY-SA 4.0","Gervacio Rosales, CC BY 3.0","Claudio Elias,
 const BASES_A=[
  {n:"Buenos Aires",e:"1 noche corta",d:0},{n:"San Martín",e:"2 noches",d:1},{n:"Lago Falkner",e:"2 · Año Nuevo",d:3},{n:"Villa Traful",e:"2 noches",d:5},
  {n:"La Angostura",e:"3 noches",d:7},{n:"Otto Meiling",e:"1 · 2.000 m",d:10},{n:"Bariloche",e:"3 noches",d:11}];
+const ITIN_ACT="2026-11-18"; // fecha del último cambio en DAYS_A / DAYS_B (año-mes-día)
 const KL={casa:"Casa",camp:"Camping",ref:"Refugio",fly:"Vuelo"};
 const KC={casa:"var(--casa)",camp:"var(--camp)",ref:"var(--ref)",fly:"var(--fly)"};
 const DAYS_A=[
@@ -1169,6 +1207,7 @@ function renderIntro(){try{
  const fd=DAYS.find(d=>d.k==='ref'&&/Frey/.test(d.t));const pf=document.querySelector('#pinFrey small');if(pf)pf.textContent=fd?'≈1.700 m · noche del '+fd.d:'≈1.700 m · no está en esta versión';
 }catch(e){console.warn(e)}}
 renderIntro();
+{const t=document.getElementById('itinAct');if(t){const [y,m,d]=ITIN_ACT.split('-');t.dateTime=ITIN_ACT;t.textContent=(+d)+'/'+(+m)+'/'+y}}
 document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>renderIntro()));
 /* menú lateral */
 const drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),mbtn=document.getElementById('menuBtn');
@@ -1179,7 +1218,7 @@ mbtn.onclick=()=>menu(true);
  const hide=mq.matches&&d>0&&y>120&&!drawer.classList.contains('open');mbtn.classList.toggle('hide',hide);lastY=y},{passive:true});
  mbtn.addEventListener('focus',()=>mbtn.classList.remove('hide'))}scrim.onclick=()=>menu(false);document.getElementById('drawerX').onclick=()=>menu(false);
 addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer.classList.contains('open'))menu(false)});
-function go(k){menu(false);if(k==='portada'){document.getElementById('portada').scrollIntoView({behavior:'smooth'});return}
+function go(k){menu(false);if(k==='arriba'){window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});return}if(k==='portada'){document.getElementById('portada').scrollIntoView({behavior:'smooth'});return}
  showPage(k);try{history.replaceState(null,'','#'+k)}catch(e){}document.getElementById('app').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 document.addEventListener('click',e=>{const a=e.target.closest('[data-go]');if(!a)return;e.preventDefault();go(a.dataset.go)});
 document.querySelectorAll('.vchoose button').forEach(b=>b.onclick=()=>{const v=b.dataset.ver;const vb=document.querySelector('.vbtn[data-v="'+v+'"]');if(vb&&vb.getAttribute('aria-pressed')!=='true')vb.click();go('itinerario')});
