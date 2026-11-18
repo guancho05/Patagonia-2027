@@ -216,3 +216,14 @@ Todos son ramas en GitHub. Para **probar** uno sin tocar nada: `git switch -c pr
 3. ¿Reservamos una salida de trolling el 9/1?
 4. ¿Te gusta el título "Patagonia 2027" en serif grande en la portada, o preferís otro nombre para el viaje para alejarse más de la marca?
 5. ¿Mergeamos `relato` a `main` después de verlo en el preview? (no lo hice)
+
+## Correcciones del 18/11
+
+1. **Mosaico del pantallazo:** cada foto tiene su punto de foco (`object-position`) para que se vea el lugar (el Tronador ya no queda en cielo). La de San Martín se pide a Unsplash con recorte por punto focal y zoom (`crop=focalpoint&fp-y=.76&fp-z=1.9`): ahora muestra el Lácar, la playa, el muelle y el pueblo. No hizo falta reemplazar ninguna foto.
+2. **Crédito del relieve:** pasó al borde de papel, en una línea chica debajo de la banda de datos, en todas las resoluciones (texto más corto: "Relieve: AWS Terrain Tiles (SRTM) · Lugares: © OpenStreetMap").
+3. **Botón de menú en el celular (≤ 820 px):** ahora es solo el ícono (40 × 40, con "Menú" para lectores de pantalla), se esconde al bajar y vuelve al subir; reaparece si recibe foco con el teclado. Respeta movimiento reducido. En escritorio no cambió.
+4. **Pesca en Gastos:** los permisos figuran como **Opcional** y no se suman: el total por persona y el dato de la portada volvieron a **USD 493**.
+5. **Decisiones (casa de La Angostura y título de la portada):** el pedido llegó con las opciones sin completar ("[Posta de los Colonos / Cuncumen]" y "[queda / cambialo por ____]"), así que **no cambié nada**: "Las casas elegidas" y "La del grupo" siguen con Cuncumen y el título sigue "Patagonia 2027". Decime cuál y lo hago.
+6. De paso: las etiquetas chicas de la portada (Cerro Tronador, Pampa Linda) se veían vacías en modo oscuro (texto claro sobre fondo claro, error de la etapa 5); arreglado. Además aparecen recién cuando se desvanece el título, para no quedar detrás.
+
+Capturas (JPEG, 390 × 844 y 1280 × 800) en `docs/capturas/06-correcciones/`.

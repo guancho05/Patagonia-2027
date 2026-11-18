@@ -426,9 +426,25 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 @media (prefers-reduced-motion:reduce){.poster{transition:none}}
 
 /* ===== Etapa 5 · marcadores de la portada ===== */
-.stage .pin.sm>div{background:rgba(251,246,236,.82);border-left:0;padding:3px 8px;box-shadow:none}
+.stage .pin.sm>div{opacity:clamp(0,calc((var(--p,0) - .22)*6),1);background:rgba(251,246,236,.82);color:#221d17;border-left:0;padding:3px 8px;box-shadow:none}
 .stage .pin.sm b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
 @media (max-width:640px){.stage .pin.sm{display:none}}
+/* ===== Correcciones 18/11: crédito abajo de la banda, en el borde de papel ===== */
+:root{--marco:clamp(6px,1.1vw,14px);--marco-b:24px}
+.stage::before{border-bottom-width:var(--marco-b)}
+.hero-band{bottom:var(--marco-b)}
+.hero .credit{left:var(--marco);right:var(--marco);bottom:0;height:var(--marco-b);display:flex;align-items:center;justify-content:flex-end;padding:0 4px;z-index:5;color:var(--tinta-2);font-size:10px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .credit span{overflow:hidden;text-overflow:ellipsis}
+.hero-txt{bottom:calc(var(--marco-b) + 72px)}
+@media (max-width:640px){.hero-txt{bottom:calc(var(--marco-b) + 92px)}.hero .credit{font-size:9px;justify-content:center}}
+/* ===== Correcciones 18/11: botón de menú compacto en el celular, se oculta al bajar ===== */
+@media (max-width:820px){
+ .menu-btn{padding:0;width:40px;height:40px;justify-content:center;top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));transition:transform .25s ease,opacity .25s ease}
+ .menu-btn .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ .menu-btn.hide{transform:translateY(calc(-100% - 16px));opacity:0;pointer-events:none}
+}
+@media (max-width:820px) and (prefers-reduced-motion:reduce){.menu-btn{transition:none}}
+.gtab tr.opt td{color:var(--muted)}.gtab tr.opt td.n{text-decoration:none;font-style:italic}
 /* ===== Etapa 4 · pesca ===== */
 .fish{padding:14px 16px;border:1px solid var(--raya);border-left:3px solid var(--abeto);border-radius:2px;background:var(--rio)}
 .fish.no{border-left-color:var(--stone);background:var(--papel)}
@@ -461,7 +477,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 @media (max-width:640px){#pzGuides th:nth-child(3),#pzGuides td:nth-child(3){display:none}}
 </style>
 
-<button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer"><i></i>Menú</button>
+<button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" aria-label="Menú" aria-hidden="true">
   <div class="dh"><b>Patagonia 2027</b><button type="button" id="drawerX" aria-label="Cerrar menú">×</button></div>
@@ -483,7 +499,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <div class="shade" aria-hidden="true"></div>
     <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1></div>
     <p class="hero-band"><span><b>27/12/2026 → 10/1/2027</b></span><span>8 personas</span><span>14 noches</span><span>San Martín de los Andes → Bariloche</span></p>
-        <p class="credit"><span class="c3d">Relieve: Terrain Tiles de AWS (SRTM y otros) · Lugares: © OpenStreetMap</span><span class="cph">Foto: Unsplash</span></p>
+        <p class="credit"><span class="c3d">Relieve: AWS Terrain Tiles (SRTM) · Lugares: © OpenStreetMap</span><span class="cph">Foto: Unsplash</span></p>
   </div>
 </section>
 <section class="intro" id="portada" aria-labelledby="intro-h">
@@ -494,11 +510,11 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <div class="istats"><div><b>14</b><span>noches, 27/12 → 10/1</span></div><div><b id="istatKm">≈820</b><span>km en auto (trayectos del itinerario)</span></div><div><b id="istatRef">2</b><span id="istatRefL">noches en refugio</span></div><div><b id="istatPP">—</b><span>por persona, gastos con precio</span></div></div>
   </div>
   <div class="mosaic">
-    <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" loading="lazy"><figcaption><small>5/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
-    <figure><img src="https://images.unsplash.com/photo-1577931751802-068d861ba420?w=900&q=80&auto=format&fit=crop" alt="Lago Lácar" loading="lazy"><figcaption><small>28/12</small>San Martín de los Andes</figcaption></figure>
-    <figure><img src="https://images.unsplash.com/photo-1677282658069-d9bd2e9f59c0?w=900&q=80&auto=format&fit=crop" alt="Pesca en el lago" loading="lazy"><figcaption><small>1 y 2/1</small>Villa Traful</figcaption></figure>
-    <figure><img src="https://images.unsplash.com/photo-1591043345548-c5cd13e2be51?w=900&q=80&auto=format&fit=crop" alt="Laguna entre rocas" loading="lazy"><figcaption><small>3/1</small>Refugio Frey</figcaption></figure>
-    <figure><img src="https://images.unsplash.com/photo-1575819453111-abb276cd4973?w=900&q=80&auto=format&fit=crop" alt="Lagos de Bariloche desde la altura" loading="lazy"><figcaption><small>6 al 10/1</small>Bariloche</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" style="object-position:58% 64%" loading="lazy"><figcaption><small>5/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1577931751802-068d861ba420?w=720&h=900&q=80&auto=format&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.76&fp-z=1.9" alt="Lago Lácar, la playa y el muelle de San Martín de los Andes" style="object-position:50% 55%" loading="lazy"><figcaption><small>28/12</small>San Martín de los Andes</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1677282658069-d9bd2e9f59c0?w=900&q=80&auto=format&fit=crop" alt="Pesca en el lago" style="object-position:55% 58%" loading="lazy"><figcaption><small>1 y 2/1</small>Villa Traful</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1591043345548-c5cd13e2be51?w=900&q=80&auto=format&fit=crop" alt="Laguna entre rocas" style="object-position:48% 50%" loading="lazy"><figcaption><small>3/1</small>Refugio Frey</figcaption></figure>
+    <figure><img src="https://images.unsplash.com/photo-1575819453111-abb276cd4973?w=900&q=80&auto=format&fit=crop" alt="Lagos de Bariloche desde la altura" style="object-position:45% 62%" loading="lazy"><figcaption><small>6 al 10/1</small>Bariloche</figcaption></figure>
   </div>
   <div class="intro-in">
     <div class="vchoose">
@@ -554,7 +570,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <p class="sub" id="gver"></p>
     <div class="gsum" id="gsum"></div>
     <div class="ptabw"><table class="gtab" id="gtab"></table></div>
-    <p class="note">Suma solo lo que ya tiene precio. Los gastos "a cargar" se completan a medida que se reserven. Total dividido entre 8.</p>
+    <p class="note">Suma solo lo que ya tiene precio. Los gastos "a cargar" se completan a medida que se reserven. Total dividido entre 8. Lo opcional (permisos de pesca) se muestra pero no se suma.</p>
   </section>
 
   <section class="view pesca" id="view-pesca" aria-labelledby="pesca-h" hidden>
@@ -1085,13 +1101,13 @@ function renderGastos(){try{
  const st=h=>h.star&&h.star.startsWith('Confirmada')?['Confirmada','ok']:h.star&&h.star.startsWith('Primera')?['Primera opción','op']:['Elegida',''];
  const rows=[["Autos: 2 Citroën Basalt (Hertz, 13 días, seguro completo)",["Cotizado",""],1810.88]];
  [["San Martín","Casa en Las Pendientes"],["La Angostura",vh],["Bariloche","Dúplex con vista al lago"]].forEach(([l,n])=>{const h=H(n);rows.push(["Casa "+l+": "+n,st(h),h.tot])});
- rows.push(["Permisos de pesca: 8 × 10 días país limítrofe (ARS 50.000 c/u, dólar BNA del 17/11/2026)",["Precio oficial",""],Math.round(8*50000/1575)]);
+ rows.push(["Permisos de pesca: 8 × 10 días país limítrofe (ARS 50.000 c/u, dólar BNA del 17/11/2026). No se suma al total",["Opcional",""],Math.round(8*50000/1575),1]);
  ["Vuelos Ezeiza ⇄ Chapelco","Barco Montevideo → Buenos Aires","Airbnb en Buenos Aires","Campings: Falkner y Traful","Refugio Frey","Refugio Otto Meiling","Rafting en el Manso","Nafta","Súper y comida"].forEach(n=>rows.push([n,["A cargar",""],null]));
- const known=rows.filter(r=>r[2]!=null),tot=known.reduce((a,r)=>a+r[2],0),conf=known.filter(r=>r[1][1]==='ok').reduce((a,r)=>a+r[2],0);
+ const known=rows.filter(r=>r[2]!=null&&!r[3]),tot=known.reduce((a,r)=>a+r[2],0),conf=known.filter(r=>r[1][1]==='ok').reduce((a,r)=>a+r[2],0);
  const f=n=>'USD '+Math.round(n).toLocaleString('es-AR');
  document.getElementById('gver').textContent='Según el itinerario '+(ver==='b'?'nuevo':'original')+'. Cambiá la versión en el Itinerario o en la portada.';
  document.getElementById('gsum').innerHTML=`<div><b>${f(tot/8)}</b><span>por persona, todo lo que tiene precio</span></div><div><b>${f(conf/8)}</b><span>por persona, solo lo confirmado</span></div><div><b>${f(tot)}</b><span>total del grupo</span></div>`;
- document.getElementById('gtab').innerHTML='<thead><tr><th>Gasto</th><th>Estado</th><th class="n">Total</th><th class="n">Por persona</th></tr></thead><tbody>'+rows.map(r=>`<tr class="${r[2]==null?'pend':''}"><td>${r[0]}</td><td><span class="gtag ${r[1][1]}">${r[1][0]}</span></td><td class="n">${r[2]==null?'—':f(r[2])}</td><td class="n">${r[2]==null?'—':f(r[2]/8)}</td></tr>`).join('')+`<tr class="tot"><td colspan="2">Total con precio</td><td class="n">${f(tot)}</td><td class="n">${f(tot/8)}</td></tr></tbody>`;
+ document.getElementById('gtab').innerHTML='<thead><tr><th>Gasto</th><th>Estado</th><th class="n">Total</th><th class="n">Por persona</th></tr></thead><tbody>'+rows.map(r=>`<tr class="${r[2]==null?'pend':''}${r[3]?' opt':''}"><td>${r[0]}</td><td><span class="gtag ${r[1][1]}">${r[1][0]}</span></td><td class="n">${r[2]==null?'—':f(r[2])}</td><td class="n">${r[2]==null?'—':f(r[2]/8)}</td></tr>`).join('')+`<tr class="tot"><td colspan="2">Total con precio</td><td class="n">${f(tot)}</td><td class="n">${f(tot/8)}</td></tr></tbody>`;
  document.getElementById('istatPP').textContent=f(tot/8);
 }catch(e){console.warn(e)}}
 renderGastos();
@@ -1151,7 +1167,11 @@ document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>ren
 /* menú lateral */
 const drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),mbtn=document.getElementById('menuBtn');
 function menu(open){drawer.classList.toggle('open',open);drawer.setAttribute('aria-hidden',!open);scrim.hidden=!open;mbtn.setAttribute('aria-expanded',open);if(open)drawer.querySelector('a').focus()}
-mbtn.onclick=()=>menu(true);scrim.onclick=()=>menu(false);document.getElementById('drawerX').onclick=()=>menu(false);
+mbtn.onclick=()=>menu(true);
+/* celular: el botón se esconde al bajar y vuelve al subir */
+{let lastY=scrollY;const mq=matchMedia('(max-width: 820px)');addEventListener('scroll',()=>{const y=scrollY,d=y-lastY;if(Math.abs(d)<6)return;
+ const hide=mq.matches&&d>0&&y>120&&!drawer.classList.contains('open');mbtn.classList.toggle('hide',hide);lastY=y},{passive:true});
+ mbtn.addEventListener('focus',()=>mbtn.classList.remove('hide'))}scrim.onclick=()=>menu(false);document.getElementById('drawerX').onclick=()=>menu(false);
 addEventListener('keydown',e=>{if(e.key==='Escape'&&drawer.classList.contains('open'))menu(false)});
 function go(k){menu(false);if(k==='portada'){document.getElementById('portada').scrollIntoView({behavior:'smooth'});return}
  showPage(k);try{history.replaceState(null,'','#'+k)}catch(e){}document.getElementById('app').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
