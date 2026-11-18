@@ -16,3 +16,5 @@ Los tags no se pueden subir desde este entorno (el proxy corta el push), así qu
 | Fecha | Checkpoint (rama) | Qué tiene |
 |---|---|---|
 | 2026-11-18 | `checkpoint/01-antes-orden` | Estado de `relato` al empezar la noche (commit 78273c5): primera versión del rediseño. |
+| 2026-11-18 | `checkpoint/01-orden-lista` | Etapa 0: `CLAUDE.md` actualizado con la estructura real y la regla de contenido; resumen de etapas; plan de la noche. Web sin cambios visibles. |
+| 2026-11-18 | `checkpoint/02-antes-contenido` | Igual que el anterior (punto de partida de la etapa 1). |

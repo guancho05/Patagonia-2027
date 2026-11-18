@@ -327,28 +327,27 @@ body.lb-open{overflow:hidden}
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" aria-label="Menú" aria-hidden="true">
   <div class="dh"><b>Patagonia 2027</b><button type="button" id="drawerX" aria-label="Cerrar menú">×</button></div>
-  <a href="#portada" data-go="portada"><b>Portada</b><span>El Tronador y el viaje en un pantallazo</span></a>
-  <a href="#itinerario" data-go="itinerario"><b>Itinerario</b><span>Día por día, con casas y trayectos</span></a>
-  <a href="#casas" data-go="casas"><b>Casas</b><span>Confirmadas y opciones</span></a>
-  <a href="#autos" data-go="autos"><b>Autos</b><span>2 Citroën Basalt, Hertz</span></a>
-  <a href="#gastos" data-go="gastos"><b>Gastos</b><span>Total y por persona</span></a>
+  <a href="#portada" data-go="portada"><b>Portada</b><span>Resumen y versión del itinerario</span></a>
+  <a href="#itinerario" data-go="itinerario"><b>Itinerario</b><span>27/12 al 10/1, día por día</span></a>
+  <a href="#casas" data-go="casas"><b>Casas</b><span>San Martín y Bariloche confirmadas</span></a>
+  <a href="#autos" data-go="autos"><b>Autos</b><span>2 Citroën Basalt · Hertz · 28/12 al 10/1</span></a>
+  <a href="#gastos" data-go="gastos"><b>Gastos</b><span>Total y por persona, en USD</span></a>
 </aside>
 <section class="hero" id="hero" aria-label="Portada: el Tronador">
   <div class="stage" id="stage">
     <img class="poster" src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1800&q=80&auto=format&fit=crop" alt="El Tronador nevado sobre el bosque" fetchpriority="high">
     <canvas id="terrain" aria-hidden="true"></canvas>
     <div class="pin" id="pin"><div><b>Refugio Otto Meiling</b><small>≈2.000 m · noche del 5/1</small></div></div>
-    <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1><p>8 amigos, 14 noches, del Lácar al Tronador.</p></div>
-    <div class="cue">Bajá para volar ↓</div>
-    <p class="credit">Relieve real: Terrain Tiles (AWS) · SRTM</p>
+    <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1><p>27/12/2026 → 10/1/2027 · 8 personas · 14 noches · de San Martín de los Andes a Bariloche</p></div>
+        <p class="credit">Relieve real: Terrain Tiles (AWS) · SRTM</p>
   </div>
 </section>
 <section class="intro" id="portada" aria-labelledby="intro-h">
   <div class="intro-in">
-    <p class="kicker">El viaje en un pantallazo</p>
-    <h2 id="intro-h">Del Lácar al Tronador</h2>
-    <p class="lede">Ocho amigos, dos autos y catorce noches. Una tarde en Buenos Aires, aterrizaje en Chapelco y la Ruta de los 7 Lagos hacia el sur: Año Nuevo frente al Falkner, carpa en Traful, las agujas del Frey, La Angostura, una noche a 2.000 metros en el Otto Meiling y el cierre en Bariloche, con rafting en el Manso.</p>
-    <div class="istats"><div><b>14</b><span>noches, 27/12 → 10/1</span></div><div><b>≈820</b><span>km de ruta en auto</span></div><div><b>2</b><span>refugios de montaña</span></div><div><b id="istatPP">—</b><span>por persona, lo cargado</span></div></div>
+    <p class="kicker">Resumen del viaje</p>
+    <h2 id="intro-h">27/12 → 10/1</h2>
+    <p class="lede" id="introLede">Barco a Buenos Aires el 27/12, vuelo a Chapelco el 28/12 y dos autos hasta el 10/1.</p>
+    <div class="istats"><div><b>14</b><span>noches, 27/12 → 10/1</span></div><div><b id="istatKm">≈820</b><span>km en auto (trayectos del itinerario)</span></div><div><b id="istatRef">2</b><span id="istatRefL">noches en refugio</span></div><div><b id="istatPP">—</b><span>por persona, gastos con precio</span></div></div>
   </div>
   <div class="mosaic">
     <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" loading="lazy"><figcaption><small>5/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
@@ -359,8 +358,8 @@ body.lb-open{overflow:hidden}
   </div>
   <div class="intro-in">
     <div class="vchoose">
-      <button type="button" data-ver="a"><b>Itinerario original</b><span>El plan con el que arrancamos.</span></button>
-      <button type="button" class="new" data-ver="b"><b>Itinerario nuevo</b><span>Con el Frey y plan B para el Meiling. Acá van los próximos cambios hasta cerrar todo.</span></button>
+      <button type="button" data-ver="a"><b>Itinerario original</b><span>Sin Frey. 3 noches en La Angostura, Meiling el 6/1, Bariloche del 7 al 10/1.</span></button>
+      <button type="button" class="new" data-ver="b"><b>Itinerario nuevo</b><span>Frey el 3/1, Meiling el 5/1 si hay clima, Bariloche del 6 al 10/1 (coincide con las reservas).</span></button>
     </div>
   </div>
 </section>
@@ -373,7 +372,7 @@ body.lb-open{overflow:hidden}
   </nav>
 
   <div class="view" id="view-itin">
-  <div class="ver" role="group" aria-label="Versión del itinerario"><span>Versión</span><button type="button" class="vbtn" data-v="a" aria-pressed="true">Original</button><button type="button" class="vbtn" data-v="b" aria-pressed="false">Nuevo (propuesta)</button><p class="vnote" id="vnote"></p></div>
+  <div class="ver" role="group" aria-label="Versión del itinerario"><span>Versión</span><button type="button" class="vbtn" data-v="a" aria-pressed="true">Original</button><button type="button" class="vbtn" data-v="b" aria-pressed="false">Nuevo</button><p class="vnote" id="vnote"></p></div>
   <nav class="route" id="route" aria-label="Bases del viaje"></nav>
 
   <div class="filters" role="group" aria-label="Filtrar por tipo de noche">
@@ -548,78 +547,78 @@ const BASES_A=[
 const KL={casa:"Casa",camp:"Camping",ref:"Refugio",fly:"Vuelo"};
 const KC={casa:"var(--casa)",camp:"var(--camp)",ref:"var(--ref)",fly:"var(--fly)"};
 const DAYS_A=[
- {d:"27/12",w:"Dom",k:"casa",t:"Buenos Aires",s:"Barco, valijas en el Airbnb y una birra",
-  lead:"Cruzan de mañana desde Montevideo, dejan las valijas en un Airbnb cerca del puerto y aprovechan el día. Es domingo, así que está la feria de San Telmo. Cena y cerveza temprano, unas horas de sueño y a las 4 salen para Ezeiza.",
+ {d:"27/12",w:"Dom",k:"casa",t:"Buenos Aires",s:"Barco desde Montevideo y noche corta cerca del puerto",
+  lead:"Barco Montevideo → Buenos Aires a la mañana y valijas en un Airbnb cerca del puerto (a reservar). Es domingo: feria de San Telmo. Salida a Ezeiza a las 4:00.",
   st:[["Cruce","≈2 h 15 en barco"],["Airbnb","San Telmo o Puerto Madero"],["A Ezeiza","≈40 min de noche"]],
   a:[["Mañana","Buquebus Montevideo → Buenos Aires (o bus + barco por Colonia, más barato)"],["Mediodía","Valijas en el Airbnb: pedir al anfitrión dejarlas antes del check-in"],["Tarde","Feria de San Telmo, Plaza de Mayo y Puerto Madero"],["20:00","Cena y una birra temprano"],["22:00","A dormir"],["4:00","Salida a Ezeiza: dos autos o una combi para los 8 con valijas, reservada de antes"]],
   f:["Feria de San Telmo domingo","Puerto Madero atardecer"],sc:{type:"town",sky:"dusk",seed:7}},
- {d:"28/12",w:"Lun",k:"casa",t:"San Martín de los Andes",s:"Llegada, compras, primer atardecer",
-  lead:"Aterrizan en Chapelco a las 9:09, retiran los autos y hacen las compras grandes. La casa se entrega a las 15 h y la tarde queda para conocer el pueblo y el Lácar.",
+ {d:"28/12",w:"Lun",k:"casa",t:"San Martín de los Andes",s:"Llegada a Chapelco 9:09, autos, súper y casa desde las 15",
+  lead:"Aterrizaje en Chapelco a las 9:09, retiro de los autos y compras grandes. La casa se entrega a las 15:00; a la tarde, Mirador Bandurrias y Playa Catritre.",
   st:[["Llegada","9:09"],["Aeropuerto → pueblo","22 km"],["Altura","640 m"]],
   a:[["9:09","Aterrizaje en Chapelco y retiro de autos"],["11:00","Súper: comida para Año Nuevo y los campings"],["15:00","Entrega de la casa"],["16:00","Mirador Bandurrias, la mejor vista del pueblo"],["18:00","Playa Catritre, primer chapuzón en el Lácar"],["21:00","Asado en la casa"]],
   f:["Mirador Bandurrias San Martín de los Andes","Playa Catritre Lago Lácar"],sc:{type:"town",sky:"dusk",seed:3}},
- {d:"29/12",w:"Mar",k:"casa",t:"Playa Yuco y Pozones del Caleufú",s:"Agua turquesa, ripio y pozones",
-  lead:"Día de agua. Yuco a la mañana temprano, porque el estacionamiento se llena, y a la tarde los pozones del Caleufú, ollas turquesa en un cañón de piedra.",
+ {d:"29/12",w:"Mar",k:"casa",t:"Playa Yuco y Pozones del Caleufú",s:"Playa Yuco (30 km de ripio) y Pozones del Caleufú",
+  lead:"Yuco a primera hora, porque el estacionamiento se llena. A la tarde, Pozones del Caleufú por la RP 63. Unas 4 h de manejo en el día.",
   st:[["Yuco","30 km ripio"],["Caleufú","≈50 km"],["Manejo","≈4 h"]],
   a:[["8:00","Salida a Yuco por la RP 48, a 40 km/h"],["9:00","Cinco playas sobre el Lácar"],["13:00","Almuerzo y salida al Caleufú por la RP 63"],["14:15","Pozones: plataformas de piedra y ollas profundas"],["18:00","Últimas compras y armar todo para los campings"]],
   f:["Playa Yuco Lago Lácar","Pozones del Caleufú"],sc:{type:"river",sky:"day",seed:11}},
- {d:"30/12",w:"Mié",k:"camp",t:"Ruta de los 7 Lagos hasta el Falkner",s:"Paradas libres y a elegir parcela",
-  lead:"Solo 47 km, pero con paradas. Llegan al Camping Lago Falkner con tiempo para conseguir dos parcelas juntas con vista al lago.",
+ {d:"30/12",w:"Mié",k:"camp",t:"Ruta de los 7 Lagos hasta el Falkner",s:"47 km por la Ruta de los 7 Lagos al Camping Lago Falkner",
+  lead:"47 km con paradas en miradores y lagos. Llegar temprano al Camping Lago Falkner para conseguir dos parcelas juntas.",
   st:[["Distancia","47 km"],["Parcelas","2 contiguas"],["Pesca","Río Falkner–Villarino"]],
   a:[["Mañana","Mirador del Pil Pil y Laguna Fría"],["","Lago Machónico, el primero de los 7"],["","Lago Hermoso: muelle y cascada"],["","Cascada Vuliñanco, 20 m de caída"],["Tarde","Carpas armadas, playa en la unión con el Villarino"]],
   f:["Lago Machónico Ruta 7 Lagos","Cascada Vuliñanco","Camping Lago Falkner"],sc:{type:"lake",sky:"day",seed:21}},
- {d:"31/12",w:"Jue",k:"camp",t:"Año Nuevo en el Lago Falkner",s:"Cerro Falkner y fogón",
-  lead:"El primer desafío del viaje: el Cerro Falkner, de día completo. El que prefiera algo tranquilo camina la costa del Villarino y el Escondido. A la noche, fogón frente al lago.",
+ {d:"31/12",w:"Jue",k:"camp",t:"Año Nuevo en el Lago Falkner",s:"Cerro Falkner (opcional) y Año Nuevo en el camping",
+  lead:"Cerro Falkner para el que quiera: día completo, difícil. El resto, costa del Villarino y el Escondido. Año Nuevo en el camping.",
   st:[["Trekking","Cerro Falkner"],["Dificultad","Difícil"],["Noche","Año Nuevo"]],
   a:[["8:00","Subida al Cerro Falkner (opcional)"],["","Costa Villarino–Escondido para los tranquilos"],["Atardecer","Pesca en el río entre los dos lagos"],["00:00","Brindis con fogón"]],
   f:["Cerro Falkner","Lago Falkner atardecer"],sc:{type:"lake",sky:"night",seed:27}},
- {d:"1/1",w:"Vie",k:"camp",t:"Villa Traful",s:"Camping Paloma Araucana",
-  lead:"Traslado por la RN 40 y la RP 65 hasta Villa Traful. Camping Paloma Araucana, bajo el mirador, con fogón y luz en cada parcela.",
+ {d:"1/1",w:"Vie",k:"camp",t:"Villa Traful",s:"≈75 km a Villa Traful, Camping Paloma Araucana",
+  lead:"Traslado por la RN 40 y la RP 65 (≈1 h 30). Camping Paloma Araucana, con fogón y luz en cada parcela. En Villa Traful hay una sola estación de servicio.",
   st:[["Distancia","≈75 km"],["Manejo","≈1 h 30"],["Nafta","Una sola estación"]],
   a:[["Mañana","Desarme y salida por la Ruta 7 Lagos"],["Tarde","Mirador del Viento, vista de todo el lago"],["Noche","Asado en el camping"]],
   f:["Mirador del Viento Villa Traful","Lago Traful"],sc:{type:"lake",sky:"dusk",seed:33}},
- {d:"2/1",w:"Sáb",k:"camp",t:"Bosque sumergido",s:"Kayak, cascadas y pesca",
-  lead:"Kayak hasta el bosque sumergido, cipreses que asoman del agua. A la tarde, las cascadas Coa Có y Co Lochi. El Traful es famoso por el salmón encerrado.",
+ {d:"2/1",w:"Sáb",k:"camp",t:"Bosque sumergido",s:"Kayak al bosque sumergido, cascadas y pesca",
+  lead:"Kayak a la mañana, antes de que suba el viento, hasta el bosque sumergido. A la tarde, cascadas Coa Có y Co Lochi; al atardecer, pesca desde la costa.",
   st:[["Kayak","Mañana"],["Cascadas","Medio día"],["Pesca","Salmón encerrado"]],
   a:[["Mañana","Kayak al bosque sumergido, antes del viento"],["Tarde","Cascadas Coa Có y Co Lochi"],["Atardecer","Pesca desde la costa"]],
   f:["Bosque sumergido Villa Traful","Cascada Coa Có"],sc:{type:"forestlake",sky:"day",seed:41}},
  {d:"3/1",w:"Dom",k:"casa",t:"Villa La Angostura",s:"Belvedere, Inacayal y el Correntoso",
-  lead:"Llegan a la casa después de cuatro noches de carpa. A la tarde, el mirador Belvedere con la cascada Inacayal, y al atardecer, pesca en el río Correntoso, uno de los más cortos del mundo.",
+  lead:"65 km de Traful a la casa de La Angostura. A la tarde, mirador Belvedere y cascada Inacayal (≈3 h, fácil); al atardecer, pesca en la desembocadura del Correntoso.",
   st:[["Distancia","65 km"],["Trekking","Fácil, 3 h"],["Pesca","Mosca, zona preferencial"]],
   a:[["Mañana","Traslado y ducha"],["Tarde","Mirador Belvedere + Cascada Inacayal"],["Atardecer","Desembocadura del Correntoso"]],
   f:["Mirador Belvedere Villa La Angostura","Río Correntoso desembocadura"],sc:{type:"lake",sky:"dusk",seed:52}},
- {d:"4/1",w:"Lun",k:"casa",t:"Filo del Cerro Belvedere",s:"Primer gran desnivel",
-  lead:"El trekking más exigente de La Angostura: unas 3 h de subida hasta el filo, a 1.600 m, sobre basalto. Vista del Correntoso y el Nahuel Huapi a la vez.",
+ {d:"4/1",w:"Lun",k:"casa",t:"Filo del Cerro Belvedere",s:"Filo del Cerro Belvedere, ≈800 m de desnivel",
+  lead:"≈3 h de subida hasta el filo (1.600 m) por sendero marcado en rojo. Bajada y tarde en el Lago Espejo.",
   st:[["Desnivel","≈800 m"],["Subida","≈3 h"],["Dificultad","Media–difícil"]],
   a:[["8:30","Inicio del sendero, marcas rojas en los troncos"],["11:30","Filo y cruz de la cumbre"],["Tarde","Bajada y descanso en el Lago Espejo"]],
   f:["Filo Cerro Belvedere","Lago Espejo Villa La Angostura"],sc:{type:"peak",sky:"day",seed:61}},
- {d:"5/1",w:"Mar",k:"casa",t:"Kayak y Bosque de Arrayanes",s:"Día tranquilo antes del Meiling",
-  lead:"Kayak a la mañana y el Bosque de Arrayanes, único en el mundo, con la vuelta en barco. A la noche, mochilas armadas y a dormir temprano.",
+ {d:"5/1",w:"Mar",k:"casa",t:"Kayak y Bosque de Arrayanes",s:"Kayak, Bosque de Arrayanes y mochilas para el Meiling",
+  lead:"Kayak a la mañana en el Nahuel Huapi. Bosque de Arrayanes (12 km de ida, vuelta en barco). A la noche, mochilas listas para el Meiling.",
   st:[["Arrayanes","12 km ida"],["Vuelta","En barco"],["Mañana","Salida 8:30"]],
   a:[["Mañana","Kayak en el Nahuel Huapi"],["Tarde","Bosque de Arrayanes"],["Noche","Compras y mochilas listas para el Tronador"]],
   f:["Bosque de Arrayanes Quetrihué","Villa La Angostura kayak"],sc:{type:"forest",sky:"day",seed:73}},
- {d:"6/1",w:"Mié",k:"ref",t:"Refugio Otto Meiling",s:"Noche al borde del glaciar",
-  lead:"El gran desafío. Salen de La Angostura a las 8:30, entran al camino de Pampa Linda a las 10:30 y suben 13 km hasta el refugio, entre los glaciares Castaño Overa y Alerce.",
+ {d:"6/1",w:"Mié",k:"ref",t:"Refugio Otto Meiling",s:"13 km de subida y noche en el refugio, ≈2.000 m",
+  lead:"Salida de La Angostura 8:30; el camino a Pampa Linda abre para subir a las 10:30. Desde Pampa Linda, 13 km y 1.050 m de desnivel hasta el refugio, entre los glaciares Castaño Overa y Alerce.",
   st:[["Salida","8:30 (límite 10:00)"],["Subida","5–7 h"],["Desnivel","1.050 m"],["Altura","≈2.000 m"]],
   a:[["8:30","Salida de La Angostura"],["10:30","Los Rápidos: abre la entrada al camino"],["11:45","Pampa Linda, registro y mochilas"],["12:15","Subida al Meiling"],["Atardecer","Glaciar Castaño Overa y el Tronador"]],
   f:["Refugio Otto Meiling","Glaciar Castaño Overa Tronador"],sc:{type:"glacier",sky:"dusk",seed:89}},
- {d:"7/1",w:"Jue",k:"casa",t:"Ventisquero Negro y Bariloche",s:"Bajada, glaciar negro y Blest",
-  lead:"Bajan a la mañana y, como del camino no se sale antes de las 16, pasan el mediodía en el Ventisquero Negro y la Garganta del Diablo. Llegan a la casa de Bariloche y cierran con cerveza en Blest.",
+ {d:"7/1",w:"Jue",k:"casa",t:"Ventisquero Negro y Bariloche",s:"Bajada, Ventisquero Negro y llegada a Bariloche",
+  lead:"Bajada a la mañana (≈3 h). Del camino de Pampa Linda no se sale antes de las 16, así que el mediodía queda para el Ventisquero Negro y la Garganta del Diablo. Casa de Bariloche ≈19:00 y Cervecería Blest a las 20:30.",
   st:[["Bajada","≈3 h"],["Salida camino","16–17:30"],["Casa","≈19:00"]],
   a:[["8:30","Bajada del Meiling"],["12:30","Ventisquero Negro y Garganta del Diablo"],["16:00","Salida por el camino de mano única"],["20:30","Cervecería Blest"]],
   f:["Ventisquero Negro Tronador","Garganta del Diablo Pampa Linda"],sc:{type:"blackglacier",sky:"day",seed:97}},
- {d:"8/1",w:"Vie",k:"casa",t:"Rafting en el río Manso",s:"Clase IV hasta Chile + Patagonia",
-  lead:"Rafting Manso a la Frontera: rápidos de clase IV hasta el límite con Chile, sin experiencia previa. A la noche, Cervecería Patagonia frente al Lago Moreno para el atardecer.",
+ {d:"8/1",w:"Vie",k:"casa",t:"Rafting en el río Manso",s:"Rafting en el Manso (clase IV) y atardecer en el Lago Moreno",
+  lead:"Rafting Manso a la Frontera: ≈2 h de rápidos clase IV hasta el límite con Chile, sin experiencia previa. A las 19:30, Cervecería Patagonia (km 24,7) frente al Lago Moreno.",
   st:[["Rafting","Clase IV"],["Duración","Día completo"],["Atardecer","≈21:15"]],
   a:[["Mañana","Traslado al Manso inferior"],["Mediodía","≈2 h de rápidos hasta la frontera"],["19:30","Cervecería Patagonia, km 24,7"]],
   f:["Rafting río Manso Bariloche","Cervecería Patagonia Circuito Chico vista"],sc:{type:"river",sky:"dusk",seed:103}},
- {d:"9/1",w:"Sáb",k:"casa",t:"Filo de las Cabras y Circuito Chico",s:"Último día: montaña y bici",
-  lead:"A la mañana, el Filo de las Cabras en el Cerro López, con el Nahuel Huapi abajo. A la tarde, el Circuito Chico en bici por Llao Llao y Bahía López.",
+ {d:"9/1",w:"Sáb",k:"casa",t:"Filo de las Cabras y Circuito Chico",s:"Filo de las Cabras (Cerro López) y Circuito Chico en bici",
+  lead:"A la mañana, Filo de las Cabras desde el arroyo López (5–6 h). Almuerzo en Colonia Suiza y, a la tarde, Circuito Chico en bici por Llao Llao y Bahía López (≈4 h).",
   st:[["Filo","≈930 m"],["Trekking","5–6 h"],["Bici","≈4 h"]],
   a:[["8:00","Filo de las Cabras desde el arroyo López"],["13:45","Almuerzo en Colonia Suiza"],["15:15","Circuito Chico en bici"],["20:00","Nafta y valijas"]],
   f:["Filo de las Cabras Cerro López","Circuito Chico Bariloche Llao Llao"],sc:{type:"peak",sky:"dusk",seed:113}},
  {d:"10/1",w:"Dom",k:"fly",t:"Vuelta a casa",s:"Salida 6:30, vuelo 13:50",
-  lead:"Salen de Bariloche a las 6:30 por la ruta de la estepa, unos 240 km, para llegar a Chapelco a las 10 con margen para devolver los autos.",
+  lead:"Salida de Bariloche 6:30 por la RN 237 y la RN 40 (≈240 km). Llegada a Chapelco ≈10:00, devolución de autos y vuelo a las 13:50.",
   st:[["Salida","6:30"],["Distancia","≈240 km"],["Vuelo","13:50"]],
   a:[["6:30","Salida por RN 237 y RN 40"],["≈10:00","Aeropuerto Chapelco, devolución de autos"],["13:50","Vuelo"]],
   f:["Ruta 237 estepa Neuquén","Aeropuerto Chapelco"],sc:{type:"steppe",sky:"dawn",seed:127}}
@@ -631,27 +630,27 @@ DAYS_A[10].l=[WG_MEILING,["Refugio Otto Meiling","https://refugiomeiling.com/"]]
 const cp=(i,o)=>Object.assign({},DAYS_A[i],{p:i},o);
 const DAYS_B=[0,1,2,3,4,5,6].map(i=>cp(i)).concat([
  {d:"3/1",w:"Dom",k:"ref",t:"Refugio Frey",s:"Trekking y carpa en la laguna Toncek",
-  lead:"Salen temprano de Traful hacia Villa Catedral (≈2 h 30 de manejo) y suben al Refugio Frey: unos 10 km y 750 m de desnivel por el bosque, con vista al Lago Gutiérrez, hasta la laguna Toncek rodeada de agujas de granito. Noche en carpa junto al refugio; los autos quedan en el estacionamiento de Catedral.",
+  lead:"Salida temprano de Traful a Villa Catedral (≈2 h 30 de manejo). Sendero al Refugio Frey: ≈10 km y 750 m de desnivel hasta la laguna Toncek. Noche en carpa junto al refugio; los autos quedan en el estacionamiento de Catedral.",
   st:[["Sendero","≈10 km"],["Desnivel","≈750 m"],["Dificultad","Media"]],
   a:[["7:30","Desarme del camping y salida de Traful"],["10:00","Villa Catedral: autos en el estacionamiento"],["10:30","Inicio del sendero al Frey"],["≈14:30","Refugio Frey y laguna Toncek"],["Tarde","Armar carpas; el que quiera, sube a la laguna Schmoll"],["Noche","Cena en el refugio o en las carpas"]],
   f:["Refugio Frey laguna Toncek","Agujas Frey Cerro Catedral"],
   l:[WG_FREY,["Registro de trekking","https://nahuelhuapi.gov.ar/refugio-frey-desde-villa-catedral/"],["Refugio Frey","https://refugiofreybariloche.com/"]],
   sc:{type:"peak",sky:"dusk",seed:71},p:null},
  cp(7,{d:"4/1",w:"Lun",t:"Bajada del Frey y La Angostura",s:"Bajada, ruta y atardecer en el Correntoso",
-  lead:"Bajan del Frey a la mañana (≈3 h), buscan los autos y siguen a La Angostura (≈2 h). Casa, ducha y almuerzo; a la tarde, el mirador Belvedere con la cascada Inacayal, y al atardecer, pesca en el Correntoso. A la noche miran el pronóstico y deciden el Meiling.",
+  lead:"Bajada del Frey (≈3 h), autos en Catedral y 102 km a La Angostura. A la tarde, mirador Belvedere y cascada Inacayal; al atardecer, pesca en el Correntoso. A la noche se decide el Meiling según el pronóstico.",
   st:[["Bajada","≈3 h"],["Catedral → La Angostura","102 km · 1 h 56"],["Casa","1 noche (2 si hay plan B)"]],
   a:[["8:00","Desayuno y bajada"],["11:30","Villa Catedral, autos y salida"],["13:30","La Angostura: casa y almuerzo"],["16:00","Mirador Belvedere + Cascada Inacayal"],["Atardecer","Desembocadura del Correntoso"],["Noche","Pronóstico y mochilas para el Meiling"]],
   l:[WG_MEILING]}),
  cp(10,{d:"5/1",w:"Mar",t:"Otto Meiling, si hay clima",s:"Carpa o adentro del refugio · plan B si llueve",
-  lead:"Si el pronóstico da bien: salen de La Angostura a las 8:30, entran al camino de Pampa Linda en la ventana de subida (10:30 a 14) y suben 13 km hasta el refugio, entre los glaciares Castaño Overa y Alerce. Duermen en carpa o adentro del refugio. Si da mal clima no se sube, y se elige uno de los planes B.",
+  lead:"Si el pronóstico da bien: salida de La Angostura 8:30, camino a Pampa Linda en la ventana de subida (10:30 a 14) y 13 km hasta el refugio. Noche en carpa o adentro del refugio. Con mal clima no se sube y se elige un plan B.",
   st:[["Subida","13 km · ≈1.050 m"],["Noche","Carpa o refugio"],["Se decide","La noche del 4/1"]],
   a:[["8:30","Salida de La Angostura"],["10:30","Camino a Pampa Linda (se sube de 10:30 a 14)"],["≈13:00","Pampa Linda, inicio del sendero"],["≈18:00","Refugio Otto Meiling"],["Plan B 1","Mal clima: una noche más en La Angostura, si la casa está libre (Arrayanes y kayak)"],["Plan B 2","Volver a acampar a Traful, en otro camping"],["Plan B 3","Adelantar un día la casa de Bariloche, si está libre"]],
   l:[WG_MEILING,["Refugio Otto Meiling","https://refugiomeiling.com/"]]}),
  cp(11,{d:"6/1",w:"Mié"}),
- cp(13,{d:"7/1",w:"Jue",s:"Montaña y bici"}),
+ cp(13,{d:"7/1",w:"Jue"}),
  cp(12,{d:"8/1",w:"Vie"}),
  {d:"9/1",w:"Sáb",k:"casa",t:"Día libre en Bariloche",s:"Pesca, playa o Cerro Otto",
-  lead:"Con la casa hasta el 10 queda un día sin agenda: pesca en el Nahuel Huapi o el Gutiérrez, Playa Bonita, subir al Cerro Otto o descansar. Cena de despedida y a dormir temprano, que el 10 se sale a las 6:30.",
+  lead:"Día sin agenda fija: pesca en el Nahuel Huapi o el Gutiérrez, Playa Bonita o Cerro Otto. A la noche, valijas: el 10/1 se sale a las 6:30.",
   st:[["Agenda","Libre"],["Opciones","Pesca · playa · Cerro Otto"],["Salida 10/1","6:30"]],
   a:[["Mañana","Pesca o Playa Bonita"],["Tarde","Cerro Otto o compras en el centro"],["Noche","Cena de despedida y valijas"]],
   f:["Playa Bonita Bariloche","Cerro Otto Bariloche"],sc:{type:"lake",sky:"day",seed:113},p:null},
@@ -880,6 +879,16 @@ function renderGastos(){try{
  document.getElementById('istatPP').textContent=f(tot/8);
 }catch(e){console.warn(e)}}
 renderGastos();
+/* pantallazo: datos de la versión elegida */
+function renderIntro(){try{
+ const parts=BASES.map((b,i)=>{const n=(i<BASES.length-1?BASES[i+1].d:DAYS.length-1)-b.d;return b.n+' ('+n+(n===1?' noche':' noches')+')'});
+ document.getElementById('introLede').textContent='Barco a Buenos Aires el 27/12, vuelo a Chapelco el 28/12 y dos autos hasta el 10/1. Itinerario '+(ver==='b'?'nuevo':'original')+': '+parts.join(', ')+'.';
+ const km=Object.values(LEGS[ver]).reduce((a,l)=>a+parseInt(l.km),0);document.getElementById('istatKm').textContent='≈'+(Math.round(km/10)*10).toLocaleString('es-AR');
+ const rn=DAYS.filter(d=>d.k==='ref').length;document.getElementById('istatRef').textContent=rn;document.getElementById('istatRefL').textContent=rn===1?'noche en refugio':'noches en refugio';
+ const md=DAYS.find(d=>d.k==='ref'&&/Meiling/.test(d.t));const pm=document.querySelector('#pin small');if(md&&pm)pm.textContent='≈2.000 m · noche del '+md.d;
+}catch(e){console.warn(e)}}
+renderIntro();
+document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>renderIntro()));
 /* menú lateral */
 const drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),mbtn=document.getElementById('menuBtn');
 function menu(open){drawer.classList.toggle('open',open);drawer.setAttribute('aria-hidden',!open);scrim.hidden=!open;mbtn.setAttribute('aria-expanded',open);if(open)drawer.querySelector('a').focus()}
