@@ -18,3 +18,5 @@ Los tags no se pueden subir desde este entorno (el proxy corta el push), así qu
 | 2026-11-18 | `checkpoint/01-antes-orden` | Estado de `relato` al empezar la noche (commit 78273c5): primera versión del rediseño. |
 | 2026-11-18 | `checkpoint/01-orden-lista` | Etapa 0: `CLAUDE.md` actualizado con la estructura real y la regla de contenido; resumen de etapas; plan de la noche. Web sin cambios visibles. |
 | 2026-11-18 | `checkpoint/02-antes-contenido` | Igual que el anterior (punto de partida de la etapa 1). |
+| 2026-11-18 | `checkpoint/02-contenido-lista` | Etapa 1: sin "Bajá para volar" ni textos de relleno; bajadas y descripciones de cada día concretas; pantallazo con datos de la versión elegida. Estética todavía la de la primera versión. |
+| 2026-11-18 | `checkpoint/03-antes-estetica` | Igual que el anterior (punto de partida de las etapas 2 y 3). |
