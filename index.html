@@ -4,7 +4,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..800,100;1,9..144,400..800,100&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Caprasimo&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..800,100;1,9..144,400..800,100&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 /* Layout: cartel de sendero arriba, franja de ruta con las 6 bases, línea de tiempo a la izquierda y panel del día a la derecha (apilado en el teléfono) */
 /* Tokens: paleta de la investigación de estética (docs/investigacion-estetica.md). Los nombres viejos apuntan a los nuevos. */
@@ -445,6 +445,12 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 }
 @media (max-width:820px) and (prefers-reduced-motion:reduce){.menu-btn{transition:none}}
 .gtab tr.opt td{color:var(--muted)}.gtab tr.opt td.n{text-decoration:none;font-style:italic}
+/* ===== Título de afiche de los 70: Caprasimo (OFL, sustituto métrico de Cooper Black hecho a partir de Fraunces) ===== */
+:root{--afiche:"Caprasimo","Fraunces",Georgia,serif}
+.hero-txt h1,.intro h2,.gastos h2,.pz-head h2,.sec2,.picked h2,.v-top h2{font-family:var(--afiche);font-weight:400;font-variation-settings:normal}
+.hero-txt h1{letter-spacing:-.035em;line-height:.88}
+.intro h2{letter-spacing:-.03em;line-height:.92}
+.gastos h2,.pz-head h2,.sec2,.picked h2,.v-top h2{letter-spacing:-.02em}
 /* ===== Etapa 4 · pesca ===== */
 .fish{padding:14px 16px;border:1px solid var(--raya);border-left:3px solid var(--abeto);border-radius:2px;background:var(--rio)}
 .fish.no{border-left-color:var(--stone);background:var(--papel)}

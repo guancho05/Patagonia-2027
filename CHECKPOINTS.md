@@ -31,3 +31,5 @@ Los tags no se pueden subir desde este entorno (el proxy corta el push), así qu
 Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Checkpoints y cómo volver"). Preview de Vercel de cada rama: Vercel → Deployments → filtrar por la rama.
 | 2026-11-18 | `checkpoint/07-antes-correcciones` | Estado final de la noche, antes de las correcciones del 18/11. |
 | 2026-11-18 | `checkpoint/07-correcciones-listas` | Mosaico bien encuadrado, crédito del relieve abajo de la banda, botón de menú compacto que se esconde al bajar (celular), permisos de pesca como opcionales en Gastos. |
+| 2026-11-18 | `checkpoint/08-antes-titulo` | Estado después de las correcciones del 18/11, antes de cambiar la tipografía del título. |
+| 2026-11-18 | `checkpoint/08-titulo-listo` | Título de la portada y títulos grandes de secciones en Caprasimo (estilo Cooper Black, afiche de los 70). |

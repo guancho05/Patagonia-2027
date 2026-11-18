@@ -227,3 +227,21 @@ Todos son ramas en GitHub. Para **probar** uno sin tocar nada: `git switch -c pr
 6. De paso: las etiquetas chicas de la portada (Cerro Tronador, Pampa Linda) se veían vacías en modo oscuro (texto claro sobre fondo claro, error de la etapa 5); arreglado. Además aparecen recién cuando se desvanece el título, para no quedar detrás.
 
 Capturas (JPEG, 390 × 844 y 1280 × 800) en `docs/capturas/06-correcciones/`.
+
+## Título de la portada (tipografía de afiche de los 70)
+
+El título sigue siendo "Patagonia 2027". Probé cinco opciones, todas tipografías reales con licencia libre (OFL) de Google Fonts, sin letras dibujadas ni nada que copie el lettering de ninguna marca. Capturas en `docs/capturas/07-titulo/` (`portada-<opción>-390x844.jpg` y `-1280x800.jpg`).
+
+| Opción | Qué es | Resultado |
+|---|---|---|
+| a. Actual | Fraunces 600, SOFT 100 | Elegante pero liviana: no tiene el peso de afiche. |
+| b. Fraunces 900, SOFT 100, WONK 1, opsz 144, interletra −0,045 em | La misma familia al máximo. Fraunces está inspirada en Windsor, Souvenir y la serie Cooper ([repo](https://github.com/undercasetype/Fraunces)) | Gorda y blanda; las "n" y "h" inclinadas le dan gracia, pero con el interletrado apretado queda algo angosta y filosa. |
+| **c. Caprasimo**, interletra −0,035 em | Sustituto métrico de **Cooper Black** hecho a partir de Fraunces por el proyecto DocRepair ([descripción en google/fonts](https://github.com/google/fonts/blob/main/ofl/caprasimo/DESCRIPTION.en_us.html)) | **La más gorda, redonda y cálida**: es la vibra de afiche y catálogo de los 70. |
+| d. Corben 700 | Display de curvas amplias | Pesada pero más ancha y con aire de slab; menos blanda. |
+| e. Young Serif | Serif antigua "tierna", inspirada en Plantin Infant | Le falta peso para el efecto pedido. |
+
+**Elegí Caprasimo.** Es la que más se acerca a Cooper Black (la tipografía que más se asocia a la gráfica de los 70) sin imitar ningún logo. Además, como sale de Fraunces, convive bien con el resto de los títulos. Suma una sola fuente de unos 40 KB (o menos en woff2) y entra en el mismo pedido a Google Fonts.
+
+**Dónde se aplicó:** título de la portada, título del resumen ("27/12 → 10/1") y títulos grandes de secciones (Gastos, Pesca, "Las casas elegidas", "Dos Citroën Basalt", "Combinaciones…", "Lugares, en orden de viaje"…). Los títulos de cada día, los números de los datos y todos los textos de lectura siguen en Fraunces, Atkinson y Plex Mono. En el resumen, la flecha "→" la dibuja Fraunces (Caprasimo no la trae) y queda un poco más fina: es un detalle a revisar si molesta.
+
+La casa de La Angostura sigue como estaba (sin decidir).
