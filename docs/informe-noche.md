@@ -104,3 +104,35 @@ Investigación completa con fuentes en `docs/investigacion-pesca.md`. Lo princip
 - **Guías:** Southern Rivers (Limay) USD 410 por bote de 1-2; Natural Travel (trolling en Bahía López, hasta 4 por bote) sin tarifa publicada; el resto, a confirmar.
 - **Web:** página **Pesca** en el menú (permiso, reglas, lugares en orden de viaje, guías, equipo, fuentes); bloque **Pesca hoy** en 12 días del itinerario (abajo del trayecto, sin tocar las actividades), incluidos los avisos de dónde no se puede; fila de **permisos de pesca** en Gastos: 8 × ARS 50.000 = ≈ USD 254.
 - Capturas en `docs/capturas/04-pesca/` (incluye `dia-pesca-*`, el día 1/1 con el bloque).
+
+## Etapa 5 · Montaña más grande y con más definición
+
+### Opciones evaluadas
+
+| | A. three.js mejorado (datos propios + textura horneada) | B. Render previo del recorrido (video o secuencia de imágenes) | C. Híbrido (video de fondo + 3D liviano encima) |
+|---|---|---|---|
+| Definición | Alta: color y luz horneados a ~23 m/píxel (escritorio) sobre relieve de ~73 m | Máxima (render offline) | Alta |
+| Borde del terreno | Se resuelve con anillo exterior de 170 × 150 km + bruma + recorrido acotado | No existe | Depende del 3D |
+| Cualquier relación de aspecto | Sí (se renderiza al tamaño real) | No: el video se recorta o deja bandas en 21:9 y en vertical | Igual que B |
+| Ida y vuelta con el scroll | Natural | Hay que hacer "scrub" de video, que en iOS/Android es entrecortado si no son keyframes todos | Igual que B |
+| Peso | ≈ 1,2 MB escritorio / ≈ 0,85 MB celular (alturas + texturas), una sola vez | 5–20 MB de video para que no se vea comprimido | Suma de ambos |
+| Marcadores que siguen al terreno | Sí, con oclusión | Habría que animarlos a mano | Sí |
+| Herramientas necesarias acá | numpy/scipy (disponibles) | Blender o similar (no instalado en este entorno) | Ambas |
+| Mantenimiento | Regenerar con `python3 tools/terreno.py` | Re-renderizar todo ante cualquier cambio | Lo peor de ambos |
+
+**Elegí A.** Resuelve los dos problemas (borde y definición) en cualquier pantalla, pesa poco, mantiene el ida y vuelta fluido con el scroll y los marcadores, y no depende de herramientas que no hay en el entorno.
+
+### Qué hice
+- `tools/terreno.py`: baja tiles de AWS Terrain Tiles (z12 en la zona de detalle, ~29 m; z9 en el anillo), los reproyecta a una grilla lat/lon y **hornea una textura de color con luz**: sol de tarde del noroeste (27° de altura) con **sombras proyectadas** (marcha de rayos sobre el relieve), **oclusión ambiente**, **nieve y glaciar** según altura, pendiente y orientación (más baja en las caras al sur), **límite del bosque** irregular (~1.560 m), mallines en los fondos de valle, **lagos** detectados por zonas planas y bajas, y **estepa** hacia el este. Tono "película": negros levantados y cálidos, como en la etapa 3.
+- `data/`: `terreno-cerca-alt.png` (alturas 768 × 507), `terreno-lejos-alt.png` (256 × 228), `terreno-cerca.jpg` (2048 × 1360, escritorio), `terreno-cerca-m.jpg` (1024 × 680, celular), `terreno-lejos.jpg` (1024 × 912), `terreno.json`. La portada ya no depende de AWS en vivo.
+- **Zona modelada:** del Tronador (con parte del lado chileno) al Cerro Catedral y el Refugio Frey, de norte a sur hasta el Lago Mascardi: **47 × 31 km** con detalle (antes 17 × 17). Anillo exterior de **168 × 149 km** (se ven de lejos el Osorno y los cordones de Chile) que se funde con la bruma.
+- `js/hero.js` reescrito: **una sola malla** de densidad variable (640 × 422 en la zona de detalle en escritorio, 300 × 198 en el celular, y 40/28 filas cada vez más ralas hacia afuera), sin costuras. Shader propio: textura de detalle o de lejos según dónde cae el punto, **perspectiva aérea** (bruma con la distancia) y el borde exterior siempre 100 % bruma. **Cúpula de cielo** con la paleta (cenit `#2a74a6`, medio `#79abc0`, horizonte = bruma `#d9d7c6`).
+- **Recorrido del dron en datos** (`PATH`): sobre el Mascardi mirando al Tronador → encima de Pampa Linda → frente al Meiling y los glaciares → giro al este hacia el Catedral y el Frey. Curva Catmull-Rom; todas las posiciones de cámara quedan adentro de la zona de detalle y a más de 55 km del borde exterior, que la bruma tapa del todo antes. La cámara nunca baja de 400 m sobre el terreno. Suavizado por tiempo (igual en 30 o 120 fps).
+- **Marcadores**: Refugio Otto Meiling y Refugio Frey (con la fecha de la noche según la versión), y etiquetas chicas de Cerro Tronador y Pampa Linda (ocultas en el celular). Se esconden si quedan detrás de una montaña o fuera de pantalla. **Corregí la posición del Meiling**: estaba ~2,8 km corrida; ahora usa la de OpenStreetMap.
+- Se mantiene: ida y vuelta con el scroll, fallback con foto fija (sin WebGL2, movimiento reducido, Save-Data o poca memoria, o si algo falla), pausa fuera de pantalla y con la pestaña oculta, y el 3D arranca recién cuando el navegador queda libre (`requestIdleCallback`), así no frena el itinerario.
+- Capturas: antes en `docs/capturas/05-montana/antes/`, después en `docs/capturas/05-montana/despues/` (inicio, mitad y final; 390, 1280 y 2560; claro y oscuro) y todas las páginas en `docs/capturas/05-montana/paginas/`.
+
+### Límites conocidos
+- La textura se proyecta desde arriba: en las caras muy empinadas, de cerca, se ve algo estirada.
+- Las capturas usan render por software (SwiftShader); no pude medir fps en un celular real. Presupuesto: ~360 mil vértices en escritorio, ~70 mil en el celular, dos texturas.
+- La detección de lagos es automática: el Nahuel Huapi y el Mascardi salen bien; algún lago chico puede faltar.

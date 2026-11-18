@@ -1,155 +1,229 @@
-// Portada: el Tronador en 3D con relieve real (Terrain Tiles de AWS, formato Terrarium).
-// El scroll mueve la cámara como un dron alrededor de la montaña; al volver para arriba, gira de vuelta.
+// Portada: relieve real del Tronador al Cerro Catedral, con cámara tipo dron que avanza con el scroll y vuelve al subir.
+// Datos preprocesados con tools/terreno.py (alturas de AWS Terrain Tiles y color horneado con luz, sombras y nieve).
+// Una sola malla: densa en la zona de detalle (~47 x 31 km) y cada vez más rala hacia un anillo de ~170 x 150 km,
+// que se funde con la bruma; así nunca se ve el borde del terreno.
 const hero = document.getElementById('hero');
 const stage = document.getElementById('stage');
 const canvas = document.getElementById('terrain');
-const pin = document.getElementById('pin');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const saveData = navigator.connection && navigator.connection.saveData;
 const lowMem = navigator.deviceMemory && navigator.deviceMemory < 4;
 const mobile = matchMedia('(max-width: 820px)').matches;
 
-// Zona: de Pampa Linda a la cumbre, con el Refugio Otto Meiling.
-const BBOX = { n: -41.10, s: -41.25, w: -71.97, e: -71.74 };
-const Z = 11;
-const PLACES = {
-  meiling: { lat: -41.168, lon: -71.851, label: 'Refugio Otto Meiling', sub: '≈2.000 m' },
-  summit: { lat: -41.157, lon: -71.884 }
-};
+// Paleta de la etapa 3 (docs/investigacion-estetica.md) aplicada al cielo y la bruma.
+const SKY = { zenith: '#2a74a6', mid: '#79abc0', horizon: '#d9d7c6' };
+const EX = 1.15;            // exageración vertical
+const U = 10;               // unidades por km (1 unidad = 100 m)
 
-function fallback(reason) {
-  hero.classList.add('static');
-  hero.dataset.reason = reason;
+// Recorrido del dron: [progreso, cámara lat, lon, altura m, mira lat, lon, altura m]. Todo dentro de la zona de detalle.
+const PATH = [
+  [0.00, -41.262, -71.640, 2900, -41.168, -71.860, 2300],   // sobre el Mascardi, mirando al Tronador
+  [0.35, -41.236, -71.728, 2650, -41.172, -71.842, 2200],   // encima de Pampa Linda
+  [0.65, -41.196, -71.758, 3100, -41.160, -71.884, 2800],   // frente al Meiling y los glaciares
+  [1.00, -41.140, -71.792, 3450, -41.196, -71.540, 1500]    // giro al este: Catedral y Frey
+];
+
+function fallback(reason) { hero.classList.add('static'); hero.dataset.reason = reason; }
+function webgl2() { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } }
+
+async function heightsFrom(url) {
+  const blob = await (await fetch(url, { priority: 'low' })).blob();
+  const bmp = await createImageBitmap(blob, { colorSpaceConversion: 'none', premultiplyAlpha: 'none' });
+  const cv = document.createElement('canvas'); cv.width = bmp.width; cv.height = bmp.height;
+  const ctx = cv.getContext('2d', { willReadFrequently: true }); ctx.drawImage(bmp, 0, 0);
+  const px = ctx.getImageData(0, 0, bmp.width, bmp.height).data;
+  const h = new Float32Array(bmp.width * bmp.height);
+  for (let i = 0; i < h.length; i++) h[i] = (px[i * 4] * 256 + px[i * 4 + 1]) / 10;
+  return { w: bmp.width, h: bmp.height, d: h };
 }
 
-function webgl2() {
-  try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; }
-}
-
-const tileX = lon => (lon + 180) / 360 * 2 ** Z;
-const tileY = lat => (1 - Math.asinh(Math.tan(lat * Math.PI / 180)) / Math.PI) / 2 * 2 ** Z;
-
-async function loadHeights(N) {
-  const x0 = Math.floor(tileX(BBOX.w)), x1 = Math.floor(tileX(BBOX.e));
-  const y0 = Math.floor(tileY(BBOX.n)), y1 = Math.floor(tileY(BBOX.s));
-  const cols = x1 - x0 + 1, rows = y1 - y0 + 1;
-  const cv = document.createElement('canvas'); cv.width = cols * 256; cv.height = rows * 256;
-  const ctx = cv.getContext('2d', { willReadFrequently: true });
-  const jobs = [];
-  for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) {
-    jobs.push(fetch(`https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${Z}/${x}/${y}.png`)
-      .then(r => { if (!r.ok) throw new Error('tile ' + r.status); return r.blob(); })
-      .then(b => createImageBitmap(b))
-      .then(img => ctx.drawImage(img, (x - x0) * 256, (y - y0) * 256)));
-  }
-  await Promise.all(jobs);
-  const px = ctx.getImageData(0, 0, cv.width, cv.height).data;
-  const H = new Float32Array(N * N);
-  const fx0 = (tileX(BBOX.w) - x0) * 256, fx1 = (tileX(BBOX.e) - x0) * 256;
-  const fy0 = (tileY(BBOX.n) - y0) * 256, fy1 = (tileY(BBOX.s) - y0) * 256;
-  const at = (x, y) => { const i = (y * cv.width + x) * 4; return px[i] * 256 + px[i + 1] + px[i + 2] / 256 - 32768; };
-  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-    const fx = fx0 + (fx1 - fx0) * i / (N - 1), fy = fy0 + (fy1 - fy0) * j / (N - 1);
-    const ix = Math.min(cv.width - 2, Math.floor(fx)), iy = Math.min(cv.height - 2, Math.floor(fy));
-    const tx = fx - ix, ty = fy - iy;
-    H[j * N + i] = (at(ix, iy) * (1 - tx) + at(ix + 1, iy) * tx) * (1 - ty) + (at(ix, iy + 1) * (1 - tx) + at(ix + 1, iy + 1) * tx) * ty;
-  }
-  return H;
+function sampler(g) {
+  return (u, v) => {
+    const x = Math.min(g.w - 1.001, Math.max(0, u * (g.w - 1))), y = Math.min(g.h - 1.001, Math.max(0, v * (g.h - 1)));
+    const ix = x | 0, iy = y | 0, tx = x - ix, ty = y - iy, i = iy * g.w + ix;
+    return (g.d[i] * (1 - tx) + g.d[i + 1] * tx) * (1 - ty) + (g.d[i + g.w] * (1 - tx) + g.d[i + g.w + 1] * tx) * ty;
+  };
 }
 
 async function start() {
   if (reduce || saveData || lowMem || !webgl2()) return fallback(reduce ? 'reduced-motion' : 'liviano');
-  const THREE = await import('../vendor/three.module.min.js');
-  const N = mobile ? 128 : 200;
-  const H = await loadHeights(N);
+  // que el plan (itinerario, casas) cargue primero: el 3D arranca cuando el navegador queda libre
+  await new Promise(r => (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(r, { timeout: 1500 }));
+  const [THREE, meta] = await Promise.all([import('../vendor/three.module.min.js'), fetch('data/terreno.json').then(r => r.json())]);
+  const [gC, gO] = await Promise.all([heightsFrom('data/terreno-cerca-alt.png'), heightsFrom('data/terreno-lejos-alt.png')]);
+  const sC = sampler(gC), sO = sampler(gO);
+  const C = meta.cerca, O = meta.lejos;
 
-  // Escala: 1 unidad = 100 m.
-  const kmW = (BBOX.e - BBOX.w) * 111.32 * Math.cos(41.17 * Math.PI / 180);
-  const kmH = (BBOX.n - BBOX.s) * 110.57;
-  const W = kmW * 10, D = kmH * 10, EX = 1.25;
-  const geo = new THREE.PlaneGeometry(W, D, N - 1, N - 1);
-  geo.rotateX(-Math.PI / 2);
-  const pos = geo.attributes.position;
-  for (let k = 0; k < pos.count; k++) pos.setY(k, H[k] / 100 * EX);
-  geo.computeVertexNormals();
-
-  // Color por altura y pendiente: bosque, roca, nieve.
-  const nor = geo.attributes.normal, col = new Float32Array(pos.count * 3);
-  const forest = new THREE.Color('#3f4d2c'), scrub = new THREE.Color('#6b6a4a'), rock = new THREE.Color('#7d7468'), snow = new THREE.Color('#f4f1ea'), dark = new THREE.Color('#4a4540');
-  const c = new THREE.Color();
-  const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-  for (let k = 0; k < pos.count; k++) {
-    const h = H[k], up = nor.getY(k);
-    c.copy(forest).lerp(scrub, sm(1100, 1450, h)).lerp(rock, sm(1400, 1750, h));
-    c.lerp(dark, sm(0.85, 0.55, up) * 0.6);
-    c.lerp(snow, sm(1750, 2050, h) * sm(0.45, 0.75, up));
-    col.set([c.r, c.g, c.b], k * 3);
-  }
-  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.95;
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog('#d8b4a6', 170, 560);
-  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 })));
-  scene.add(new THREE.HemisphereLight('#c9d4ef', '#3a3a2a', 0.8));
-  const sun = new THREE.DirectionalLight('#ffc48e', 2.4);
-  sun.position.set(-180, 70, 40); scene.add(sun);
-
-  const toXZ = (lat, lon) => [((lon - BBOX.w) / (BBOX.e - BBOX.w) - 0.5) * W, ((BBOX.n - lat) / (BBOX.n - BBOX.s) - 0.5) * D];
-  const heightAt = (x, z) => {
-    const i = Math.round((x / W + 0.5) * (N - 1)), j = Math.round((z / D + 0.5) * (N - 1));
-    return H[Math.max(0, Math.min(N - 1, j)) * N + Math.max(0, Math.min(N - 1, i))] / 100 * EX;
+  // Proyección local: origen en el centro de la zona de detalle.
+  const lat0 = (C.n + C.s) / 2, lon0 = (C.w + C.e) / 2;
+  const kx = 111.32 * Math.cos(lat0 * Math.PI / 180) * U, kz = 110.57 * U;
+  const X = lon => (lon - lon0) * kx, Zc = lat => (lat0 - lat) * kz;
+  const rc = [X(C.w), Zc(C.n), X(C.e) - X(C.w), Zc(C.s) - Zc(C.n)];
+  const ro = [X(O.w), Zc(O.n), X(O.e) - X(O.w), Zc(O.s) - Zc(O.n)];
+  const hAt = (x, z) => {
+    const uo = (x - ro[0]) / ro[2], vo = (z - ro[1]) / ro[3];
+    let h = sO(uo, vo);
+    const uc = (x - rc[0]) / rc[2], vc = (z - rc[1]) / rc[3];
+    if (uc > 0 && uc < 1 && vc > 0 && vc < 1) {
+      const w = Math.min(1, Math.min(uc, 1 - uc, vc, 1 - vc) / 0.03);
+      h = h + (sC(uc, vc) - h) * w;
+    }
+    return h;
   };
-  const [mx, mz] = toXZ(PLACES.meiling.lat, PLACES.meiling.lon);
-  const my = heightAt(mx, mz);
-  const markerTop = new THREE.Vector3(mx, my + 9, mz);
-  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(mx, my, mz), markerTop]), new THREE.LineBasicMaterial({ color: '#c4602d' }));
-  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 12), new THREE.MeshBasicMaterial({ color: '#c4602d', fog: false }));
-  dot.position.copy(markerTop); scene.add(line, dot);
+  const yAt = (x, z) => hAt(x, z) / 100 * EX;
 
-  const [sx, sz] = toXZ(PLACES.summit.lat, PLACES.summit.lon);
-  const target = new THREE.Vector3((sx + mx) / 2, heightAt(sx, sz) * 0.55, (sz + mz) / 2);
-  const camera = new THREE.PerspectiveCamera(mobile ? 55 : 42, 1, 1, 900);
+  // Ejes de la grilla: uniformes en la zona de detalle, con separación creciente hacia afuera.
+  function axis(c0, c1, o0, o1, nc, no) {
+    const a = [];
+    for (let i = no; i >= 1; i--) a.push(c0 - (c0 - o0) * Math.pow(i / no, 2.2));
+    for (let i = 0; i < nc; i++) a.push(c0 + (c1 - c0) * i / (nc - 1));
+    for (let i = 1; i <= no; i++) a.push(c1 + (o1 - c1) * Math.pow(i / no, 2.2));
+    return a;
+  }
+  const nc = mobile ? 300 : 640;
+  const ax = axis(rc[0], rc[0] + rc[2], ro[0], ro[0] + ro[2], nc, mobile ? 28 : 40);
+  const az = axis(rc[1], rc[1] + rc[3], ro[1], ro[1] + ro[3], Math.round(nc * rc[3] / rc[2]), mobile ? 28 : 40);
+  const NX = ax.length, NZ = az.length;
+  const pos = new Float32Array(NX * NZ * 3);
+  for (let j = 0, k = 0; j < NZ; j++) for (let i = 0; i < NX; i++, k += 3) {
+    pos[k] = ax[i]; pos[k + 1] = yAt(ax[i], az[j]); pos[k + 2] = az[j];
+  }
+  const idx = new Uint32Array((NX - 1) * (NZ - 1) * 6);
+  for (let j = 0, k = 0; j < NZ - 1; j++) for (let i = 0; i < NX - 1; i++) {
+    const a = j * NX + i, b = a + 1, c = a + NX, d = c + 1;
+    idx[k++] = a; idx[k++] = c; idx[k++] = b; idx[k++] = b; idx[k++] = c; idx[k++] = d;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setIndex(new THREE.BufferAttribute(idx, 1));
 
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, alpha: false, powerPreference: 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
+  const loader = new THREE.TextureLoader();
+  const tex = url => new Promise((res, rej) => loader.load(url, t => {
+    t.flipY = false; t.colorSpace = THREE.NoColorSpace; t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; res(t);
+  }, undefined, rej));
+  const [tC, tO] = await Promise.all([tex(mobile ? 'data/terreno-cerca-m.jpg' : 'data/terreno-cerca.jpg'), tex('data/terreno-lejos.jpg')]);
+
+  const col = c => new THREE.Color(c);
+  const fogCol = col(SKY.horizon);
+  const mat = new THREE.ShaderMaterial({
+    uniforms: {
+      tC: { value: tC }, tO: { value: tO },
+      rc: { value: new THREE.Vector4(...rc) }, ro: { value: new THREE.Vector4(...ro) },
+      fogCol: { value: fogCol }, fogK: { value: 0.0026 }
+    },
+    vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `precision highp float;
+      uniform sampler2D tC, tO; uniform vec4 rc, ro; uniform vec3 fogCol; uniform float fogK; varying vec3 vW;
+      void main(){
+        vec2 uc = (vW.xz - rc.xy) / rc.zw, uo = (vW.xz - ro.xy) / ro.zw;
+        vec3 c = texture2D(tO, uo).rgb;
+        float e = min(min(uc.x, 1.0 - uc.x), min(uc.y, 1.0 - uc.y));
+        if (e > 0.0) c = mix(c, texture2D(tC, uc).rgb, clamp(e / 0.03, 0.0, 1.0));
+        float d = distance(vW, cameraPosition);
+        float f = 1.0 - exp(-pow(d * fogK, 3.0));
+        f = max(f, 0.18 * (1.0 - exp(-d * 0.006)));                      // velo de aire también de cerca
+        float edge = min(min(uo.x, 1.0 - uo.x), min(uo.y, 1.0 - uo.y));
+        f = max(f, 1.0 - smoothstep(0.0, 0.12, edge));                    // el borde exterior siempre en bruma
+        gl_FragColor = vec4(mix(c, fogCol, clamp(f, 0.0, 1.0)), 1.0);
+      }`
+  });
+  const scene = new THREE.Scene();
+  scene.add(new THREE.Mesh(geo, mat));
+
+  // Cielo: cúpula con degradé (cenit, medio y horizonte = bruma), sigue a la cámara.
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 32, 16), new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false, depthTest: false,
+    uniforms: { z: { value: col(SKY.zenith) }, m: { value: col(SKY.mid) }, h: { value: fogCol } },
+    vertexShader: `varying vec3 vD; void main(){ vD = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+    fragmentShader: `uniform vec3 z, m, h; varying vec3 vD; void main(){ float y = normalize(vD).y;
+      vec3 c = mix(h, m, smoothstep(-0.02, 0.12, y)); c = mix(c, z, smoothstep(0.08, 0.65, y)); gl_FragColor = vec4(c, 1.0); }`
+  }));
+  sky.renderOrder = -1; scene.add(sky);
+
+  // Marcadores
+  const P = meta.places;
+  const markers = [];
+  function marker(key, elId, lift, dot) {
+    const p = P[key], x = X(p.lon), z = Zc(p.lat), y = yAt(x, z);
+    const top = new THREE.Vector3(x, y + lift, z);
+    if (dot) {
+      const m = new THREE.LineBasicMaterial({ color: '#a3301d' });
+      scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, y, z), top]), m));
+      const s = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), new THREE.MeshBasicMaterial({ color: '#c4462c' }));
+      s.position.copy(top); scene.add(s);
+    }
+    const el = document.getElementById(elId);
+    if (el) markers.push({ el, top, ground: new THREE.Vector3(x, y, z) });
+  }
+  marker('meiling', 'pin', 9, true);
+  marker('frey', 'pinFrey', 9, true);
+  marker('tronador', 'pinTronador', 2, false);
+  marker('pampa', 'pinPampa', 2, false);
+
+  // Cámara y recorrido
+  const toV = (lat, lon, alt) => new THREE.Vector3(X(lon), alt / 100 * EX, Zc(lat));
+  const camCurve = new THREE.CatmullRomCurve3(PATH.map(k => toV(k[1], k[2], k[3])), false, 'centripetal');
+  const lookCurve = new THREE.CatmullRomCurve3(PATH.map(k => toV(k[4], k[5], k[6])), false, 'centripetal');
+  const stops = PATH.map(k => k[0]);
+  // progreso del scroll → parámetro de la curva (los puntos de control se reparten según PATH)
+  const curveT = p => {
+    for (let i = 0; i < stops.length - 1; i++) if (p <= stops[i + 1]) {
+      const t = (p - stops[i]) / (stops[i + 1] - stops[i]);
+      return (i + t) / (stops.length - 1);
+    }
+    return 1;
+  };
+  const camera = new THREE.PerspectiveCamera(mobile ? 56 : 44, 1, 0.5, 1000);
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
-    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false); camera.aspect = w / h;
+    camera.fov = Math.min(60, (mobile ? 56 : 44) * Math.max(1, (h / w) * 0.75)); // en vertical, un poco más de campo
+    camera.updateProjectionMatrix();
   }
   addEventListener('resize', resize); resize();
 
-  // Progreso del scroll dentro de la portada (0 arriba, 1 al terminar).
   const progress = () => {
     const r = hero.getBoundingClientRect(), span = hero.offsetHeight - innerHeight;
     return span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
   };
-  let p = progress(), shown = p, visible = true, t0 = performance.now();
-  new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) loop(); }).observe(hero);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) loop(); });
+  let shown = progress(), visible = true, running = false, last = performance.now();
+  const t0 = performance.now(), cp = new THREE.Vector3(), lp = new THREE.Vector3(), v = new THREE.Vector3(), q = new THREE.Vector3();
 
-  const v = new THREE.Vector3();
-  let running = false;
+  function occluded(m) {
+    for (let i = 1; i < 24; i++) {
+      q.lerpVectors(camera.position, m.top, i / 24);
+      if (yAt(q.x, q.z) > q.y + 0.3) return true;
+    }
+    return false;
+  }
   function frame(now) {
     if (!visible || document.hidden) { running = false; return; }
-    p = progress();
-    shown += (p - shown) * 0.08; // suavizado: el dron frena y acelera
-    const t = (now - t0) / 1000;
-    const ang = 2.35 + shown * Math.PI * 1.15 + Math.sin(t * 0.15) * 0.02;
-    const rad = 135 - shown * 50, alt = 70 - shown * 26;
-    camera.position.set(target.x + Math.cos(ang) * rad, target.y + alt, target.z + Math.sin(ang) * rad);
-    camera.lookAt(target.x, target.y + shown * 4, target.z);
+    const dt = Math.min(0.25, (now - last) / 1000); last = now;
+    shown += (progress() - shown) * (1 - Math.exp(-dt * 4.5));   // suavizado por tiempo: igual en 30 o 120 fps
+    const t = curveT(shown), s = (now - t0) / 1000;
+    camCurve.getPoint(t, cp); lookCurve.getPoint(t, lp);
+    cp.x += Math.sin(s * 0.13) * 0.6; cp.y += Math.sin(s * 0.17) * 0.3;
+    cp.y = Math.max(cp.y, yAt(cp.x, cp.z) + 4);               // nunca adentro de la montaña
+    camera.position.copy(cp); camera.lookAt(lp);
+    sky.position.copy(cp);
     renderer.render(scene, camera);
-    // Etiqueta HTML del refugio, proyectada sobre el punto.
-    v.copy(markerTop).project(camera);
-    const behind = v.z > 1;
-    pin.style.transform = `translate(${(v.x * 0.5 + 0.5) * stage.clientWidth}px,${(-v.y * 0.5 + 0.5) * stage.clientHeight}px)`;
-    pin.style.opacity = behind ? 0 : 1;
+    const W = stage.clientWidth, H = stage.clientHeight;
+    for (const m of markers) {
+      v.copy(m.top).project(camera);
+      const sx = (v.x * 0.5 + 0.5) * W, sy = (-v.y * 0.5 + 0.5) * H;
+      const off = v.z > 1 || sx < 40 || sx > W - 40 || sy < 70 || sy > H - 40 || occluded(m);
+      m.el.style.transform = `translate(${sx}px,${sy}px)`;
+      m.el.style.opacity = off ? 0 : 1;
+    }
     hero.style.setProperty('--p', shown.toFixed(3));
     requestAnimationFrame(frame);
   }
-  function loop() { if (!running) { running = true; requestAnimationFrame(frame); } }
+  function loop() { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } }
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) loop(); }).observe(hero);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) loop(); });
   hero.classList.add('live');
   loop();
 }

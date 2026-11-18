@@ -349,7 +349,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .hero-band b{font-weight:600}
 .hero.static .hero-band{opacity:1}
 .credit{right:calc(clamp(6px,1.1vw,14px) + 8px);bottom:calc(clamp(6px,1.1vw,14px) + 58px);z-index:3}
-@media (max-width:640px){.hero-band{font-size:12px;gap:2px 14px;padding:10px 16px}.hero-txt{bottom:calc(clamp(6px,1.1vw,14px) + 118px)}.credit{bottom:calc(clamp(6px,1.1vw,14px) + 92px)}}
+@media (max-width:640px){.hero-band{font-size:12px;gap:2px 14px;padding:10px 16px}.hero-txt{bottom:calc(clamp(6px,1.1vw,14px) + 140px)}.hero-txt small{letter-spacing:.06em;font-size:11px}.credit{bottom:calc(clamp(6px,1.1vw,14px) + 92px)}}
 .stage .pin>div{background:var(--hoja);color:var(--tinta);border-left:3px solid var(--polar);border-radius:2px}
 .stage .pin b{font-family:var(--display);font-weight:600}.stage .pin small{font-family:var(--mono);color:var(--tinta-2)}
 /* --- pantallazo --- */
@@ -421,9 +421,14 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 45%,rgba(14,11,7,.62) 100%);opacity:calc(1 - var(--p,0)*1.6)}
 .hero-txt{text-shadow:0 1px 2px rgba(0,0,0,.45),0 2px 28px rgba(14,11,7,.5)}
 .hero-txt small{background:rgba(14,11,7,.38);padding:3px 8px}
+.credit{left:calc(clamp(6px,1.1vw,14px) + 8px);text-align:right;line-height:1.35}
 .credit .cph,.hero.static .credit .c3d{display:none}.hero.static .credit .cph{display:inline}
 @media (prefers-reduced-motion:reduce){.poster{transition:none}}
 
+/* ===== Etapa 5 · marcadores de la portada ===== */
+.stage .pin.sm>div{background:rgba(251,246,236,.82);border-left:0;padding:3px 8px;box-shadow:none}
+.stage .pin.sm b{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+@media (max-width:640px){.stage .pin.sm{display:none}}
 /* ===== Etapa 4 · pesca ===== */
 .fish{padding:14px 16px;border:1px solid var(--raya);border-left:3px solid var(--abeto);border-radius:2px;background:var(--rio)}
 .fish.no{border-left-color:var(--stone);background:var(--papel)}
@@ -472,10 +477,13 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <img class="poster" src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1800&q=80&auto=format&fit=crop" alt="El Tronador nevado sobre el bosque" fetchpriority="high">
     <canvas id="terrain" aria-hidden="true"></canvas>
     <div class="pin" id="pin"><div><b>Refugio Otto Meiling</b><small>≈2.000 m · noche del 5/1</small></div></div>
+    <div class="pin" id="pinFrey"><div><b>Refugio Frey</b><small>≈1.700 m · noche del 3/1</small></div></div>
+    <div class="pin sm" id="pinTronador"><div><b>Cerro Tronador</b></div></div>
+    <div class="pin sm" id="pinPampa"><div><b>Pampa Linda</b></div></div>
     <div class="shade" aria-hidden="true"></div>
     <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1></div>
     <p class="hero-band"><span><b>27/12/2026 → 10/1/2027</b></span><span>8 personas</span><span>14 noches</span><span>San Martín de los Andes → Bariloche</span></p>
-        <p class="credit"><span class="c3d">Relieve real: Terrain Tiles (AWS) · SRTM</span><span class="cph">Foto: Unsplash</span></p>
+        <p class="credit"><span class="c3d">Relieve: Terrain Tiles de AWS (SRTM y otros) · Lugares: © OpenStreetMap</span><span class="cph">Foto: Unsplash</span></p>
   </div>
 </section>
 <section class="intro" id="portada" aria-labelledby="intro-h">
@@ -538,7 +546,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
       </div>
     </article>
   </div>
-  <p class="note">Fotos: Unsplash y Wikimedia Commons. Mapas y tiempos de los trayectos: Google Maps. Relieve de la portada: Terrain Tiles de AWS (datos SRTM y otros).</p>
+  <p class="note">Fotos: Unsplash y Wikimedia Commons. Mapas y tiempos de los trayectos: Google Maps. Relieve de la portada: Terrain Tiles de AWS (datos SRTM, GMTED2010 y otros), procesado con tools/terreno.py; ubicación de refugios y lugares: © colaboradores de OpenStreetMap.</p>
   </div>
 
   <section class="view gastos" id="view-gastos" aria-labelledby="gastos-h" hidden>
@@ -1136,6 +1144,7 @@ function renderIntro(){try{
  const km=Object.values(LEGS[ver]).reduce((a,l)=>a+parseInt(l.km),0);document.getElementById('istatKm').textContent='≈'+(Math.round(km/10)*10).toLocaleString('es-AR');
  const rn=DAYS.filter(d=>d.k==='ref').length;document.getElementById('istatRef').textContent=rn;document.getElementById('istatRefL').textContent=rn===1?'noche en refugio':'noches en refugio';
  const md=DAYS.find(d=>d.k==='ref'&&/Meiling/.test(d.t));const pm=document.querySelector('#pin small');if(md&&pm)pm.textContent='≈2.000 m · noche del '+md.d;
+ const fd=DAYS.find(d=>d.k==='ref'&&/Frey/.test(d.t));const pf=document.querySelector('#pinFrey small');if(pf)pf.textContent=fd?'≈1.700 m · noche del '+fd.d:'≈1.700 m · no está en esta versión';
 }catch(e){console.warn(e)}}
 renderIntro();
 document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>renderIntro()));

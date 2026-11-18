@@ -1,0 +1,74 @@
+{
+ "cerca": {
+  "n": -41.08,
+  "s": -41.36,
+  "w": -71.98,
+  "e": -71.42,
+  "km": [
+   46.891,
+   30.96
+  ],
+  "alt": [
+   768,
+   507
+  ],
+  "tex": [
+   2048,
+   1360
+  ],
+  "min": 441,
+  "max": 3437
+ },
+ "lejos": {
+  "n": -40.55,
+  "s": -41.9,
+  "w": -72.7,
+  "e": -70.7,
+  "km": [
+   167.454,
+   149.27
+  ],
+  "alt": [
+   256,
+   228
+  ],
+  "tex": [
+   1024,
+   912
+  ],
+  "min": -213,
+  "max": 3237
+ },
+ "places": {
+  "meiling": {
+   "lat": -41.17593,
+   "lon": -71.81801,
+   "label": "Refugio Otto Meiling"
+  },
+  "frey": {
+   "lat": -41.19825,
+   "lon": -71.48628,
+   "label": "Refugio Frey"
+  },
+  "tronador": {
+   "lat": -41.15892,
+   "lon": -71.89128,
+   "label": "Cerro Tronador"
+  },
+  "pampa": {
+   "lat": -41.23057,
+   "lon": -71.7732,
+   "label": "Pampa Linda"
+  },
+  "mascardi": {
+   "lat": -41.30889,
+   "lon": -71.57735,
+   "label": "Lago Mascardi"
+  }
+ },
+ "fuente": "AWS Terrain Tiles (Terrarium): SRTM, GMTED2010, ETOPO1 y otros",
+ "sol": {
+  "az": 315.0,
+  "el": 27.0
+ }
+}
