@@ -187,7 +187,7 @@ Todos son ramas en GitHub. Para **probar** uno sin tocar nada: `git switch -c pr
 4. **Fogón en el Falkner y en Traful:** el texto del día lo menciona (estaba en los datos); en Parques Nacionales el fuego depende del índice de peligro del día. A confirmar con el camping.
 5. **Altura del Refugio Frey (≈1.700 m)** sale de una fuente turística, no oficial.
 6. **Rendimiento del 3D en un celular real:** las capturas son con render por software; conviene abrir el preview en un celular de gama media y ver si va fluido.
-7. **Capturas en el repo:** las pasé de PNG a JPEG (calidad 82) al final: la carpeta bajó de 205 MB a lo que ocupa hoy, pero los PNG quedan en el historial de `relato`. Agregué `.vercelignore` para que `docs/` y `tools/` no se suban a Vercel. Si al mergear a `main` querés un historial liviano, conviene un merge con squash.
+7. **Capturas en el repo:** las pasé de PNG a JPEG (calidad 82) al final: la carpeta bajó de 205 MB a 28 MB, pero los PNG quedan en el historial de `relato`. Agregué `.vercelignore` para que `docs/` y `tools/` no se suban a Vercel. Si al mergear a `main` querés un historial liviano, conviene un merge con squash.
 
 ## Para revisión
 
