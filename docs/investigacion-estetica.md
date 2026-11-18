@@ -157,3 +157,38 @@ Variantes para texto sobre el fondo oscuro de la página: rojo `#ef7a62` (6,67),
 
 ### Lo que no se usa
 Ni el nombre ni el logo de la marca, ni la silueta de montaña, ni franjas de atardecer, ni combinaciones que lo armen. Los colores van en bloques planos y separados, como etiquetas de catálogo.
+
+---
+
+## Paleta 3 · paleta principal desde los colores del logo (18/11/2026)
+
+Pedido: usar como paleta principal los colores exactos de una imagen de referencia del logo de la marca (que me pasaron solo para eso: **no está en el repo ni publicada**). Saqué los colores por conteo de píxeles (los más frecuentes de cada zona):
+
+| Color | Hex | Uso |
+|---|---|---|
+| Violeta | `#4d0074` | bloques (Autos, Pesca), parche de datos, botón "Itinerario nuevo", pie, acento de texto chico en claro |
+| Azul rey | `#003da2` | bloques (Itinerario, Gastos), parches, links en claro, etiqueta "Trayecto del día" |
+| Rojo | `#e10d0c` | bloque Casas, banda/botones de acción, día elegido, marcadores, **senderos punteados**, filete del pie |
+| Negro | `#0d0709` | texto en claro, fondo en oscuro, banda de datos de la portada |
+| Blanco | `#ffffff` | texto sobre los bloques de color |
+| Neutros sumados | crema `#f2ead9`, hoja `#fbf6ec`, gris `#5a5258` (claro); hoja `#1c1518`, gris `#bdb3ad` (oscuro) | solo para lectura y contraste |
+
+**Contraste (WCAG 2):**
+
+| Texto / fondo | Contraste | Uso permitido |
+|---|---|---|
+| blanco / violeta | 13,4 | todo |
+| blanco / azul | 9,59 | todo |
+| blanco / rojo | 4,92 | todo (AA texto normal) |
+| negro / rojo | 4,06 | solo texto grande: no se usa |
+| negro / crema | 16,69 | texto de lectura en claro |
+| violeta / crema | 11,19 | acentos chicos (horas, fechas) en claro |
+| azul / crema | 8,01 | links en claro |
+| rojo / crema | 4,11 | **no** para texto chico: solo bloques, líneas y marcadores |
+| gris `#5a5258` / crema | 6,31 | texto secundario en claro |
+| crema / negro | 16,69 | texto de lectura en oscuro |
+| gris `#bdb3ad` / negro | 9,72 | texto secundario en oscuro |
+| rojo / negro | 4,06 | **no** para texto chico en oscuro |
+| azul / negro, violeta / negro | 2,08 / 1,49 | solo como bloques con texto blanco, nunca texto sobre negro |
+
+**Límites que respeto:** nada de franjas violeta/azul/rojo apiladas detrás de una silueta de montaña, ni en la portada ni en otro lado; los colores van en bloques planos separados. El cielo del 3D queda en un degradé natural. Los títulos siguen en Caprasimo (estilo Cooper Black, años 70), que no se parece a la letra del logo.

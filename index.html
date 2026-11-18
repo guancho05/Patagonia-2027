@@ -496,64 +496,80 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .pz-spots p{margin:8px 0 0;font-size:15px}.pz-spots i{font-style:normal;font-weight:700}
 #pzGuides a{color:var(--ink);font-weight:700}
 @media (max-width:640px){#pzGuides th:nth-child(3),#pzGuides td:nth-child(3){display:none}}
-/* ===== Paleta de época con más protagonismo (docs/investigacion-estetica.md, sección "Paleta 2") ===== */
+/* ===== Paleta principal: violeta, azul rey, rojo, negro y blanco (docs/investigacion-estetica.md, "Paleta 3") + crema y gris neutros para lectura ===== */
 :root{
-  --rojo:#b3312a; --cobalto:#1f4fa3; --cobalto-o:#183c7c; --teal:#0d6b70; --aloe:#8db596; --espuma:#93cdbd; --mostaza:#d19a2a; --moca:#a68b72; --purpura:#5a3d7d;
-  --claro:#fbf6ec; --oscuro:#221d17;
-  --polar:#b3312a; --cielo:#1f4fa3; --casa:#b3312a; --camp:#0d6b70; --ref:#1f4fa3; --fly:#5a3d7d;
+  --violeta:#4d0074; --azul:#003da2; --rojo:#e10d0c; --negro:#0d0709; --blanco:#ffffff;
+  --claro:#ffffff; --oscuro:#0d0709;
+  /* neutros (solo lectura y contraste) */
+  --papel:#f2ead9; --hoja:#fbf6ec; --tinta:#0d0709; --tinta-2:#5a5258; --raya:#d9cfbe;
+  /* acentos */
+  --polar:#e10d0c; --on-polar:#ffffff; --acento:#4d0074; --cielo:#003da2;
+  --casa:#e10d0c; --camp:#003da2; --ref:#4d0074; --fly:#0d0709;
+  --abeto:#003da2; --on-abeto:#ffffff; --rio:#fbf6ec; --stone:#5a5258; --ice:#e3dccb;
+  /* nombres de la paleta anterior, apuntando a la nueva */
+  --cobalto:var(--azul); --cobalto-o:var(--violeta); --teal:var(--azul); --mostaza:var(--violeta); --espuma:var(--azul); --moca:var(--tinta-2); --purpura:var(--violeta);
+  --parche-4:var(--negro); --on-parche-4:#ffffff;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--polar:#ef7a62; --cielo:#8fb0ee; --casa:#ef7a62; --camp:#5cc2bf; --ref:#8fb0ee; --fly:#c3a6e6}}
-:root[data-theme="dark"]{--polar:#ef7a62; --cielo:#8fb0ee; --casa:#ef7a62; --camp:#5cc2bf; --ref:#8fb0ee; --fly:#c3a6e6}
-/* bloques de color por sección */
-#view-itin{--sec:var(--cobalto);--on-sec:var(--claro)}
-#view-casas{--sec:var(--rojo);--on-sec:var(--claro)}
-#view-autos{--sec:var(--mostaza);--on-sec:var(--oscuro)}
-#view-gastos{--sec:var(--teal);--on-sec:var(--claro)}
-#view-pesca{--sec:var(--espuma);--on-sec:var(--oscuro)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --papel:#0d0709; --hoja:#1c1518; --tinta:#f2ead9; --tinta-2:#bdb3ad; --raya:#3a3036;
+  --acento:#f2ead9; --cielo:#f2ead9; --rio:#1c1518; --parche-4:#1c1518; --on-parche-4:#f2ead9; --polar:#e10d0c; --on-polar:#ffffff; --casa:#e10d0c; --camp:#003da2; --ref:#4d0074; --fly:#0d0709; --abeto:#003da2; --on-abeto:#ffffff; --stone:#7d7377; --ice:#2a2226; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --papel:#0d0709; --hoja:#1c1518; --tinta:#f2ead9; --tinta-2:#bdb3ad; --raya:#3a3036;
+  --acento:#f2ead9; --cielo:#f2ead9; --rio:#1c1518; --parche-4:#1c1518; --on-parche-4:#f2ead9; --polar:#e10d0c; --on-polar:#ffffff; --casa:#e10d0c; --camp:#003da2; --ref:#4d0074; --fly:#0d0709; --abeto:#003da2; --on-abeto:#ffffff; --stone:#7d7377; --ice:#2a2226; color-scheme:dark}
+/* links: en oscuro son crema subrayados */
+.links a,.stay a,.leg a,.fish a,.pz-head .sub a,.v-foot a,#pzGuides a{text-decoration-thickness:1px}
+.stay a,.leg .src a,.fish a,.v-foot a{text-decoration:underline}
+/* bloques de color por sección (texto blanco: violeta 13,4 · azul 9,59 · rojo 4,92) */
+#view-itin{--sec:var(--azul);--on-sec:#fff}
+#view-casas{--sec:var(--rojo);--on-sec:#fff}
+#view-autos{--sec:var(--violeta);--on-sec:#fff}
+#view-gastos{--sec:var(--azul);--on-sec:#fff}
+#view-pesca{--sec:var(--violeta);--on-sec:#fff}
 .sec-band{background:var(--sec);color:var(--on-sec);border-radius:2px;padding:22px 22px 18px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
 .sec-band h2{font-family:var(--afiche);font-weight:400;font-size:clamp(40px,7vw,72px);line-height:.95;letter-spacing:-.02em;margin:0;color:inherit}
 .sec-band p,.sec-band .sub{margin:0;font-family:var(--mono);font-size:13px;color:inherit!important;opacity:1}
 .sec-band.pz-head{display:block;max-width:none}
 .sec-band.pz-head .sub a{color:inherit;font-weight:700}
-.sec-band .fly{color:var(--oscuro)}
+.sec-band .fly{color:#fff}
 .sec-band .kicker{color:inherit}
 .vbtn[aria-pressed="true"],#view-itin .chip[aria-pressed="true"],#cityChips .chip[aria-pressed="true"]{background:var(--sec);border-color:var(--sec);color:var(--on-sec)}
-.day.on{box-shadow:inset 4px 0 0 var(--sec,var(--polar)),0 0 0 1px var(--raya)}
-.base.on i{background:var(--sec);border-color:var(--sec);color:var(--on-sec)}
+.day.on{box-shadow:inset 4px 0 0 var(--rojo),0 0 0 1px var(--raya)}
+.base.on i{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.go{background:var(--rojo);color:#fff}
 /* parches de datos */
-.istats div:nth-child(1){background:var(--rojo);color:var(--claro)}
-.istats div:nth-child(2){background:var(--cobalto);color:var(--claro)}
-.istats div:nth-child(3){background:var(--mostaza);color:var(--oscuro)}
-.istats div:nth-child(4){background:var(--teal);color:var(--claro)}
-.istats div span{color:inherit!important;opacity:.92}
-.istats div{border:0!important}
 .istats{background:none;gap:6px}
-.gsum div:nth-child(1){background:var(--cobalto);border-color:var(--cobalto);color:var(--claro)}
-.gsum div:nth-child(2){background:var(--mostaza);border-color:var(--mostaza);color:var(--oscuro)}
-.gsum div:nth-child(3){background:var(--rojo);border-color:var(--rojo);color:var(--claro)}
+.istats div{border:0!important}
+.istats div:nth-child(1){background:var(--rojo);color:#fff}
+.istats div:nth-child(2){background:var(--azul);color:#fff}
+.istats div:nth-child(3){background:var(--violeta);color:#fff}
+.istats div:nth-child(4){background:var(--parche-4);color:var(--on-parche-4);box-shadow:inset 0 0 0 1px var(--raya)}
+.istats div span{color:inherit!important;opacity:.92}
+.gsum div:nth-child(1){background:var(--azul);border-color:var(--azul);color:#fff}
+.gsum div:nth-child(2){background:var(--violeta);border-color:var(--violeta);color:#fff}
+.gsum div:nth-child(3){background:var(--rojo);border-color:var(--rojo);color:#fff}
 .gsum div span{color:inherit!important;opacity:.92}
-.hero-band{background:var(--rojo);color:var(--claro)}
-.vchoose button.new{background:var(--cobalto);border-color:var(--cobalto);color:var(--claro)}
-.vchoose button.new span{color:var(--claro)}
-.pz-permit{background:var(--espuma);color:var(--oscuro);border-color:var(--espuma);border-left-color:var(--teal)}
-.pz-permit h3,.pz-big span,.pz-permit .note{color:var(--oscuro)!important}
-.pz-permit .gtab td{color:var(--oscuro);border-color:rgba(34,29,23,.2)}
-.pz-permit .links a{color:var(--oscuro);border-color:var(--oscuro)}
-.pz-permit .links a:hover{background:var(--oscuro);color:var(--espuma)}
+.hero-band{background:var(--negro);color:#fff}
+.vchoose button.new{background:var(--violeta);border-color:var(--violeta);color:#fff}
+.vchoose button.new span{color:#fff}
+.pz-permit{background:var(--hoja);color:var(--tinta);border-color:var(--raya);border-left:4px solid var(--violeta)}
+.pz-permit h3,.pz-big span,.pz-permit .note{color:var(--tinta-2)!important}
 .combo.rec,.picked{box-shadow:inset 4px 0 0 var(--rojo);border-color:var(--rojo)}
-.know .k:nth-child(1){border-top-color:var(--rojo)}.know .k:nth-child(2){border-top-color:var(--cobalto)}.know .k:nth-child(3){border-top-color:var(--mostaza)}
-.pz-spots li{border-top-color:var(--teal)}
-/* detalles del itinerario: etiquetas como parches */
+.know .k:nth-child(1){border-top-color:var(--rojo)}.know .k:nth-child(2){border-top-color:var(--azul)}.know .k:nth-child(3){border-top-color:var(--violeta)}
+.pz-spots li{border-top-color:var(--violeta)}
+/* detalles del itinerario: etiquetas como parches, horas y fechas en el acento */
+.acts .h,.pz-d,.kicker{color:var(--acento)}
 .stay h3,.leg h3,.fish h3{display:inline-block;padding:3px 8px;border-radius:2px;letter-spacing:.1em}
-.stay h3{background:var(--rojo);color:var(--claro)!important}
-.leg h3{background:var(--cobalto);color:var(--claro)!important}
-.fish h3{background:var(--teal);color:var(--claro)!important}
-.fish.no h3{background:var(--moca);color:var(--oscuro)!important}
-.fish{border-left-color:var(--teal)}
-.drawer a:nth-of-type(1)::before{color:var(--polar)}.drawer a:nth-of-type(2)::before{color:var(--cielo)}.drawer a:nth-of-type(4)::before{color:var(--camp)}
-/* pie */
-.pie{background:var(--cobalto-o);color:var(--claro);border-top:8px solid var(--mostaza)}
-.pie-nav a{border-bottom-color:rgba(251,246,236,.25)}
+.stay h3{background:var(--rojo);color:#fff!important}
+.leg h3{background:var(--azul);color:#fff!important}
+.fish h3{background:var(--violeta);color:#fff!important}
+.fish.no h3{background:var(--tinta-2);color:var(--papel)!important}
+.fish{border-left-color:var(--violeta);background:var(--hoja)}
+.day .pin{box-shadow:0 0 0 2px currentColor,0 0 0 3px var(--raya)}
+.drawer a::before{color:var(--acento)}
+.stage .pin>div{border-left-color:var(--rojo)}
+/* pie: violeta, filete rojo arriba */
+.pie{background:var(--violeta);color:#fff;border-top:6px solid var(--rojo)}
+.pie-nav a{border-bottom-color:rgba(255,255,255,.25)}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
