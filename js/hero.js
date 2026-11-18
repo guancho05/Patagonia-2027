@@ -21,13 +21,19 @@ const SKY = { zenith: '#2a74a6', mid: '#79abc0', horizon: '#d9d7c6' };
 const EX = 1.15;            // exageración vertical
 const U = 10;               // unidades por km (1 unidad = 100 m)
 
-// Recorrido del dron: [progreso, cámara lat, lon, altura m, mira lat, lon, altura m]. Todo dentro de la zona de detalle.
+// Recorrido del dron: puntos de control [cámara lat, lon, altura m, mira lat, lon, altura m], en orden.
+// La cámara va por una spline a velocidad constante (por longitud de arco); la mirada usa los mismos tramos.
 const PATH = [
-  [0.00, -41.262, -71.640, 2900, -41.168, -71.860, 2300],
-  [0.35, -41.236, -71.728, 2650, -41.172, -71.842, 2200],
-  [0.65, -41.196, -71.758, 3100, -41.160, -71.884, 2800],
-  [1.00, -41.140, -71.792, 3450, -41.196, -71.540, 1500]
+  [-41.226, -71.758, 2650, -41.170, -71.850, 2350],   // sobre Pampa Linda, de frente al Tronador y el Meiling
+  [-41.204, -71.776, 2900, -41.164, -71.868, 2600],   // más cerca de los glaciares
+  [-41.180, -71.760, 3150, -41.120, -71.770, 2300],   // gira por el norte
+  [-41.176, -71.690, 3200, -41.180, -71.560, 2000],   // mira al este
+  [-41.182, -71.600, 3000, -41.196, -71.505, 1950],   // cruza hacia el Catedral
+  [-41.168, -71.502, 2850, -41.200, -71.490, 1950],
+  [-41.166, -71.458, 2950, -41.203, -71.490, 1850]    // cierre: Cerro Catedral y Refugio Frey (línea de vista despejada a la laguna Toncek)
 ];
+const ACCEL = 0.14;   // fracción del recorrido para acelerar y para frenar
+const HOLD = 0.92;    // la cámara llega al Catedral al 92 % del scroll y se queda quieta
 
 function fallback(reason) { hero.classList.add('static'); hero.dataset.reason = reason; }
 function webgl2() { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } }
@@ -128,11 +134,12 @@ async function start() {
   })();
   const oMat = new THREE.ShaderMaterial({
     uniforms: { tO: { value: tO }, rc: { value: new THREE.Vector4(...rc) }, ro: { value: new THREE.Vector4(...ro) }, fogCol: { value: fogCol }, fogK: { value: 0.0026 } },
-    vertexShader: `varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    // adentro de la zona de detalle el anillo se hunde 300 m: queda tapado por el terreno nítido y no deja huecos en la costura
+    vertexShader: `uniform vec4 rc; varying vec3 vW; void main(){ vec3 p = position; vec2 uc = (p.xz - rc.xy) / rc.zw;
+      if (uc.x > 0.0005 && uc.x < 0.9995 && uc.y > 0.0005 && uc.y < 0.9995) p.y -= ${(3 * 1.15).toFixed(2)};
+      vec4 w = modelMatrix * vec4(p,1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }`,
     fragmentShader: `precision highp float; uniform sampler2D tO; uniform vec4 rc, ro; uniform vec3 fogCol; uniform float fogK; varying vec3 vW;
       void main(){
-        vec2 uc = (vW.xz - rc.xy) / rc.zw;
-        if (uc.x > 0.0005 && uc.x < 0.9995 && uc.y > 0.0005 && uc.y < 0.9995) discard;
         vec2 uo = (vW.xz - ro.xy) / ro.zw;
         vec3 c = texture2D(tO, uo).rgb;${FOG}
         float edge = min(min(uo.x, 1.0 - uo.x), min(uo.y, 1.0 - uo.y));
@@ -188,7 +195,7 @@ async function start() {
   const coreGroup = new THREE.Group(); scene.add(coreGroup);
   function buildCore(level, prev) {
     const Cq = level.chunk, nCx = Math.max(1, Math.round((level.alt - 1) / Cq)), nCz = Math.max(1, Math.round((altH(level.alt) - 1) / Cq));
-    const V = Cq + 1, dxw = rc[2] / (nCx * Cq), dzw = rc[3] / (nCz * Cq), skirt = 0.9 * EX;
+    const V = Cq + 1, dxw = rc[2] / (nCx * Cq), dzw = rc[3] / (nCz * Cq), skirt = 4 * EX;   // faldones de 400 m: tapan grietas entre niveles de detalle
     const list = [];
     for (let cj = 0; cj < nCz; cj++) for (let ci = 0; ci < nCx; ci++) {
       const pos = new Float32Array((V * V + 4 * V) * 3), h0 = new Float32Array(V * V + 4 * V);
@@ -241,14 +248,14 @@ async function start() {
     const parts = [];
     if (dot) {
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, y, z), top]), new THREE.LineBasicMaterial({ color: '#a3301d' }));
-      const s = new THREE.Mesh(new THREE.SphereGeometry(0.55, 16, 12), new THREE.MeshBasicMaterial({ color: '#c4462c' }));
+      const s = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 12), new THREE.MeshBasicMaterial({ color: '#c4462c' }));
       s.position.copy(top); scene.add(line, s); parts.push(line, s);
     }
     const el = document.getElementById(elId);
     if (el) markers.push({ el, top, key, lift, parts });
   }
   marker('meiling', 'pin', 9, true);
-  marker('frey', 'pinFrey', 9, true);
+  marker('frey', 'pinFrey', 4, true);
   marker('tronador', 'pinTronador', 2, false);
   marker('pampa', 'pinPampa', 2, false);
   function replant() {   // con las alturas nuevas, los marcadores se apoyan en el terreno de alta resolución
@@ -261,13 +268,30 @@ async function start() {
 
   // Cámara y recorrido
   const toV = (lat, lon, alt) => new THREE.Vector3(X(lon), alt / 100 * EX, Zc(lat));
-  const camCurve = new THREE.CatmullRomCurve3(PATH.map(k => toV(k[1], k[2], k[3])), false, 'centripetal');
-  const lookCurve = new THREE.CatmullRomCurve3(PATH.map(k => toV(k[4], k[5], k[6])), false, 'centripetal');
-  const stops = PATH.map(k => k[0]);
-  const curveT = p => {
-    for (let i = 0; i < stops.length - 1; i++) if (p <= stops[i + 1]) return (i + (p - stops[i]) / (stops[i + 1] - stops[i])) / (stops.length - 1);
-    return 1;
+  const camCurve = new THREE.CatmullRomCurve3(PATH.map(k => toV(k[0], k[1], k[2])), false, 'centripetal', 0.5);
+  const lookCurve = new THREE.CatmullRomCurve3(PATH.map(k => toV(k[3], k[4], k[5])), false, 'centripetal', 0.5);
+  camCurve.arcLengthDivisions = 2000;
+  // perfil de velocidad: acelera, sigue constante y frena (posición = integral de una velocidad trapezoidal suavizada)
+  const ease = p => {
+    const a = ACCEL, vmax = 1 / (1 - a);
+    if (p < a) return vmax * (p * p) / (2 * a);
+    if (p > 1 - a) { const r = 1 - p; return 1 - vmax * (r * r) / (2 * a); }
+    return vmax * (a / 2 + (p - a));
   };
+  // margen sobre el terreno precalculado y suavizado: la cámara nunca entra al cerro y no pega saltos de altura
+  const NS = 600, lift = new Float32Array(NS + 1); let liftPrev = null;
+  function computeLift() {
+    const need = new Float32Array(NS + 1), tmp = new THREE.Vector3();
+    for (let i = 0; i <= NS; i++) {
+      camCurve.getPointAt(i / NS, tmp); let g = 0;
+      for (const [ox, oz] of [[0, 0], [4, 0], [-4, 0], [0, 4], [0, -4]]) g = Math.max(g, yAt(tmp.x + ox, tmp.z + oz));
+      need[i] = Math.max(0, g + 4.5 - tmp.y);
+    }
+    const R = 40, mx = new Float32Array(NS + 1);
+    for (let i = 0; i <= NS; i++) { let m = 0; for (let k = -R; k <= R; k++) m = Math.max(m, need[Math.min(NS, Math.max(0, i + k))]); mx[i] = m; }
+    for (let i = 0; i <= NS; i++) { let a = 0, w = 0; for (let k = -R; k <= R; k++) { const g = Math.exp(-(k * k) / (2 * 15 * 15)); a += mx[Math.min(NS, Math.max(0, i + k))] * g; w += g; } lift[i] = a / w; }
+  }
+  computeLift();
   const camera = new THREE.PerspectiveCamera(mobile ? 56 : 44, 1, 0.5, 1000);
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
@@ -281,13 +305,19 @@ async function start() {
     const r = hero.getBoundingClientRect(), span = hero.offsetHeight - innerHeight;
     return span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
   };
-  let shown = progress(), visible = true, running = false, last = performance.now();
+  // seguimiento del scroll con un resorte críticamente amortiguado, por tiempo (igual a 30 o 120 fps)
+  let shown = progress(), vel = 0, visible = true, running = false, last = performance.now();
+  const W0 = 3.2;
   const t0 = performance.now(), cp = new THREE.Vector3(), lp = new THREE.Vector3(), v = new THREE.Vector3(), q = new THREE.Vector3();
   function cameraAt(p, s) {
-    const t = curveT(p);
+    const u = Math.min(1, Math.max(0, ease(Math.min(1, p / HOLD))));   // el cierre se sostiene quieto al final del scroll
+    const t = camCurve.getUtoTmapping(u);
     camCurve.getPoint(t, cp); lookCurve.getPoint(t, lp);
-    cp.x += Math.sin(s * 0.13) * 0.6; cp.y += Math.sin(s * 0.17) * 0.3;
-    cp.y = Math.max(cp.y, yAt(cp.x, cp.z) + 4);
+    const fi = u * NS, i0 = Math.floor(fi), i1 = Math.min(NS, i0 + 1);
+    let L = lift[i0] + (lift[i1] - lift[i0]) * (fi - i0);
+    if (liftPrev) { const m = cMat.uniforms.morph.value; L = liftPrev[i0] + (liftPrev[i1] - liftPrev[i0]) * (fi - i0) + (L - (liftPrev[i0] + (liftPrev[i1] - liftPrev[i0]) * (fi - i0))) * m; }
+    cp.y += L;
+    cp.x += Math.sin(s * 0.13) * 0.25; cp.y += Math.sin(s * 0.17) * 0.12;   // respiración mínima del dron
   }
 
   function occluded(m) {
@@ -297,8 +327,10 @@ async function start() {
   let morphFrom = 0;
   function frame(now) {
     if (!visible || document.hidden) { running = false; return; }
-    const dt = Math.min(0.25, (now - last) / 1000); last = now;
-    shown += (progress() - shown) * (1 - Math.exp(-dt * 4.5));
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const acc = W0 * W0 * (progress() - shown) - 2 * W0 * vel;
+    vel += acc * dt; shown += vel * dt;
+    shown = Math.min(1, Math.max(0, shown));
     cameraAt(shown, (now - t0) / 1000);
     camera.position.copy(cp); camera.lookAt(lp);
     sky.position.copy(cp);
@@ -331,7 +363,7 @@ async function start() {
     const oldA = cMat.uniforms.tA.value, oldN = cMat.uniforms.tN.value;
     cMat.uniforms.tA.value = tA; cMat.uniforms.tN.value = tN; oldA.dispose(); oldN.dispose();
     cMat.uniforms.morph.value = 0; morphFrom = performance.now();
-    replant();
+    replant(); liftPrev = lift.slice(); computeLift();
     hero.dataset.calidad = 'alta';
   } catch (e) { console.warn('Portada 3D: sigo con la versión liviana', e); }
 }

@@ -237,14 +237,14 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16p
 body.lb-open{overflow:hidden}
 
 /* ===== Portada 3D ===== */
-.hero{height:260vh;position:relative}
+.hero{height:460vh;position:relative}
 .hero.static{height:100svh}
 .stage{position:sticky;top:0;height:100svh;overflow:hidden;background:linear-gradient(#26304a 0%,#7d5f68 42%,#e9b98f 72%,#efc9a2 100%)}
 .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1s}
 .hero.live .poster{opacity:0}
 #terrain{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hero.static #terrain,.hero.static .pin{display:none}
-.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,var(--bg));opacity:calc((var(--p,0) - .72)*3.6);pointer-events:none}
+.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,var(--bg));opacity:calc((var(--p,0) - .955)*14);pointer-events:none}
 .hero-txt{position:absolute;left:max(20px,6vw);right:20px;bottom:15vh;color:#fff8ec;text-shadow:0 2px 30px rgba(20,16,10,.45);opacity:calc(1 - var(--p,0)*2.4)}
 .hero-txt small{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase}
 .hero-txt h1{font-family:var(--display);font-weight:800;font-size:clamp(64px,14vw,176px);line-height:.88;margin:10px 0 14px;letter-spacing:-.02em}
