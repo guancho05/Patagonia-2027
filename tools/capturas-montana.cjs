@@ -21,7 +21,7 @@ const STOPS = [['inicio', 0], ['mitad', 0.5], ['final', 1]];
     for (const [name, p] of STOPS) {
       await page.evaluate(p => { const hr = document.getElementById('hero'); window.scrollTo(0, hr.offsetTop + p * (hr.offsetHeight - innerHeight)); }, p);
       await page.waitForTimeout(4000);
-      const file = `${out}/portada-${name}-${w}x${h}-${sc}.png`;
+      const file = `${out}/portada-${name}-${w}x${h}-${sc}.png`; // en el repo se guardan como .jpg (ver informe)
       await page.screenshot({ path: file });
       console.log('ok', file);
     }
