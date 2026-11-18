@@ -17,12 +17,13 @@ const STOPS = [['inicio', 0], ['mitad', 0.5], ['final', 1]];
     page.on('console', m => { if (m.type() === 'warning' || m.type() === 'error') console.log('consola:', m.text().slice(0, 200)); });
     await page.goto(base, { waitUntil: 'networkidle' }).catch(() => {});
     await page.waitForFunction(() => document.getElementById('hero').classList.contains('live') || document.getElementById('hero').classList.contains('static'), null, { timeout: 60000 }).catch(() => console.log('sin 3D'));
+    await page.waitForFunction(() => document.getElementById('hero').dataset.calidad === 'alta' || document.getElementById('hero').classList.contains('static'), null, { timeout: 120000 }).catch(() => console.log('sin alta resolución'));
     await page.waitForTimeout(2500);
     for (const [name, p] of STOPS) {
       await page.evaluate(p => { const hr = document.getElementById('hero'); window.scrollTo(0, hr.offsetTop + p * (hr.offsetHeight - innerHeight)); }, p);
       await page.waitForTimeout(4000);
-      const file = `${out}/portada-${name}-${w}x${h}-${sc}.png`; // en el repo se guardan como .jpg (ver informe)
-      await page.screenshot({ path: file });
+      const file = `${out}/portada-${name}-${w}x${h}-${sc}.jpg`;
+      await page.screenshot({ path: file, type: 'jpeg', quality: 84 });
       console.log('ok', file);
     }
     await ctx.close();

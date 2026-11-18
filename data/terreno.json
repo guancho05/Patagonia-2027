@@ -1,23 +1,32 @@
 {
  "cerca": {
   "n": -41.08,
-  "s": -41.36,
+  "s": -41.38,
   "w": -71.98,
-  "e": -71.42,
+  "e": -71.36,
   "km": [
-   46.891,
-   30.96
+   51.907,
+   33.171
   ],
-  "alt": [
-   768,
-   507
+  "alts": [
+   [
+    1536,
+    982
+   ],
+   [
+    768,
+    491
+   ],
+   [
+    384,
+    245
+   ]
   ],
   "tex": [
-   2048,
-   1360
+   4096,
+   2624
   ],
-  "min": 441,
-  "max": 3437
+  "altScale": 1
  },
  "lejos": {
   "n": -40.55,
@@ -31,13 +40,7 @@
   "alt": [
    256,
    228
-  ],
-  "tex": [
-   1024,
-   912
-  ],
-  "min": -213,
-  "max": 3237
+  ]
  },
  "places": {
   "meiling": {
@@ -66,9 +69,12 @@
    "label": "Lago Mascardi"
   }
  },
- "fuente": "AWS Terrain Tiles (Terrarium): SRTM, GMTED2010, ETOPO1 y otros",
  "sol": {
   "az": 315.0,
   "el": 27.0
+ },
+ "fuente": {
+  "cerca": "Copernicus DEM GLO-30 (ESA / Airbus)",
+  "lejos": "AWS Terrain Tiles (Terrarium): SRTM, GMTED2010 y otros"
  }
 }
