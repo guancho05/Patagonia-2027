@@ -50,7 +50,7 @@ async function start() {
   // que el plan (itinerario, casas) cargue primero: el 3D arranca cuando el navegador queda libre
   await new Promise(r => (window.requestIdleCallback || ((f) => setTimeout(f, 300)))(r, { timeout: 1500 }));
   const [THREE, meta] = await Promise.all([import('../vendor/three.module.min.js'), fetch('data/terreno.json').then(r => r.json())]);
-  const [gC, gO] = await Promise.all([heightsFrom('data/terreno-cerca-alt.png'), heightsFrom('data/terreno-lejos-alt.png')]);
+  const [gC, gO] = await Promise.all([heightsFrom(mobile ? 'data/terreno-cerca-alt-m.png' : 'data/terreno-cerca-alt.png'), heightsFrom('data/terreno-lejos-alt.png')]);
   const sC = sampler(gC), sO = sampler(gO);
   const C = meta.cerca, O = meta.lejos;
 

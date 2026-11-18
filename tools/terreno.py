@@ -8,6 +8,7 @@ oclusión ambiente, nieve y glaciar según altura, pendiente y orientación, bos
 Salida en data/:
   terreno.json            metadatos (cajas, tamaños, lugares)
   terreno-cerca-alt.png   alturas de la zona de detalle (R*256+G = decímetros)
+  terreno-cerca-alt-m.png ídem, mitad de resolución (celular)
   terreno-lejos-alt.png   alturas del anillo exterior (misma codificación)
   terreno-cerca.jpg       color horneado de la zona de detalle (escritorio)
   terreno-cerca-m.jpg     ídem, mitad de resolución (celular)
@@ -181,6 +182,8 @@ def main():
             Image.fromarray(img).resize((BW // 2, BH // 2), Image.LANCZOS).save(os.path.join(OUT, 'terreno-cerca-m.jpg'), quality=84, optimize=True, progressive=True)
         ha = heights(box, AW, AH)
         save_alt(ha, os.path.join(OUT, f'terreno-{key}-alt.png'))
+        if key == 'cerca':
+            save_alt(heights(box, AW // 2, AH // 2), os.path.join(OUT, 'terreno-cerca-alt-m.png'))
         meta[key] = {k: box[k] for k in ('n', 's', 'w', 'e')} | {'km': [round(wkm, 3), round(hkm, 3)], 'alt': [AW, AH], 'tex': [BW, BH], 'min': round(float(ha.min())), 'max': round(float(ha.max()))}
     json.dump(meta, open(os.path.join(OUT, 'terreno.json'), 'w'), ensure_ascii=False, indent=1)
     for f in sorted(os.listdir(OUT)):
