@@ -596,9 +596,18 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 /* ===== Mapa único (atlas viejo, colores de la paleta apagados) ===== */
 .mapa1{margin:0 auto 36px}
 .mapa{margin:0 auto;max-width:640px;background:#f4ecda;border:1px solid var(--raya);border-radius:2px;padding:8px}
-.mapa-svg{aspect-ratio:600/814;background:#b9cdd6;overflow:hidden}
-.mapa svg{display:block;width:100%;height:auto;touch-action:pan-y;user-select:none;cursor:grab}
-.mapa svg:active{cursor:grabbing}
+.mapa-svg{position:relative;aspect-ratio:600/827.4;background:#b9cdd6;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;contain:layout paint}
+.mapa-svg.zoom{touch-action:none;cursor:grab}.mapa-svg.arrastre{cursor:grabbing}
+.mapa-svg::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:multiply;opacity:.35;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .28 0 0 0 0 .2 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/220px 220px}
+.mv-capa{position:absolute;left:0;top:0;width:100%;height:100%;transform-origin:0 0;will-change:transform;backface-visibility:hidden}
+.mv-b{width:200%;height:200%;visibility:hidden}
+.mv-capa svg{display:block;width:100%;height:100%}
+.mapa-zoom{position:absolute;top:8px;right:8px;z-index:2;display:flex;flex-direction:column;gap:6px}
+.mapa-zoom button{width:40px;height:40px;display:grid;place-items:center;padding:0;border:1.5px solid #2b2326;border-radius:2px;background:#fbf6ec;color:#2b2326;font:700 22px/1 var(--body);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.mapa-zoom button:disabled{opacity:.4;cursor:default}
+.mapa-zoom button:focus-visible{outline:2px solid var(--rojo);outline-offset:2px}
+.mapa-zoom svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+.mbtn:disabled{opacity:.45;cursor:default}
 .mapa-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 2px 2px}
 .mbtn{border:1.5px solid #2b2326;background:#2b2326;color:#fbf6ec;border-radius:2px;padding:7px 14px;font:700 14px var(--body);cursor:pointer}
 .mbtn:focus-visible{outline:2px solid var(--rojo);outline-offset:2px}
@@ -639,7 +648,6 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .mapa-ley .l-vuelta{border-top:3px dashed #4d0074}.mapa-ley .l-opc{border-top:3px dotted #4d0074}.mapa-ley .l-send{border-top:2px dashed #e10d0c}
 .mv-fino{stroke:none}
 .capa-det{opacity:0;visibility:hidden}.g-det{opacity:0}
-@media (prefers-reduced-motion:reduce){.mapa svg{scroll-behavior:auto}}
 /* carteles de la portada: el JS ubica la caja (esquina superior izquierda) dentro de la pantalla y la une al punto con una línea */
 .stage .pin>div{transform:none;position:relative;z-index:1;box-sizing:border-box;max-width:min(70vw,360px);white-space:normal}
 .stage .pin small{display:block}
@@ -693,7 +701,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   <div class="intro-in mapa1">
     <figure class="mapa">
       <div class="mapa-svg" data-src="data/mapa.svg" aria-busy="true"></div>
-      <div class="mapa-ctl"><button type="button" class="mbtn" data-ir="ruta">Ver la ruta</button><button type="button" class="mbtn" data-ir="general" hidden>Vista general</button><span class="mapa-hint">Pellizcá o usá Ctrl + rueda para acercar</span></div>
+      <div class="mapa-ctl"><button type="button" class="mbtn" data-ir="ruta">Ver la ruta</button><button type="button" class="mbtn" data-ir="general">Vista general</button><span class="mapa-hint">Pellizcá o usá Ctrl + rueda para acercar</span></div>
       <ul class="mapa-ley"><li><i class="l-ruta"></i>Ruta en auto</li><li><i class="l-vuelta"></i>Vuelta a Chapelco (10/1)</li><li><i class="l-opc"></i>Opcional: Bariloche ⇄ Pampa Linda</li><li><i class="l-send"></i>Sendero (trekking)</li></ul>
       <figcaption>Itinerario nuevo: rutas reales en auto (OSRM sobre OpenStreetMap), paradas con fechas, lagos y senderos. Datos: Natural Earth y © OpenStreetMap.</figcaption>
     </figure>
@@ -1396,38 +1404,92 @@ function renderIntro(){try{
 }catch(e){console.warn(e)}}
 renderIntro();
 /* mapas del resumen: SVG propios (tools/mapa.py), insertados en línea para usar las fuentes y los colores de la página */
-document.querySelectorAll('.mapa-svg').forEach(el=>{fetch(el.dataset.src).then(r=>r.ok?r.text():Promise.reject(r.status)).then(t=>{el.innerHTML=t;el.removeAttribute('aria-busy');mapaZoom(el.closest('.mapa'))}).catch(()=>{el.innerHTML='<p class="note">No se pudo cargar el mapa.</p>'})});
-/* zoom del mapa: botón, pellizco (dos dedos), Ctrl/⌘ + rueda y arrastre con mouse; un dedo sigue moviendo la página */
-function mapaZoom(fig){try{
- const svg=fig.querySelector('svg'),gen=svg.querySelector('.capa-gen'),det=svg.querySelector('.capa-det');
- const Z0=svg.getAttribute('viewBox').split(' ').map(Number),Z1=svg.dataset.zoom.split(' ').map(Number);
- const ks=[...svg.querySelectorAll('.k')].map(g=>[g,+g.dataset.x,+g.dataset.y]),gg=[...svg.querySelectorAll('.g-gen')],gd=[...svg.querySelectorAll('.g-det')];
- const red=matchMedia('(prefers-reduced-motion: reduce)').matches;let vb=Z0.slice(),anim=0;
- const bR=fig.querySelector('[data-ir="ruta"]'),bG=fig.querySelector('[data-ir="general"]');
+document.querySelectorAll('.mapa-svg').forEach(el=>{fetch(el.dataset.src).then(r=>r.ok?r.text():Promise.reject(r.status)).then(t=>{el.removeAttribute('aria-busy');mapaZoom(el.closest('.mapa'),t)}).catch(()=>{el.innerHTML='<p class="note">No se pudo cargar el mapa.</p>'})});
+/* zoom del mapa, fluido: dos capas que se mueven y escalan con transform (GPU) durante el gesto.
+   - capa A: vista general simplificada (sin el detalle fino), dibujada una sola vez;
+   - capa B: el mapa completo con el detalle, redibujado nítido una vez por gesto (al soltar), con margen de media pantalla
+     a cada lado para que al arrastrar no aparezcan bordes vacíos.
+   Con un dedo: sin zoom mueve la página; con zoom arrastra el mapa. Con dos dedos: pellizco. Mouse: arrastre, Ctrl + rueda
+   (o rueda si ya hay zoom) y botones + y −. */
+function mapaZoom(fig,txt){
+ const box=fig.querySelector('.mapa-svg');
+ try{
+ box.innerHTML='<div class="mv-capa mv-a"></div><div class="mv-capa mv-b" aria-hidden="true"></div>'
+  +'<div class="mapa-zoom"><button type="button" data-z="in" aria-label="Acercar">+</button><button type="button" data-z="out" aria-label="Alejar">−</button><button type="button" data-z="gen" aria-label="Vista general" title="Vista general"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 8V3h5M12 3h5v5M17 12v5h-5M8 17H3v-5"/></svg></button></div>';
+ const A=box.querySelector('.mv-a'),B=box.querySelector('.mv-b');
+ A.innerHTML=txt;B.innerHTML=txt.replace(/<title[^>]*>[\s\S]*?<\/title>/,'').replace(' role="img" aria-labelledby="mv-t"',' aria-hidden="true"');
+ const sa=A.querySelector('svg'),sb=B.querySelector('svg');
+ sa.querySelectorAll('.capa-det,.g-det,.mv-fino,.mv-papel').forEach(e=>e.remove());sb.querySelectorAll('.mv-papel').forEach(e=>e.remove());
+ const Z0=sa.getAttribute('viewBox').split(' ').map(Number),Z1=sa.dataset.zoom.split(' ').map(Number),AR=Z0[3]/Z0[2],M=0.5,WMIN=Z1[2]/3;
+ box.style.aspectRatio=Z0[2]+'/'+Z0[3];
+ for(const v of [sa,sb])v.setAttribute('preserveAspectRatio','none');
+ const kA=[...sa.querySelectorAll('.k')].map(g=>[g,+g.dataset.x,+g.dataset.y]),kB=[...sb.querySelectorAll('.k')].map(g=>[g,+g.dataset.x,+g.dataset.y]);
+ const gen=sb.querySelector('.capa-gen'),det=sb.querySelector('.capa-det'),gg=[...sb.querySelectorAll('.g-gen')],gd=[...sb.querySelectorAll('.g-det')];
+ const red=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const bR=fig.querySelector('[data-ir="ruta"]'),bG=fig.querySelector('[data-ir="general"]'),zIn=box.querySelector('[data-z="in"]'),zOut=box.querySelector('[data-z="out"]'),zGen=box.querySelector('[data-z="gen"]');
  const cl=(v,a,b)=>Math.min(b,Math.max(a,v));
- function fix(){vb[2]=cl(vb[2],Z1[2]/3,Z0[2]);vb[3]=vb[2]*Z0[3]/Z0[2];vb[0]=cl(vb[0],0,Z0[2]-vb[2]);vb[1]=cl(vb[1],0,Z0[3]-vb[3])}
- function apply(){fix();svg.setAttribute('viewBox',vb.map(v=>v.toFixed(4)).join(' '));const cw=svg.clientWidth||600,u=vb[2]/cw*(cw<500?0.8:1);
-  for(const [g,x,y] of ks)g.setAttribute('transform','translate('+x+' '+y+') scale('+u.toFixed(5)+')');
-  const z=Z0[2]/vb[2],t=cl((z-1.8)/2.6,0,1);gen.style.opacity=1-t;gg.forEach(g=>g.style.opacity=1-t);det.style.opacity=t;gd.forEach(g=>g.style.opacity=t);det.style.visibility=t<0.02?'hidden':'visible';
-  const enRuta=z>2.2;bR.hidden=enRuta;bG.hidden=!enRuta}
- function ir(to){cancelAnimationFrame(anim);if(red){vb=to.slice();apply();return}const from=vb.slice(),t0=performance.now(),D=900;
+ let W=box.clientWidth||600,H=W*AR,vb=Z0.slice(),vc=null,anim=0,raf=0,ct=0;
+ // límites: con poco zoom, todo el mapa; con zoom de detalle, la zona del viaje con un margen (no se pierde el mapa de vista)
+ const ZB=[Z1[0]-Z1[2]*0.35,Z1[1]-Z1[3]*0.35,Z1[2]*1.7,Z1[3]*1.7];
+ const fix=v=>{v[2]=cl(v[2],WMIN,Z0[2]);v[3]=v[2]*AR;const t=cl((Z0[2]/v[2]-1.8)/2.6,0,1),L=(a,b)=>a+(b-a)*t;
+  const bx=L(0,ZB[0]),by=L(0,ZB[1]),bw=Math.max(v[2],L(Z0[2],ZB[2])),bh=Math.max(v[3],L(Z0[3],ZB[3]));
+  v[0]=cl(v[0],Math.max(0,bx-(bw-L(Z0[2],ZB[2]))/2),Math.min(Z0[2],bx+bw-(bw-L(Z0[2],ZB[2]))/2)-v[2]);
+  v[1]=cl(v[1],Math.max(0,by-(bh-L(Z0[3],ZB[3]))/2),Math.min(Z0[3],by+bh-(bh-L(Z0[3],ZB[3]))/2)-v[3]);return v};
+ const zoomed=()=>vb[2]<Z0[2]*0.98;
+ const labels=(ks,w)=>{const u=(w/W*(W<500?0.8:1)).toFixed(5);for(const [g,x,y] of ks)g.setAttribute('transform','translate('+x+' '+y+') scale('+u+')')};
+ // cada cuadro: solo transformaciones (no se redibuja el SVG)
+ function render(){fix(vb);
+  A.style.transform='translate3d('+(-vb[0]/vb[2]*W).toFixed(2)+'px,'+(-vb[1]/vb[3]*H).toFixed(2)+'px,0) scale('+(Z0[2]/vb[2]).toFixed(5)+')';
+  if(vc){const r0=vc[0]-M*vc[2],r1=vc[1]-M*vc[3];B.style.transform='translate3d('+((r0-vb[0])/vb[2]*W).toFixed(2)+'px,'+((r1-vb[1])/vb[3]*H).toFixed(2)+'px,0) scale('+(vc[2]/vb[2]).toFixed(5)+')'}}
+ const req=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;render()})};
+ // al terminar el gesto: la capa B se redibuja nítida para la vista actual (una sola vez)
+ function commit(to){const v=fix((to||vb).slice()),z=Z0[2]/v[2];
+  if(z<1.02){vc=null;B.style.visibility='hidden'}
+  else{vc=v;sb.setAttribute('viewBox',[v[0]-M*v[2],v[1]-M*v[3],(1+2*M)*v[2],(1+2*M)*v[3]].map(x=>x.toFixed(4)).join(' '));labels(kB,v[2]);
+   const t=cl((z-1.8)/2.6,0,1);gen.style.opacity=1-t;gg.forEach(g=>g.style.opacity=1-t);det.style.opacity=t;gd.forEach(g=>g.style.opacity=t);det.style.visibility=t<0.02?'hidden':'visible';
+   B.style.visibility='visible'}
+  const zv=Z0[2]/vb[2];box.classList.toggle('zoom',zv>1.02);box.dataset.vista=vb.map(x=>x.toFixed(2)).join(' ');
+  bR.disabled=zv>2.2;bG.disabled=zGen.disabled=zv<=1.02;zOut.disabled=zv<=1.02;zIn.disabled=vb[2]<=WMIN*1.01;render()}
+ const later=()=>{clearTimeout(ct);ct=setTimeout(()=>commit(),140)};
+ // animación de botones: la capa B se dibuja primero en el destino, así se ve nítida mientras se acerca
+ function ir(to){cancelAnimationFrame(anim);clearTimeout(ct);to=fix(to.slice());const from=vb.slice();
+  if(Z0[2]/to[2]>1.02)commit(to);
+  if(red){vb=to;commit();return}
+  const t0=performance.now(),D=750;
   const step=now=>{const k=cl((now-t0)/D,0,1),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
-   // interpolación en escala logarítmica del ancho: el zoom se siente parejo
    const w=Math.exp(Math.log(from[2])+(Math.log(to[2])-Math.log(from[2]))*e),f=(from[2]-w)/(from[2]-to[2]||1);
-   vb=[from[0]+(to[0]-from[0])*f,from[1]+(to[1]-from[1])*f,w,w*Z0[3]/Z0[2]];apply();if(k<1)anim=requestAnimationFrame(step)};anim=requestAnimationFrame(step)}
- function zoomAt(f,px,py){const r=svg.getBoundingClientRect(),ux=vb[0]+(px-r.left)/r.width*vb[2],uy=vb[1]+(py-r.top)/r.height*vb[3];
-  const w=cl(vb[2]/f,Z1[2]/3,Z0[2]),h=w*Z0[3]/Z0[2];vb=[ux-(px-r.left)/r.width*w,uy-(py-r.top)/r.height*h,w,h];apply()}
- bR.onclick=()=>ir(Z1);bG.onclick=()=>ir(Z0);
- svg.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();cancelAnimationFrame(anim);zoomAt(Math.exp(-e.deltaY*0.003),e.clientX,e.clientY)},{passive:false});
- const pts=new Map();let last=null;
- svg.addEventListener('pointerdown',e=>{pts.set(e.pointerId,e);if(pts.size===2||e.pointerType==='mouse'){svg.setPointerCapture(e.pointerId);cancelAnimationFrame(anim)}last=null});
- svg.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const prev=pts.get(e.pointerId);pts.set(e.pointerId,e);const r=svg.getBoundingClientRect();
-  if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),cx=(a.clientX+b.clientX)/2,cy=(a.clientY+b.clientY)/2;
-   if(last){zoomAt(d/last.d,cx,cy);vb[0]-=(cx-last.cx)/r.width*vb[2];vb[1]-=(cy-last.cy)/r.height*vb[3];apply()}last={d,cx,cy};e.preventDefault()}
-  else if(e.pointerType==='mouse'&&e.buttons===1&&vb[2]<Z0[2]){vb[0]-=(e.clientX-prev.clientX)/r.width*vb[2];vb[1]-=(e.clientY-prev.clientY)/r.height*vb[3];apply()}});
- const up=e=>{pts.delete(e.pointerId);last=null};svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);svg.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')up(e)});
- addEventListener('resize',apply);apply();
-}catch(e){console.warn('Mapa',e)}}
+   vb=[from[0]+(to[0]-from[0])*f,from[1]+(to[1]-from[1])*f,w,w*AR];render();if(k<1)anim=requestAnimationFrame(step);else commit()};
+  anim=requestAnimationFrame(step)}
+ const around=f=>{const w=cl(vb[2]/f,WMIN,Z0[2]);return [vb[0]+vb[2]/2-w/2,vb[1]+vb[3]/2-w*AR/2,w,w*AR]};
+ bR.onclick=()=>ir(Z1);bG.onclick=zGen.onclick=()=>ir(Z0);zIn.onclick=()=>ir(around(2));zOut.onclick=()=>ir(around(0.5));
+ let rect=null;
+ function zoomAt(f,px,py){const ux=vb[0]+(px-rect.left)/rect.width*vb[2],uy=vb[1]+(py-rect.top)/rect.height*vb[3],w=cl(vb[2]/f,WMIN,Z0[2]);
+  vb=[ux-(px-rect.left)/rect.width*w,uy-(py-rect.top)/rect.height*w*AR,w,w*AR]}
+ const pan=(dx,dy)=>{vb[0]-=dx/rect.width*vb[2];vb[1]-=dy/rect.height*vb[3]};
+ const stop=()=>{cancelAnimationFrame(anim);clearTimeout(ct)};
+ // táctil
+ let last=null,panOK=false;
+ box.addEventListener('touchstart',e=>{stop();rect=box.getBoundingClientRect();last=null;if(e.touches.length===1)panOK=zoomed()},{passive:true});
+ box.addEventListener('touchmove',e=>{const T=e.touches;
+  if(T.length>=2){e.preventDefault();const a=T[0],b=T[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),cx=(a.clientX+b.clientX)/2,cy=(a.clientY+b.clientY)/2;
+   if(last&&last.n===2){zoomAt(d/last.d,cx,cy);pan(cx-last.cx,cy-last.cy);fix(vb);req()}last={n:2,d,cx,cy}}
+  else if(T.length===1&&panOK){e.preventDefault();const a=T[0];if(last&&last.n===1){pan(a.clientX-last.cx,a.clientY-last.cy);fix(vb);req()}last={n:1,cx:a.clientX,cy:a.clientY}}
+ },{passive:false});
+ const tend=e=>{last=null;if(e.touches.length===1)panOK=zoomed();if(!e.touches.length)later()};
+ box.addEventListener('touchend',tend);box.addEventListener('touchcancel',tend);
+ // mouse
+ let drag=null;
+ box.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0||!zoomed()||e.target.closest('button'))return;stop();rect=box.getBoundingClientRect();drag={x:e.clientX,y:e.clientY};box.setPointerCapture(e.pointerId);box.classList.add('arrastre')});
+ box.addEventListener('pointermove',e=>{if(!drag)return;pan(e.clientX-drag.x,e.clientY-drag.y);drag={x:e.clientX,y:e.clientY};fix(vb);req()});
+ const mup=()=>{if(!drag)return;drag=null;box.classList.remove('arrastre');later()};
+ box.addEventListener('pointerup',mup);box.addEventListener('pointercancel',mup);
+ box.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey||zoomed()))return;e.preventDefault();stop();rect=box.getBoundingClientRect();
+  zoomAt(Math.exp(-e.deltaY*(e.deltaMode===1?0.05:0.002)),e.clientX,e.clientY);fix(vb);req();later()},{passive:false});
+ const hint=fig.querySelector('.mapa-hint');if(hint)hint.textContent=matchMedia('(pointer: coarse)').matches?'Dos dedos para acercar; con zoom, un dedo mueve el mapa':'Ctrl + rueda o + y − para acercar; con zoom, arrastrá con el mouse';
+ labels(kA,Z0[2]);commit();
+ new ResizeObserver(()=>{const w=box.clientWidth;if(!w||Math.abs(w-W)<1)return;W=w;H=W*AR;labels(kA,Z0[2]);commit()}).observe(box);
+ }catch(e){console.warn('Mapa',e);box.innerHTML=txt}
+}
 /* silueta del pie: horizonte real (tools/silueta.py) y nombres de los picos */
 {const w=document.querySelector('.sil-w');if(w)Promise.all([fetch(w.dataset.src).then(r=>r.text()),fetch('data/silueta.json').then(r=>r.json())]).then(([svg,m])=>{
  const mayores=['Tronador','Catedral Norte','López'];
