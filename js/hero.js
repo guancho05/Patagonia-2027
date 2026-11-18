@@ -90,12 +90,12 @@ async function start() {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 1.5));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 0.95;
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog('#e9b98f', 90, 330);
+  scene.fog = new THREE.Fog('#d8b4a6', 170, 560);
   scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 })));
-  scene.add(new THREE.HemisphereLight('#ffd9b0', '#2b3324', 0.9));
-  const sun = new THREE.DirectionalLight('#ffb070', 2.6);
+  scene.add(new THREE.HemisphereLight('#c9d4ef', '#3a3a2a', 0.8));
+  const sun = new THREE.DirectionalLight('#ffc48e', 2.4);
   sun.position.set(-180, 70, 40); scene.add(sun);
 
   const toXZ = (lat, lon) => [((lon - BBOX.w) / (BBOX.e - BBOX.w) - 0.5) * W, ((BBOX.n - lat) / (BBOX.n - BBOX.s) - 0.5) * D];
@@ -137,7 +137,7 @@ async function start() {
     shown += (p - shown) * 0.08; // suavizado: el dron frena y acelera
     const t = (now - t0) / 1000;
     const ang = 2.35 + shown * Math.PI * 1.15 + Math.sin(t * 0.15) * 0.02;
-    const rad = 120 - shown * 45, alt = 62 - shown * 22;
+    const rad = 135 - shown * 50, alt = 70 - shown * 26;
     camera.position.set(target.x + Math.cos(ang) * rad, target.y + alt, target.z + Math.sin(ang) * rad);
     camera.lookAt(target.x, target.y + shown * 4, target.z);
     renderer.render(scene, camera);
