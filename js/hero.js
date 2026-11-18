@@ -25,14 +25,13 @@ const U = 10;               // unidades por km (1 unidad = 100 m)
 // Recorrido del dron: puntos de control [cámara lat, lon, altura m, mira lat, lon, altura m], en orden.
 // La cámara va por una spline a velocidad constante (por longitud de arco); la mirada usa los mismos tramos.
 const PATH = [
-  [-41.226, -71.758, 2650, -41.170, -71.850, 2350],   // sobre Pampa Linda, de frente al Tronador y el Meiling
-  [-41.204, -71.776, 2900, -41.164, -71.868, 2600],   // más cerca de los glaciares
-  [-41.180, -71.760, 3150, -41.120, -71.770, 2300],   // gira por el norte
-  [-41.176, -71.690, 3200, -41.180, -71.560, 2000],   // mira al este
-  [-41.182, -71.600, 3000, -41.196, -71.505, 1950],   // cruza hacia el Catedral
-  [-41.168, -71.502, 2850, -41.200, -71.490, 1950],
-  [-41.166, -71.458, 2950, -41.203, -71.490, 1850]    // cierre: Cerro Catedral y Refugio Frey (línea de vista despejada a la laguna Toncek)
-];
+  [-41.045, -71.245, 5600, -41.125, -71.315, 800],    // sobre el Nahuel Huapi, mirando Bariloche desde arriba
+  [-41.095, -71.345, 5400, -41.165, -71.430, 1200],
+  [-41.142, -71.447, 5200, -41.183, -71.463, 1400],   // encima del sendero Villa Catedral → Refugio Frey, completo
+  [-41.170, -71.560, 5600, -41.200, -71.660, 1500],   // hacia el oeste
+  [-41.215, -71.690, 6600, -41.205, -71.785, 1700],
+  [-41.272, -71.738, 7800, -41.203, -71.796, 1500]    // final: sendero Pampa Linda → Refugio Otto Meiling, con el Tronador atrás
+]
 const ACCEL = 0.14;   // fracción del recorrido para acelerar y para frenar
 const HOLD = 0.92;    // la cámara llega al Catedral al 92 % del scroll y se queda quieta
 
@@ -229,7 +228,8 @@ async function start() {
       g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('h0', new THREE.BufferAttribute(h0, 1));
       g.setIndex(indices(Cq, 1)); g.computeBoundingSphere(); g.boundingSphere.radius += 3;
       const m = new THREE.Mesh(g, cMat); m.frustumCulled = true;
-      list.push({ mesh: m, c: new THREE.Vector3(x0 + Cq * dxw / 2, g.boundingSphere.center.y, z0 + Cq * dzw / 2), Cq, step: 1, size: Cq * dxw });
+      const hasTrail = (meta.senderos || []).some(t => t.pts.some(([la, lo]) => { const x = X(lo), z = Zc(la); return x >= x0 - 2 && x <= x0 + Cq * dxw + 2 && z >= z0 - 2 && z <= z0 + Cq * dzw + 2; }));
+      list.push({ mesh: m, c: new THREE.Vector3(x0 + Cq * dxw / 2, g.boundingSphere.center.y, z0 + Cq * dzw / 2), Cq, step: 1, size: Cq * dxw, trail: hasTrail });
     }
     coreGroup.clear(); chunks.forEach(c => c.mesh.geometry.dispose());
     list.forEach(c => coreGroup.add(c.mesh)); chunks = list;
@@ -239,6 +239,7 @@ async function start() {
     for (const c of chunks) {
       const d = Math.max(0, camera.position.distanceTo(c.c) - c.size * 0.7);
       let step = d < 45 ? 1 : d < 110 ? 2 : d < 240 ? 4 : 8;
+      if (c.trail) step = Math.min(step, 2);   // donde pasa un sendero, el relieve no se simplifica de más
       while (step > 1 && c.Cq % step) step /= 2;
       if (step !== c.step) { c.step = step; c.mesh.geometry.setIndex(indices(c.Cq, step)); }
     }
@@ -284,8 +285,9 @@ async function start() {
   }
   // senderos de OSM: línea punteada roja de ancho fijo en pantalla, apoyada sobre el relieve; lo que tapa el cerro se ve más tenue
   const trailMat = (occl) => new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, side: THREE.DoubleSide, depthFunc: occl ? THREE.GreaterDepth : THREE.LessEqualDepth,
-    uniforms: { res: { value: new THREE.Vector2(1, 1) }, wpx: { value: mobile ? 5 : 4.5 }, col: { value: new THREE.Color(ROJO) }, alpha: { value: occl ? 0.45 : 1 } },
+    transparent: true, depthWrite: false, side: THREE.DoubleSide, depthTest: true,
+    polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -8,   // apoyada sobre el relieve sin parpadear; los filos la tapan
+    uniforms: { res: { value: new THREE.Vector2(1, 1) }, wpx: { value: mobile ? 5 : 4.5 }, col: { value: new THREE.Color(ROJO) }, alpha: { value: 1 } },
     vertexShader: `attribute vec3 prev; attribute vec3 next; attribute float side; attribute float dist; uniform vec2 res; uniform float wpx; varying float vD;
       void main(){ mat4 m = projectionMatrix * viewMatrix; vec4 c = m * vec4(position,1.0), a = m * vec4(prev,1.0), b = m * vec4(next,1.0);
         float asp = res.x / res.y; vec2 sa = a.xy / a.w, sb = b.xy / b.w; vec2 d = (sb - sa) * vec2(asp, 1.0);
@@ -297,7 +299,7 @@ async function start() {
   const trails = [];
   function buildTrail(t) {
     const n = t.pts.length, pos = new Float32Array(n * 6), prv = new Float32Array(n * 6), nxt = new Float32Array(n * 6), side = new Float32Array(n * 2), dist = new Float32Array(n * 2);
-    const V = t.pts.map(([la, lo]) => { const x = X(lo), z = Zc(la); return [x, yAt(x, z) + 0.18 * EX, z]; });
+    const V = t.pts.map(([la, lo]) => { const x = X(lo), z = Zc(la); return [x, yAt(x, z) + 0.06 * EX, z]; });
     let acc = 0;
     for (let i = 0; i < n; i++) {
       if (i) acc += Math.hypot(V[i][0] - V[i - 1][0], V[i][1] - V[i - 1][1], V[i][2] - V[i - 1][2]) * 100;
@@ -311,12 +313,12 @@ async function start() {
     g.setIndex(idx); g.computeBoundingSphere();
     return g;
   }
-  const trailVis = trailMat(false), trailOcc = trailMat(true);
+  const trailVis = trailMat(false);
   function addTrails() {
     trails.splice(0).forEach(m => { scene.remove(m); m.geometry.dispose(); });
     for (const t of meta.senderos || []) {
       const g = buildTrail(t);
-      for (const [mt, ro] of [[trailOcc, 2], [trailVis, 3]]) { const m = new THREE.Mesh(g, mt); m.renderOrder = ro; m.frustumCulled = false; scene.add(m); trails.push(m); }
+      const m = new THREE.Mesh(g, trailVis); m.renderOrder = 3; m.frustumCulled = false; scene.add(m); trails.push(m);
     }
   }
   addTrails();
@@ -358,7 +360,7 @@ async function start() {
   function resize() {
     const w = stage.clientWidth, h = stage.clientHeight;
     renderer.setSize(w, h, false); camera.aspect = w / h;
-    trailVis.uniforms.res.value.set(w, h); trailOcc.uniforms.res.value.set(w, h);
+    trailVis.uniforms.res.value.set(w, h);
     camera.fov = Math.min(60, (mobile ? 56 : 44) * Math.max(1, (h / w) * 0.75));
     camera.updateProjectionMatrix();
   }
@@ -413,7 +415,7 @@ async function start() {
       }
       if (!off) placed.push([sx, sy]);
       if (m.trail) m.el.classList.toggle('cerca', dist < m.near);
-      const half = (m.w || (m.w = m.el.firstElementChild.offsetWidth)) / 2;   // la etiqueta no se sale de la pantalla
+      const half = (off ? 0 : m.el.firstElementChild.offsetWidth) / 2;   // la etiqueta no se sale de la pantalla
       const lx = Math.min(W - half - 12, Math.max(half + 12, sx));
       m.el.style.transform = `translate(${lx}px,${sy}px)`;
       m.el.style.opacity = off ? 0 : 1;
