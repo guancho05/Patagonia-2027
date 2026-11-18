@@ -378,6 +378,8 @@ async function start() {
     const u = Math.min(1, Math.max(0, ease(Math.min(1, p / HOLD))));   // el cierre se sostiene quieto al final del scroll
     const t = camCurve.getUtoTmapping(u);
     camCurve.getPoint(t, cp); lookCurve.getPoint(t, lp);
+    // en pantallas verticales la cámara se aleja por su línea de mirada para que los senderos entren completos
+    const back = Math.max(1, Math.pow(1.15 / camera.aspect, 0.6)); if (back > 1) cp.sub(lp).multiplyScalar(back).add(lp);
     const fi = u * NS, i0 = Math.floor(fi), i1 = Math.min(NS, i0 + 1);
     let L = lift[i0] + (lift[i1] - lift[i0]) * (fi - i0);
     if (liftPrev) { const m = cMat.uniforms.morph.value; L = liftPrev[i0] + (liftPrev[i1] - liftPrev[i0]) * (fi - i0) + (L - (liftPrev[i0] + (liftPrev[i1] - liftPrev[i0]) * (fi - i0))) * m; }

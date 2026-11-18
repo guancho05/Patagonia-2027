@@ -44,3 +44,9 @@ Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Ch
 | 2026-11-18 | `checkpoint/15-mapa-listo` · `16-antes-portada-realista` | Mapas SVG de la Patagonia y de la ruta. |
 | 2026-11-18 | `checkpoint/16-portada-realista-lista` · `17-senderos-listos` | Bariloche y lagos en el 3D, WorldCover, agua con reflejo, senderos punteados (un solo commit para las partes 3 y 4). |
 | 2026-11-18 | `checkpoint/18-paleta-mapa-senderos-cierre` | Capturas, informe y CLAUDE.md al día. |
+| 2026-11-19 | `checkpoint/19-antes-itinerario-nuevo` | Estado con la paleta, el mapa doble y los senderos. |
+| 2026-11-19 | `checkpoint/19-itinerario-nuevo-listo` · `20-antes-dron-alto` | Itinerario nuevo: La Angostura 3 y 4/1, Frey 5/1, Bariloche 6 al 10/1, Meiling opcional. |
+| 2026-11-19 | `checkpoint/20-dron-alto-listo` · `21-antes-mapa-vintage` | Dron alto (Bariloche → Frey → Meiling), senderos con profundidad. |
+| 2026-11-19 | `checkpoint/21-mapa-vintage-listo` · `22-antes-pie-silueta` | Mapa único estilo atlas con zoom y rutas reales. |
+| 2026-11-19 | `checkpoint/22-pie-silueta-listo` | Pie con silueta real y franjas. |
+| 2026-11-19 | `checkpoint/23-dron-mapa-pie-cierre` | Estado final: cámara en vertical, capturas e informe. |
