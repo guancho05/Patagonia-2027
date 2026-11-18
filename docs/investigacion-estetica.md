@@ -118,3 +118,42 @@ Muestreada de la foto de referencia (cuantización de colores) y ajustada para c
 - La tipografía del texto corrido de los catálogos de los 80.
 - Los nombres de los colores de los polares de época.
 - El primer año del papel reciclado en los catálogos.
+
+---
+
+## Paleta 2 · colores de producto de época con más protagonismo (18/11/2026)
+
+### Fuentes
+- La historia oficial de la empresa cuenta que **a principios de los 80**, cuando la ropa outdoor era casi toda tostada, verde bosque o celeste, la línea se llenó de color: **cobalt, teal, French red, aloe, seafoam e iced mocha** ("We introduced cobalt, teal, French red, aloe, seafoam and iced mocha"). [Patagonia · Our History (sitio de Hong Kong; la página de EE. UU. estaba en mantenimiento)](https://www.patagonia.com.hk/pages/our-history)
+- El primer Retro Pile Cardigan (c. 1988) salió en **Natural / French Red**. [Proper Magazine · Fleece Progression](https://www.propermag.com/?p=103061)
+- En 1987 publicaron un ensayo, "The Question of Color", sobre el uso del violeta (fuente secundaria, no pude leer el texto). Resumen de búsqueda sobre [Grailed · historia de la marca](https://www.grailed.com/drycleanonly/patagonia-history).
+- Las camisetas de rugby de los 70 tenían unas 12 combinaciones de colores fuertes, según un ex empleado (fuente secundaria). [Grailed](https://www.grailed.com/drycleanonly/patagonia-history)
+- **Mostaza y naranja:** no encontré fuente de la marca con esos nombres. Los uso como colores de la época (catálogos y afiches outdoor de los 70) y lo dejo marcado así.
+
+Los nombres son de la marca; **los hex son aproximaciones mías**, ajustadas para que el texto que va encima pase AA. No hay hex oficiales publicados.
+
+### Colores y contraste (WCAG 2)
+
+| Token | Nombre de época | Hex | Texto encima | Contraste |
+|---|---|---|---|---|
+| `--rojo` | French red | `#b3312a` | crema `#fbf6ec` | 5,75 |
+| `--cobalto` | cobalt | `#1f4fa3` | crema | 7,21 |
+| `--cobalto-o` | cobalt (oscuro, pie) | `#183c7c` | crema | 9,86 |
+| `--teal` | teal | `#0d6b70` | crema | 5,81 |
+| `--aloe` | aloe | `#8db596` | tinta `#221d17` | 7,31 |
+| `--espuma` | seafoam | `#93cdbd` | tinta | 9,32 |
+| `--moca` | iced mocha | `#a68b72` | tinta | 5,22 |
+| `--mostaza` | mostaza (época, sin fuente de marca) | `#d19a2a` | tinta | 6,66 |
+| `--purpura` | violeta (ensayo de 1987) | `#5a3d7d` | crema | 8,13 |
+
+Variantes para texto sobre el fondo oscuro de la página: rojo `#ef7a62` (6,67), cobalto `#8fb0ee` (8,41), teal `#5cc2bf` (8,68), violeta `#c3a6e6` (8,67).
+
+### Dónde se usan
+- **Bloques por sección:** Itinerario en cobalto, Casas en rojo francés, Autos en mostaza, Gastos en teal, Pesca en espuma de mar. Cada bloque tiene el título en Caprasimo y una línea de datos.
+- **Botones y bandas:** el botón de versión elegido y el filtro activo toman el color de la sección; la banda de datos de la portada es rojo francés (el polar de la foto de referencia); el botón "Itinerario nuevo" es cobalto.
+- **Parches de datos:** los cuatro datos del resumen son rojo, cobalto, mostaza y teal; los tres totales de Gastos son cobalto, mostaza y rojo.
+- **Pie:** cobalto oscuro con un filete mostaza arriba.
+- **Itinerario:** etiquetas "Dónde dormimos" (rojo), "Trayecto del día" (cobalto) y "Pesca hoy" (teal); tipos de noche: casa rojo, camping teal, refugio cobalto, vuelo violeta.
+
+### Lo que no se usa
+Ni el nombre ni el logo de la marca, ni la silueta de montaña, ni franjas de atardecer, ni combinaciones que lo armen. Los colores van en bloques planos y separados, como etiquetas de catálogo.

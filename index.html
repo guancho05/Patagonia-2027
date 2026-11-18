@@ -496,6 +496,64 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .pz-spots p{margin:8px 0 0;font-size:15px}.pz-spots i{font-style:normal;font-weight:700}
 #pzGuides a{color:var(--ink);font-weight:700}
 @media (max-width:640px){#pzGuides th:nth-child(3),#pzGuides td:nth-child(3){display:none}}
+/* ===== Paleta de época con más protagonismo (docs/investigacion-estetica.md, sección "Paleta 2") ===== */
+:root{
+  --rojo:#b3312a; --cobalto:#1f4fa3; --cobalto-o:#183c7c; --teal:#0d6b70; --aloe:#8db596; --espuma:#93cdbd; --mostaza:#d19a2a; --moca:#a68b72; --purpura:#5a3d7d;
+  --claro:#fbf6ec; --oscuro:#221d17;
+  --polar:#b3312a; --cielo:#1f4fa3; --casa:#b3312a; --camp:#0d6b70; --ref:#1f4fa3; --fly:#5a3d7d;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--polar:#ef7a62; --cielo:#8fb0ee; --casa:#ef7a62; --camp:#5cc2bf; --ref:#8fb0ee; --fly:#c3a6e6}}
+:root[data-theme="dark"]{--polar:#ef7a62; --cielo:#8fb0ee; --casa:#ef7a62; --camp:#5cc2bf; --ref:#8fb0ee; --fly:#c3a6e6}
+/* bloques de color por sección */
+#view-itin{--sec:var(--cobalto);--on-sec:var(--claro)}
+#view-casas{--sec:var(--rojo);--on-sec:var(--claro)}
+#view-autos{--sec:var(--mostaza);--on-sec:var(--oscuro)}
+#view-gastos{--sec:var(--teal);--on-sec:var(--claro)}
+#view-pesca{--sec:var(--espuma);--on-sec:var(--oscuro)}
+.sec-band{background:var(--sec);color:var(--on-sec);border-radius:2px;padding:22px 22px 18px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.sec-band h2{font-family:var(--afiche);font-weight:400;font-size:clamp(40px,7vw,72px);line-height:.95;letter-spacing:-.02em;margin:0;color:inherit}
+.sec-band p,.sec-band .sub{margin:0;font-family:var(--mono);font-size:13px;color:inherit!important;opacity:1}
+.sec-band.pz-head{display:block;max-width:none}
+.sec-band.pz-head .sub a{color:inherit;font-weight:700}
+.sec-band .fly{color:var(--oscuro)}
+.sec-band .kicker{color:inherit}
+.vbtn[aria-pressed="true"],#view-itin .chip[aria-pressed="true"],#cityChips .chip[aria-pressed="true"]{background:var(--sec);border-color:var(--sec);color:var(--on-sec)}
+.day.on{box-shadow:inset 4px 0 0 var(--sec,var(--polar)),0 0 0 1px var(--raya)}
+.base.on i{background:var(--sec);border-color:var(--sec);color:var(--on-sec)}
+/* parches de datos */
+.istats div:nth-child(1){background:var(--rojo);color:var(--claro)}
+.istats div:nth-child(2){background:var(--cobalto);color:var(--claro)}
+.istats div:nth-child(3){background:var(--mostaza);color:var(--oscuro)}
+.istats div:nth-child(4){background:var(--teal);color:var(--claro)}
+.istats div span{color:inherit!important;opacity:.92}
+.istats div{border:0!important}
+.istats{background:none;gap:6px}
+.gsum div:nth-child(1){background:var(--cobalto);border-color:var(--cobalto);color:var(--claro)}
+.gsum div:nth-child(2){background:var(--mostaza);border-color:var(--mostaza);color:var(--oscuro)}
+.gsum div:nth-child(3){background:var(--rojo);border-color:var(--rojo);color:var(--claro)}
+.gsum div span{color:inherit!important;opacity:.92}
+.hero-band{background:var(--rojo);color:var(--claro)}
+.vchoose button.new{background:var(--cobalto);border-color:var(--cobalto);color:var(--claro)}
+.vchoose button.new span{color:var(--claro)}
+.pz-permit{background:var(--espuma);color:var(--oscuro);border-color:var(--espuma);border-left-color:var(--teal)}
+.pz-permit h3,.pz-big span,.pz-permit .note{color:var(--oscuro)!important}
+.pz-permit .gtab td{color:var(--oscuro);border-color:rgba(34,29,23,.2)}
+.pz-permit .links a{color:var(--oscuro);border-color:var(--oscuro)}
+.pz-permit .links a:hover{background:var(--oscuro);color:var(--espuma)}
+.combo.rec,.picked{box-shadow:inset 4px 0 0 var(--rojo);border-color:var(--rojo)}
+.know .k:nth-child(1){border-top-color:var(--rojo)}.know .k:nth-child(2){border-top-color:var(--cobalto)}.know .k:nth-child(3){border-top-color:var(--mostaza)}
+.pz-spots li{border-top-color:var(--teal)}
+/* detalles del itinerario: etiquetas como parches */
+.stay h3,.leg h3,.fish h3{display:inline-block;padding:3px 8px;border-radius:2px;letter-spacing:.1em}
+.stay h3{background:var(--rojo);color:var(--claro)!important}
+.leg h3{background:var(--cobalto);color:var(--claro)!important}
+.fish h3{background:var(--teal);color:var(--claro)!important}
+.fish.no h3{background:var(--moca);color:var(--oscuro)!important}
+.fish{border-left-color:var(--teal)}
+.drawer a:nth-of-type(1)::before{color:var(--polar)}.drawer a:nth-of-type(2)::before{color:var(--cielo)}.drawer a:nth-of-type(4)::before{color:var(--camp)}
+/* pie */
+.pie{background:var(--cobalto-o);color:var(--claro);border-top:8px solid var(--mostaza)}
+.pie-nav a{border-bottom-color:rgba(251,246,236,.25)}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
@@ -553,6 +611,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   </nav>
 
   <div class="view" id="view-itin">
+  <header class="sec-band"><h2>Itinerario</h2><p>27/12/2026 → 10/1/2027 · día por día</p></header>
   <div class="ver" role="group" aria-label="Versión del itinerario"><span>Versión</span><button type="button" class="vbtn" data-v="a" aria-pressed="true">Original</button><button type="button" class="vbtn" data-v="b" aria-pressed="false">Nuevo</button><p class="vnote" id="vnote"></p></div>
   <nav class="route" id="route" aria-label="Bases del viaje"></nav>
 
@@ -586,15 +645,14 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   </div>
 
   <section class="view gastos" id="view-gastos" aria-labelledby="gastos-h" hidden>
-    <h2 id="gastos-h">Gastos</h2>
-    <p class="sub" id="gver"></p>
+    <header class="sec-band"><h2 id="gastos-h">Gastos</h2><p class="sub" id="gver"></p></header>
     <div class="gsum" id="gsum"></div>
     <div class="ptabw"><table class="gtab" id="gtab"></table></div>
     <p class="note">Suma solo lo que ya tiene precio. Los gastos "a cargar" se completan a medida que se reserven. Total dividido entre 8. Lo opcional (permisos de pesca) se muestra pero no se suma.</p>
   </section>
 
   <section class="view pesca" id="view-pesca" aria-labelledby="pesca-h" hidden>
-    <header class="pz-head">
+    <header class="pz-head sec-band">
       <svg class="fly" viewBox="0 0 160 70" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 34h96c14 0 22 8 22 18s-8 14-16 14-12-5-12-10"/><path d="M108 56l-6-6"/><path d="M30 34c10-16 34-24 62-22-12 4-20 12-24 22"/><path d="M38 34c12-8 26-11 40-10"/><path d="M84 28v12M90 27v14M96 28v12"/><path d="M18 34c-4-6-8-8-12-8M18 34c-4 6-8 8-12 8"/></svg>
       <p class="kicker">Temporada 1/11/2026 → 1/5/2027</p>
       <h2 id="pesca-h">Pesca</h2>
@@ -663,6 +721,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <p class="note">Fuentes: Reglamento de Pesca Deportiva Continental Patagónico 2026/2027; permisosdepesca.com.ar; Banco Nación (cotización del 17/11/2026); páginas de los prestadores. Detalle y lo que falta confirmar en docs/investigacion-pesca.md del repositorio.</p>
   </section>
   <section class="view" id="view-autos" aria-labelledby="autos-h" hidden>
+    <header class="sec-band"><h2>Autos</h2><p>Hertz · Chapelco · 28/12 al 10/1</p></header>
     <div class="rent">
       <div class="shots">
         <figure><img src="https://res.cloudinary.com/wdfk5jij/image/upload/f_auto,q_auto/afed2305a4" alt="Citroën Basalt visto de frente" loading="lazy"><figcaption>Foto: RL GNZLZ, CC BY-SA 2.0</figcaption></figure>
@@ -729,6 +788,7 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
   </section>
 
   <section class="view" id="view-casas" aria-labelledby="casas-h" hidden>
+    <header class="sec-band"><h2>Casas</h2><p>San Martín y Bariloche confirmadas · La Angostura a definir</p></header>
     <article class="picked" id="picked" aria-labelledby="picked-h">
       <div>
         <h2 id="picked-h">Las casas elegidas</h2>
