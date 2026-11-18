@@ -570,35 +570,6 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 /* pie: violeta, filete rojo arriba */
 .pie{background:var(--violeta);color:#fff;border-top:6px solid var(--rojo)}
 .pie-nav a{border-bottom-color:rgba(255,255,255,.25)}
-/* ===== Mapas del resumen ===== */
-.mapas{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin:0 auto 36px}
-@media (max-width:760px){.mapas{grid-template-columns:minmax(0,1fr)}}
-.mapa{margin:0;background:var(--hoja);border:1px solid var(--raya);border-radius:2px;padding:8px 8px 0}
-.mapa-svg{aspect-ratio:600/830;background:var(--azul)}
-.mapa:nth-child(2) .mapa-svg{aspect-ratio:auto;background:none}
-.mapa svg{display:block;width:100%;height:auto}
-.mapa figcaption{font-family:var(--mono);font-size:12px;color:var(--tinta-2);padding:8px 2px 10px}
-.mp-mar{fill:#003da2}.mp-tierra{fill:#f2ead9}.mp-pat{fill:#4d0074}.mp-chile{fill:#e9e0cd}
-.mp-borde{fill:none;stroke:#0d0709;stroke-width:1;stroke-dasharray:4 3;opacity:.55}
-.mp-lago{fill:#003da2;stroke:none}
-.mp-vuelo,.mp-linea{fill:none;stroke:#e10d0c;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
-.mp-vuelo{stroke-dasharray:2 9}
-.mp-vuelo-h,.mp-linea-h{fill:none;stroke:#fff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
-.mp-vuelta{fill:none;stroke:#e10d0c;stroke-width:3;stroke-dasharray:2 8;stroke-linecap:round}
-.mp-caja{fill:none;stroke:#e10d0c;stroke-width:3}
-.mp-punto{fill:#e10d0c;stroke:#fff;stroke-width:3}
-.mp-n{fill:#e10d0c;stroke:#fff;stroke-width:3}
-.mp-cerro{fill:#0d0709}
-.mp text{font-family:var(--body);paint-order:stroke;stroke-linejoin:round}
-.mp-ciudad{font-size:26px;font-weight:700;fill:#0d0709;stroke:#f2ead9;stroke-width:5}
-.mp-nota{font-family:var(--mono)!important;font-size:21px;fill:#0d0709;stroke:#f2ead9;stroke-width:5}
-.mp-n-t{font-family:var(--mono)!important;font-size:19px;font-weight:600;fill:#fff;stroke:none}
-.mp-pais{font-size:24px;font-weight:700;letter-spacing:.2em;fill:#5a5258;stroke:#f2ead9;stroke-width:4}
-.mp-pais-s{font-size:16px;font-weight:700;letter-spacing:.15em;fill:#5a5258;stroke:#f2ead9;stroke-width:4}
-.mp-pat-t{font-family:var(--afiche)!important;font-size:34px;fill:#fff;stroke:none}
-.mp-mar-t{font-size:20px;font-style:italic;fill:#fff;stroke:none}
-.mp-lago-t{font-size:21px;font-style:italic;fill:#fff;stroke:#003da2;stroke-width:4}
-.mapa:first-child .mp-nota{fill:#fff;stroke:#003da2}
 /* ===== Portada: etiquetas de lagos y de senderos ===== */
 .stage .pin .tr{display:block;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .3s;color:var(--rojo)!important;font-weight:600}
 .stage .pin.cerca .tr{max-height:3em;opacity:1;margin-top:3px}
@@ -613,6 +584,53 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
 .opt dl{margin:0 0 10px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
 .opt dt{font-family:var(--mono);font-size:12px;color:var(--tinta-2);padding-top:2px}.opt dd{margin:0}
 .base.opc i{border-style:dashed}.base.opc{opacity:.8}
+/* ===== Mapa único (atlas viejo, colores de la paleta apagados) ===== */
+.mapa1{margin:0 auto 36px}
+.mapa{margin:0 auto;max-width:640px;background:#f4ecda;border:1px solid var(--raya);border-radius:2px;padding:8px}
+.mapa-svg{aspect-ratio:600/814;background:#b9cdd6;overflow:hidden}
+.mapa svg{display:block;width:100%;height:auto;touch-action:pan-y;user-select:none;cursor:grab}
+.mapa svg:active{cursor:grabbing}
+.mapa-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 2px 2px}
+.mbtn{border:1.5px solid #2b2326;background:#2b2326;color:#fbf6ec;border-radius:2px;padding:7px 14px;font:700 14px var(--body);cursor:pointer}
+.mbtn:focus-visible{outline:2px solid var(--rojo);outline-offset:2px}
+.mapa-hint{font-family:var(--mono);font-size:12px;color:#5a5258}
+.mapa figcaption{font-family:var(--mono);font-size:12px;color:#5a5258;padding:6px 2px 4px}
+.mv-mar{fill:#b9cdd6}.mv-otros{fill:#ece4d2;stroke:#8c807a;stroke-width:.6;vector-effect:non-scaling-stroke}
+.mv-arg{fill:#efe3c6;stroke:#7a6e6a;stroke-width:.8;vector-effect:non-scaling-stroke}
+.mv-chile{fill:#e4dae2;stroke:#7a6e6a;stroke-width:.8;vector-effect:non-scaling-stroke}
+.mv-pat{fill:#e9b99a;stroke:#9b6f5c;stroke-width:.6;vector-effect:non-scaling-stroke}
+.mv-lago{fill:#a9c2d0;stroke:#7f9cad;stroke-width:.5;vector-effect:non-scaling-stroke}
+.mv-grat{fill:none;stroke:#6f8796;stroke-width:.6;stroke-dasharray:3 3;opacity:.55;vector-effect:non-scaling-stroke}
+.mv-papel{mix-blend-mode:multiply;opacity:.35;pointer-events:none}
+.mv-vuelo{fill:none;stroke:#e10d0c;stroke-width:2.5;stroke-dasharray:2 7;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.mv-caja{fill:none;stroke:#e10d0c;stroke-width:2;vector-effect:non-scaling-stroke}
+.mv-ruta-h{fill:none;stroke:#fbf6ec;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.mv-ruta{fill:none;stroke:#e10d0c;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.mv-vuelta{fill:none;stroke:#4d0074;stroke-width:3;stroke-dasharray:8 5;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.mv-opc{fill:none;stroke:#4d0074;stroke-width:3;stroke-dasharray:1 6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.mv-sendero{fill:none;stroke:#e10d0c;stroke-width:2.5;stroke-dasharray:3 4;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.mv-esc-a,.mv-esc-b{fill:none;stroke-width:5;vector-effect:non-scaling-stroke}.mv-esc-a{stroke:#2b2326}.mv-esc-b{stroke:#fbf6ec;stroke-dasharray:none}
+.mv-pto,.mv-n{fill:#e10d0c;stroke:#fbf6ec;stroke-width:2.5}.mv-n-opc{fill:#fbf6ec;stroke:#4d0074;stroke-width:2.5}
+.mv-refugio{fill:#2b2326;stroke:#fbf6ec;stroke-width:1.5}
+.mv-ref-b{fill:#fbf6ec;stroke:#2b2326;stroke-width:1}
+.mv text{paint-order:stroke;stroke-linejoin:round}
+.mv-ciudad{font:700 13px var(--body);fill:#2b2326;stroke:#f4ecda;stroke-width:3.5}
+.mv-nota{font:500 11px var(--mono);fill:#2b2326;stroke:#f4ecda;stroke-width:3.5}
+.mv-nota-r{fill:#5a1a12}
+.mv-grad{font:500 10px var(--mono);fill:#4b5d68;stroke:#f4ecda;stroke-width:3}
+.mv-ref{font:600 10px var(--mono);fill:#2b2326;stroke:none}
+.mv-n-t{font:700 11px var(--mono);fill:#fff;stroke:none}
+.mv-pais{font:600 14px var(--display);letter-spacing:.06em;fill:#5a4c4c;stroke:#f4ecda;stroke-width:3}
+.mv-pais-s{font:600 11px var(--display);fill:#5a4c4c;stroke:#f4ecda;stroke-width:3}
+.mv-pat-t{font:700 15px var(--display);letter-spacing:.04em;fill:#6b2a1b;stroke:#f2d2bd;stroke-width:3}
+.mv-mar-t{font:italic 500 14px var(--display);fill:#3e5b6b;stroke:none}
+.mv-lago-t{font:italic 500 12px var(--display);fill:#244a63;stroke:#c8d8e2;stroke-width:3}
+.mapa-ley{list-style:none;margin:6px 0 0;padding:0 2px;display:flex;flex-wrap:wrap;gap:4px 16px;font:500 12px var(--mono);color:#2b2326}
+.mapa-ley i{display:inline-block;width:26px;height:0;margin-right:6px;vertical-align:middle;border-top:3px solid #e10d0c}
+.mapa-ley .l-vuelta{border-top:3px dashed #4d0074}.mapa-ley .l-opc{border-top:3px dotted #4d0074}.mapa-ley .l-send{border-top:2px dashed #e10d0c}
+.mv-fino{stroke:none}
+.capa-det{opacity:0;visibility:hidden}.g-det{opacity:0}
+@media (prefers-reduced-motion:reduce){.mapa svg{scroll-behavior:auto}}
 </style>
 
 <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menú"><i></i><span class="lbl">Menú</span></button>
@@ -648,9 +666,13 @@ h1,h2,h3,.sec2{font-variation-settings:"SOFT" 100,"WONK" 0}
     <p class="lede" id="introLede">Barco a Buenos Aires el 27/12, vuelo a Chapelco el 28/12 y dos autos hasta el 10/1.</p>
     <div class="istats"><div><b>14</b><span>noches, 27/12 → 10/1</span></div><div><b id="istatKm">≈820</b><span>km en auto (trayectos del itinerario)</span></div><div><b id="istatRef">2</b><span id="istatRefL">noches en refugio</span></div><div><b id="istatPP">—</b><span>por persona, gastos con precio</span></div></div>
   </div>
-  <div class="intro-in mapas">
-    <figure class="mapa"><div class="mapa-svg" data-src="data/mapa-patagonia.svg" aria-busy="true"></div><figcaption>La Patagonia (en violeta) y el vuelo Buenos Aires → Chapelco del 28/12.</figcaption></figure>
-    <figure class="mapa"><div class="mapa-svg" data-src="data/mapa-ruta.svg" aria-busy="true"></div><figcaption>Ruta del itinerario nuevo, en orden. Trazado recto entre paradas: tiempos y km reales en cada día. Lagos: © OpenStreetMap; países: Natural Earth.</figcaption></figure>
+  <div class="intro-in mapa1">
+    <figure class="mapa">
+      <div class="mapa-svg" data-src="data/mapa.svg" aria-busy="true"></div>
+      <div class="mapa-ctl"><button type="button" class="mbtn" data-ir="ruta">Ver la ruta</button><button type="button" class="mbtn" data-ir="general" hidden>Vista general</button><span class="mapa-hint">Pellizcá o usá Ctrl + rueda para acercar</span></div>
+      <ul class="mapa-ley"><li><i class="l-ruta"></i>Ruta en auto</li><li><i class="l-vuelta"></i>Vuelta a Chapelco (10/1)</li><li><i class="l-opc"></i>Opcional: Bariloche ⇄ Pampa Linda</li><li><i class="l-send"></i>Sendero (trekking)</li></ul>
+      <figcaption>Itinerario nuevo: rutas reales en auto (OSRM sobre OpenStreetMap), paradas con fechas, lagos y senderos. Datos: Natural Earth y © OpenStreetMap.</figcaption>
+    </figure>
   </div>
   <div class="mosaic">
     <figure><img src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1400&q=80&auto=format&fit=crop" alt="El Tronador" style="object-position:58% 64%" loading="lazy"><figcaption><small>opcional, 6 a 9/1 · 2.000 m</small>Tronador y Otto Meiling</figcaption></figure>
@@ -1345,7 +1367,38 @@ function renderIntro(){try{
 }catch(e){console.warn(e)}}
 renderIntro();
 /* mapas del resumen: SVG propios (tools/mapa.py), insertados en línea para usar las fuentes y los colores de la página */
-document.querySelectorAll('.mapa-svg').forEach(el=>{fetch(el.dataset.src).then(r=>r.ok?r.text():Promise.reject(r.status)).then(t=>{el.innerHTML=t;el.removeAttribute('aria-busy')}).catch(()=>{el.innerHTML='<p class="note">No se pudo cargar el mapa.</p>'})});
+document.querySelectorAll('.mapa-svg').forEach(el=>{fetch(el.dataset.src).then(r=>r.ok?r.text():Promise.reject(r.status)).then(t=>{el.innerHTML=t;el.removeAttribute('aria-busy');mapaZoom(el.closest('.mapa'))}).catch(()=>{el.innerHTML='<p class="note">No se pudo cargar el mapa.</p>'})});
+/* zoom del mapa: botón, pellizco (dos dedos), Ctrl/⌘ + rueda y arrastre con mouse; un dedo sigue moviendo la página */
+function mapaZoom(fig){try{
+ const svg=fig.querySelector('svg'),gen=svg.querySelector('.capa-gen'),det=svg.querySelector('.capa-det');
+ const Z0=svg.getAttribute('viewBox').split(' ').map(Number),Z1=svg.dataset.zoom.split(' ').map(Number);
+ const ks=[...svg.querySelectorAll('.k')].map(g=>[g,+g.dataset.x,+g.dataset.y]),gg=[...svg.querySelectorAll('.g-gen')],gd=[...svg.querySelectorAll('.g-det')];
+ const red=matchMedia('(prefers-reduced-motion: reduce)').matches;let vb=Z0.slice(),anim=0;
+ const bR=fig.querySelector('[data-ir="ruta"]'),bG=fig.querySelector('[data-ir="general"]');
+ const cl=(v,a,b)=>Math.min(b,Math.max(a,v));
+ function fix(){vb[2]=cl(vb[2],Z1[2]/3,Z0[2]);vb[3]=vb[2]*Z0[3]/Z0[2];vb[0]=cl(vb[0],0,Z0[2]-vb[2]);vb[1]=cl(vb[1],0,Z0[3]-vb[3])}
+ function apply(){fix();svg.setAttribute('viewBox',vb.map(v=>v.toFixed(4)).join(' '));const cw=svg.clientWidth||600,u=vb[2]/cw*(cw<500?0.8:1);
+  for(const [g,x,y] of ks)g.setAttribute('transform','translate('+x+' '+y+') scale('+u.toFixed(5)+')');
+  const z=Z0[2]/vb[2],t=cl((z-1.8)/2.6,0,1);gen.style.opacity=1-t;gg.forEach(g=>g.style.opacity=1-t);det.style.opacity=t;gd.forEach(g=>g.style.opacity=t);det.style.visibility=t<0.02?'hidden':'visible';
+  const enRuta=z>2.2;bR.hidden=enRuta;bG.hidden=!enRuta}
+ function ir(to){cancelAnimationFrame(anim);if(red){vb=to.slice();apply();return}const from=vb.slice(),t0=performance.now(),D=900;
+  const step=now=>{const k=cl((now-t0)/D,0,1),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+   // interpolación en escala logarítmica del ancho: el zoom se siente parejo
+   const w=Math.exp(Math.log(from[2])+(Math.log(to[2])-Math.log(from[2]))*e),f=(from[2]-w)/(from[2]-to[2]||1);
+   vb=[from[0]+(to[0]-from[0])*f,from[1]+(to[1]-from[1])*f,w,w*Z0[3]/Z0[2]];apply();if(k<1)anim=requestAnimationFrame(step)};anim=requestAnimationFrame(step)}
+ function zoomAt(f,px,py){const r=svg.getBoundingClientRect(),ux=vb[0]+(px-r.left)/r.width*vb[2],uy=vb[1]+(py-r.top)/r.height*vb[3];
+  const w=cl(vb[2]/f,Z1[2]/3,Z0[2]),h=w*Z0[3]/Z0[2];vb=[ux-(px-r.left)/r.width*w,uy-(py-r.top)/r.height*h,w,h];apply()}
+ bR.onclick=()=>ir(Z1);bG.onclick=()=>ir(Z0);
+ svg.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();cancelAnimationFrame(anim);zoomAt(Math.exp(-e.deltaY*0.003),e.clientX,e.clientY)},{passive:false});
+ const pts=new Map();let last=null;
+ svg.addEventListener('pointerdown',e=>{pts.set(e.pointerId,e);if(pts.size===2||e.pointerType==='mouse'){svg.setPointerCapture(e.pointerId);cancelAnimationFrame(anim)}last=null});
+ svg.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const prev=pts.get(e.pointerId);pts.set(e.pointerId,e);const r=svg.getBoundingClientRect();
+  if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),cx=(a.clientX+b.clientX)/2,cy=(a.clientY+b.clientY)/2;
+   if(last){zoomAt(d/last.d,cx,cy);vb[0]-=(cx-last.cx)/r.width*vb[2];vb[1]-=(cy-last.cy)/r.height*vb[3];apply()}last={d,cx,cy};e.preventDefault()}
+  else if(e.pointerType==='mouse'&&e.buttons===1&&vb[2]<Z0[2]){vb[0]-=(e.clientX-prev.clientX)/r.width*vb[2];vb[1]-=(e.clientY-prev.clientY)/r.height*vb[3];apply()}});
+ const up=e=>{pts.delete(e.pointerId);last=null};svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);svg.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')up(e)});
+ addEventListener('resize',apply);apply();
+}catch(e){console.warn('Mapa',e)}}
 {const t=document.getElementById('itinAct');if(t){const [y,m,d]=ITIN_ACT.split('-');t.dateTime=ITIN_ACT;t.textContent=(+d)+'/'+(+m)+'/'+y}}
 document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>renderIntro()));
 /* menú lateral */
