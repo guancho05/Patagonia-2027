@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>medir</title>
+<!-- Medición local de carga (sustituto parcial de Lighthouse cuando no hay Node):
+     abre la web en un marco del tamaño de un celular y anota LCP, CLS, tareas largas, peso y errores.
+     Uso: chrome --headless=new --virtual-time-budget=15000 --dump-dom "http://localhost:8080/tools/medir.html?u=/%3Fnosw%3D1&w=390&h=844"
+     El resultado queda en <pre id="r"> como JSON. -->
+<style>body{margin:0;background:#888}iframe{border:0;display:block}</style>
+<pre id="r">midiendo</pre>
+<script>
+const q = new URLSearchParams(location.search), w = +(q.get('w') || 390), h = +(q.get('h') || 844);
+const f = document.createElement('iframe'); f.width = w; f.height = h; f.src = q.get('u') || '/?nosw=1'; document.body.appendChild(f);
+const errores = [];
+f.addEventListener('load', () => {
+  const W = f.contentWindow, lcp = [], cls = [], largas = [];
+  W.addEventListener('error', e => errores.push(String(e.message)));
+  const obs = (t, a) => { try { new W.PerformanceObserver(l => a.push(...l.getEntries())).observe({ type: t, buffered: true }) } catch (e) {} };
+  obs('largest-contentful-paint', lcp); obs('layout-shift', cls); obs('longtask', largas);
+  setTimeout(() => {
+    const nav = W.performance.getEntriesByType('navigation')[0], res = W.performance.getEntriesByType('resource'), u = lcp[lcp.length - 1];
+    const peso = t => Math.round(res.filter(t).reduce((a, r) => a + (r.transferSize || r.encodedBodySize || 0), 0) / 1024);
+    document.getElementById('r').textContent = JSON.stringify({
+      ancho: w, lcp_ms: u ? Math.round(u.startTime) : null, lcp_elem: u && u.element ? u.element.tagName + '.' + u.element.className : null,
+      fcp_ms: Math.round((W.performance.getEntriesByName('first-contentful-paint')[0] || {}).startTime || 0),
+      cls: +cls.filter(e => !e.hadRecentInput).reduce((a, e) => a + e.value, 0).toFixed(4),
+      tareas_largas_ms: largas.map(e => Math.round(e.duration)), bloqueo_total_ms: Math.round(largas.reduce((a, e) => a + Math.max(0, e.duration - 50), 0)),
+      dom_ms: Math.round(nav.domContentLoadedEventEnd), load_ms: Math.round(nav.loadEventEnd),
+      pedidos: res.length, kb_total: peso(() => true), kb_propios: peso(r => r.name.startsWith(location.origin)), kb_3d: peso(r => /terreno|three/.test(r.name)),
+      scroll_horizontal: W.document.documentElement.scrollWidth > w, hero: W.document.getElementById('hero').className, errores
+    });
+  }, 9000);
+});
+</script>

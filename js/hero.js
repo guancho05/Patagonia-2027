@@ -15,10 +15,10 @@ const mobile = matchMedia('(max-width: 820px), (pointer: coarse)').matches;
 // Calidad según el dispositivo: [alturas, sufijo de texturas, quads por bloque]
 const LIGHT = { alt: 480, tex: '-1024', chunk: 32 };
 const HIGH = mobile ? { alt: 960, tex: '-2048', chunk: 48 } : { alt: 1920, tex: '', chunk: 64 };
-const ROJO = '#e10d0c';   // rojo de la paleta: marcadores y senderos
+const ROJO = '#B3321F';   // rojo polar (un punto más claro que el token, para que se lea sobre el bosque): marcadores y senderos
 
 // Paleta (docs/investigacion-estetica.md) aplicada al cielo, la bruma y la luz.
-const SKY = { zenith: '#2a74a6', mid: '#79abc0', horizon: '#d9d7c6' };
+const SKY = { zenith: '#5F88A8', mid: '#9DBCD3', horizon: '#DCE7EE' };   // cielo glaciar: granito azulado arriba, bruma color nieve en el horizonte
 const EX = 1.15;            // exageración vertical
 const U = 10;               // unidades por km (1 unidad = 100 m)
 
@@ -35,6 +35,7 @@ const PATH = [
 const ACCEL = 0.14;   // fracción del recorrido para acelerar y para frenar
 const HOLD = 0.92;    // la cámara llega al Catedral al 92 % del scroll y se queda quieta
 
+const ceder = () => new Promise(r => setTimeout(r, 0));   // corta el trabajo en partes para no trabar el scroll ni los toques mientras se arma el relieve
 function fallback(reason) { hero.classList.add('static'); hero.dataset.reason = reason; }
 function webgl2() { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } }
 
@@ -106,8 +107,8 @@ async function start() {
   const fogCol = col(SKY.horizon);
   const az = 315 * Math.PI / 180, el = (meta.sol ? meta.sol.el : 27) * Math.PI / 180;
   const sunDir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el));
-  const sunCol = new THREE.Vector3(...lin('#ffd9a8').map(v => v * 2.05));
-  const skyCol = new THREE.Vector3(...lin('#9fc0d8').map(v => v * 0.62));
+  const sunCol = new THREE.Vector3(...lin('#FFE4BC').map(v => v * 2.05));
+  const skyCol = new THREE.Vector3(...lin('#B8D3E7').map(v => v * 0.62));
   const FOG = `
     float d = distance(vW, cameraPosition);
     float f = 1.0 - exp(-pow(d * fogK, 3.0));
@@ -124,6 +125,7 @@ async function start() {
   // adentro de la zona de detalle se descarta, pero hace falta densidad para que el borde calce sin huecos
   const ax = axis(rc[0], rc[0] + rc[2], ro[0], ro[0] + ro[2], mobile ? 96 : 170, mobile ? 30 : 44);
   const azs = axis(rc[1], rc[1] + rc[3], ro[1], ro[1] + ro[3], mobile ? 62 : 110, mobile ? 30 : 44);
+  await ceder();
   const oGeo = (() => {
     const NX = ax.length, NZ = azs.length, pos = new Float32Array(NX * NZ * 3);
     for (let j = 0, k = 0; j < NZ; j++) for (let i = 0; i < NX; i++, k += 3) { pos[k] = ax[i]; pos[k + 1] = yAt(ax[i], azs[j]); pos[k + 2] = azs[j]; }
@@ -148,6 +150,7 @@ async function start() {
         gl_FragColor = vec4(mix(c, fogCol, clamp(f, 0.0, 1.0)), 1.0);
       }`
   });
+  await ceder();
   const scene = new THREE.Scene();
   scene.add(new THREE.Mesh(oGeo, oMat));
 
@@ -182,7 +185,7 @@ async function start() {
           float vy = clamp(V.y + rip, 0.0, 1.0);
           float fres = 0.04 + 0.96 * pow(1.0 - vy, 5.0);
           vec3 refl = mix(fogCol, mix(skyM, skyZ, smoothstep(0.1, 0.7, vy)), smoothstep(0.0, 0.15, vy));
-          vec3 deep = vec3(0.06, 0.20, 0.27) * (0.75 + 0.35 * dot(vec3(0.0, 1.0, 0.0), sunDir));
+          vec3 deep = vec3(0.07, 0.17, 0.27) * (0.75 + 0.35 * dot(vec3(0.0, 1.0, 0.0), sunDir));
           vec3 wc = mix(deep, refl, clamp(0.18 + fres * 0.8, 0.0, 0.92));
           c = mix(c, wc, wa);
         }${FOG}
@@ -207,7 +210,7 @@ async function start() {
   }
   let chunks = [];
   const coreGroup = new THREE.Group(); scene.add(coreGroup);
-  function buildCore(level, prev) {
+  async function buildCore(level, prev) {
     const Cq = level.chunk, nCx = Math.max(1, Math.round((level.alt - 1) / Cq)), nCz = Math.max(1, Math.round((altH(level.alt) - 1) / Cq));
     const V = Cq + 1, dxw = rc[2] / (nCx * Cq), dzw = rc[3] / (nCz * Cq), skirt = 4 * EX;   // faldones de 400 m: tapan grietas entre niveles de detalle
     const list = [];
@@ -230,11 +233,12 @@ async function start() {
       const m = new THREE.Mesh(g, cMat); m.frustumCulled = true;
       const hasTrail = (meta.senderos || []).some(t => t.pts.some(([la, lo]) => { const x = X(lo), z = Zc(la); return x >= x0 - 2 && x <= x0 + Cq * dxw + 2 && z >= z0 - 2 && z <= z0 + Cq * dzw + 2; }));
       list.push({ mesh: m, c: new THREE.Vector3(x0 + Cq * dxw / 2, g.boundingSphere.center.y, z0 + Cq * dzw / 2), Cq, step: 1, size: Cq * dxw, trail: hasTrail });
+      if (list.length % 4 === 0) await ceder();
     }
     coreGroup.clear(); chunks.forEach(c => c.mesh.geometry.dispose());
     list.forEach(c => coreGroup.add(c.mesh)); chunks = list;
   }
-  buildCore(LIGHT, null);
+  await buildCore(LIGHT, null);
   function updateLOD() {
     for (const c of chunks) {
       const d = Math.max(0, camera.position.distanceTo(c.c) - c.size * 0.7);
@@ -399,7 +403,7 @@ async function start() {
   }
   let morphFrom = 0;
   // Carteles: siempre dentro de la pantalla (12 px de margen), anclados hacia adentro con una línea al punto;
-  // sin pisarse entre sí ni con el menú, el título, la banda de datos o el crédito. Si chocan, queda el más cercano
+  // sin pisarse entre sí ni con el título o la banda de datos. Si chocan, queda el más cercano
   // al punto que mira la cámara en ese momento (el centro del recorrido).
   const MARGIN = 12, GAP = 14;
   const obstacles = [];
@@ -408,11 +412,10 @@ async function start() {
     if (r.width && r.bottom > sr.top && r.top < sr.bottom) obstacles.push([r.left - sr.left - pad, r.top - sr.top - pad, r.right - sr.left + pad, r.bottom - sr.top + pad]);
   }
   const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
-  const menuBtn = document.getElementById('menuBtn'), heroTitle = hero.querySelector('.hero-txt'), band = hero.querySelector('.hero-band'), credit = hero.querySelector('.credit');
+  const heroTitle = hero.querySelector('.hero-txt'), band = hero.querySelector('.hero-band');
   function placeLabels() {
     const W = stage.clientWidth, H = stage.clientHeight, sr = stage.getBoundingClientRect();
     obstacles.length = 0;
-    rectIn(menuBtn, sr, 6); rectIn(credit, sr, 2);
     if (shown < 0.28) rectIn(heroTitle, sr, 6);
     if (shown < 0.55) rectIn(band, sr, 6);
     const placed = [];
@@ -481,7 +484,7 @@ async function start() {
     const [gH, tA, tN] = await Promise.all([heightsFrom(`data/terreno-cerca-alt-${HIGH.alt}.png`, 1),
       tex(`data/terreno-cerca-color${HIGH.tex}.jpg`), tex(`data/terreno-cerca-normal${HIGH.tex}.jpg`)]);
     const prev = sC; sC = sampler(gH);
-    buildCore(HIGH, prev);
+    await buildCore(HIGH, prev);
     const oldA = cMat.uniforms.tA.value, oldN = cMat.uniforms.tN.value;
     cMat.uniforms.tA.value = tA; cMat.uniforms.tN.value = tN; oldA.dispose(); oldN.dispose();
     cMat.uniforms.morph.value = 0; morphFrom = performance.now();

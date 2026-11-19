@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>marco</title>
+<!-- Marco para capturas: muestra una ruta de la web a pantalla completa dentro de un iframe.
+     Chrome sin ventana captura mal las páginas con scroll; así la página de afuera no se mueve y la de adentro sí.
+     Parámetros: u = ruta (por defecto /?nosw=1) · sel = selector al que hacer scroll adentro · js = código a ejecutar adentro antes de la captura. -->
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#131A22}iframe{border:0;display:block;width:100vw;height:100vh}</style>
+<script>
+const q = new URLSearchParams(location.search), f = document.createElement('iframe'); f.src = q.get('u') || '/?nosw=1';
+// w y h: tamaño exacto del marco (Chrome sin ventana no baja de ~500 px de ancho; así se captura bien un celular de 390)
+if (q.get('w')) f.style.width = q.get('w') + 'px'; if (q.get('h')) f.style.height = q.get('h') + 'px';
+addEventListener('DOMContentLoaded', () => document.body.appendChild(f));
+f.addEventListener('load', () => setTimeout(() => { const W = f.contentWindow;
+  try { if (q.get('js')) W.eval(q.get('js')); const s = q.get('sel') && W.document.querySelector(q.get('sel')); if (s) s.scrollIntoView() } catch (e) { console.warn(e) } }, 1500));
+</script>

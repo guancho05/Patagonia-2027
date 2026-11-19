@@ -192,3 +192,56 @@ Pedido: usar como paleta principal los colores exactos de una imagen de referenc
 | azul / negro, violeta / negro | 2,08 / 1,49 | solo como bloques con texto blanco, nunca texto sobre negro |
 
 **Límites que respeto:** nada de franjas violeta/azul/rojo apiladas detrás de una silueta de montaña, ni en la portada ni en otro lado; los colores van en bloques planos separados. El cielo del 3D queda en un degradé natural. Los títulos siguen en Caprasimo (estilo Cooper Black, años 70), que no se parece a la letra del logo.
+
+---
+
+## Paleta 4 · Fitz Roy y polares (19/11/2026) — la que usa la web hoy
+
+Reemplaza a la "Paleta 3" (violeta, azul rey y rojo, sacada de un logo): esa ya no se usa en ningún lado. Sale de dos fotos de referencia que mandó Juan **solo para el color** (no están en el repo y no se usa nada de sus textos ni logos): (1) el Fitz Roy con cielo glaciar, granito azulado, lengas en otoño y pastizal dorado; (2) dos personas con polares rojos, bolsillos azul marino, abetos y pasto seco.
+
+Los valores base los muestreó Juan; yo los verifiqué a ojo contra las fotos y agregué los dos que faltaban (lenga y marino). Los ajustes respecto del muestreo están anotados.
+
+| Token | Hex | De dónde sale | Uso |
+|---|---|---|---|
+| `--cielo` | `#B8D3E7` | cielo glaciar (foto 1) | luz ambiente del 3D, detalles |
+| `--cielo-2` | `#85A8C3` | cielo, parte alta | cielo de las ilustraciones |
+| `--granito` | `#58758B` | pared del Fitz Roy en sombra | banda de Mapa (oscurecido a `#4C677B` para texto blanco), sierras lejanas |
+| `--pizarra` | `#2E353E` | roca oscura | banda de Gastos, aviso sin conexión |
+| `--tinta` | `#131A22` | sombras | texto, barra de secciones, pie, fondo del modo oscuro |
+| `--nieve` | `#F2F6F9` | nieve y glaciar | fondo del modo claro, texto del modo oscuro |
+| `--pastizal` | `#D8B273` | pasto dorado | fechas de la portada, franja del pie, relleno de la Patagonia en el mapa (apagado a `#DFC79C`) |
+| `--tierra` | `#937B65` | ladera | bordes del mapa |
+| `--lenga` | `#A9561F` | lengas en otoño (foto 1). Muestreado ≈`#B4622B`; oscurecido para que el texto blanco tenga contraste 5,2 | etiqueta "Casa", avisos "a confirmar", franja del pie |
+| `--polar` | `#9D2F23` | polares rojos (foto 2) | **acento principal**: barra activa, botones, día elegido, marcadores, ruta y senderos punteados |
+| `--abeto` | `#3D594F` | abetos | banda de Itinerario, "confirmada", camping |
+| `--abeto-2` | `#182521` | sombra del abeto | banda de Pesca |
+| `--caqui` | `#BFA984` | pantalón caqui | franja del pie, estepa |
+| `--oliva` | `#74684D` | pasto seco en sombra | bloque "Opcional: Otto Meiling", ruta opcional del mapa |
+| `--celeste` | `#6CC2DB` | cielo de la foto 2 | foco de teclado en el modo oscuro, ríos |
+| `--marino` | `#22375C` | bolsillos de los polares (foto 2). Elegido a ojo: ajustalo si lo ves distinto | banda de Autos, refugio, trayecto, lagos del 3D |
+
+### Semánticos (claro / oscuro) y contraste
+
+Todos los pares de texto cumplen AA (4,5:1 o más); calculado con la fórmula de WCAG 2.1.
+
+| Par | Claro | Oscuro |
+|---|---|---|
+| Texto sobre fondo | `#131A22` / `#F2F6F9` · 16,1 | `#F2F6F9` / `#131A22` · 16,1 |
+| Texto secundario | `#46596A` · 6,7 (6,1 sobre `--sup-2`) | `#A9BCCB` · 9,0 (6,9 sobre `--sup-2`) |
+| Links y horas (`--acento-texto`) | `#9D2F23` · 6,8 | `#F09383` · 7,7 |
+| Blanco sobre el acento | `#9D2F23` · 7,3 | `#B33A2C` · 5,9 |
+| Blanco sobre abeto / marino / pizarra / lenga / oliva | 7,7 / 11,9 / 12,4 / 5,2 / 5,5 | ok `#4F7466` 5,2 · refugio `#4A6FA8` 5,1 · neutro `#5C7890` 4,6 |
+| Barra de secciones (inactivo sobre tinta) | `#C5D3DF` · 11,5 | igual |
+| Foco de teclado | `#22375C` · 10,9 | `#6CC2DB` · 8,7 |
+
+### Dónde se aplica
+
+- **Acento:** rojo polar en la barra de secciones (pestaña activa y filete), botones, día y base elegidos, marcadores y senderos punteados. En el 3D el rojo va un punto más claro (`#B3321F`) para que se lea sobre el bosque.
+- **Portada 3D:** cielo `#5F88A8` → `#9DBCD3` → bruma `#DCE7EE` (granito azulado arriba, nieve en el horizonte); sol cálido `#FFE4BC`; luz de cielo `#B8D3E7`; lagos con fondo azul marino.
+- **Mapa plano:** mismo papel en claro y en oscuro (`#F1EADB`), mar `#BCCFDB`, Argentina `#EDE3CB`, Patagonia `#DFC79C`, lagos `#A5BFD0`; ruta en rojo polar, vuelta en marino a rayas, opcional en oliva punteado. Tonos apagados, como impresos.
+- **Pie:** silueta real arriba; franjas rectas abajo, separadas de la silueta: abeto, caqui, pastizal, lenga y polar. Son todos tonos de tierra a propósito: no repiten la combinación azul-violeta-naranja de ninguna marca.
+- **Ilustraciones** (cuando un día no tiene foto o no hay conexión): cielos, sierras y agua con los mismos tonos.
+
+### Qué se mantiene de las etapas anteriores
+
+Tipografías (Caprasimo para títulos de afiche, Fraunces para relato, Atkinson Hyperlegible para datos, IBM Plex Mono para pies), borde de papel en la portada, banda de datos, grano fino, pies de foto con lugar y fecha. Regla de siempre: nada del logo, el lettering ni la composición de la marca Patagonia.

@@ -1,0 +1,18 @@
+{
+  "name": "Patagonia 2027",
+  "short_name": "Patagonia 27",
+  "description": "Plan del viaje: itinerario, mapa, casas, autos, gastos y pesca. 27/12/2026 al 10/1/2027.",
+  "lang": "es-UY",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#131A22",
+  "theme_color": "#131A22",
+  "icons": [
+    { "src": "img/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icono-512-m.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/icono.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

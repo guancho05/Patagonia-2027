@@ -393,3 +393,234 @@ Es una emulación: en un teléfono real el compositor usa la GPU, así que deber
 - Sin errores de JS ni scroll horizontal. Resultado: OK.
 
 **Merge:** rama `checkpoint/main-antes-del-merge` → `main` anterior; `relato` a `main` en un solo commit. Detalles y verificación de producción en `CHECKPOINTS.md`.
+
+---
+
+# Informe del 19/11/2026 · correcciones, paleta nueva, pulido y rediseño libre
+
+## Lo primero (leer esto)
+
+- **La web publicada NO quedó actualizada.** Esta sesión corrió en una PC con Windows que no tiene Git, Node ni Python, sin el repo clonado (solo el zip de `main`) y sin credenciales de GitHub. Preguntado al empezar, elegiste "sin instalar nada". Por eso **no hay commits, ramas, push, merge ni previews de Vercel**: todo el trabajo está en carpetas locales.
+- Dónde está cada cosa (en `Desktop\Pat\`):
+  - `Patagonia-2027-main\` → la versión **pulida y lista para publicar** (etapas 1 a 3). Es lo que tendría que ir a `relato` y después a `main`.
+  - `Patagonia-2027-rediseno-libre\` → el **rediseño libre** (etapa 5). Equivale a la rama `rediseno-libre`. No mezclar con `main`.
+  - `_checkpoints\` → copias de carpeta de cada etapa (ver "Checkpoints y cómo volver").
+- Para verlas en la PC: en cada carpeta, `powershell -ExecutionPolicy Bypass -File tools\servidor.ps1` y abrir http://localhost:8080/ (para la segunda, agregar ` 8090` al final y abrir http://localhost:8090/).
+- **Lighthouse no se pudo correr** (necesita Node). En su lugar medí LCP, CLS, tareas largas y peso con Chrome sin ventana (`tools/medir.ps1`), antes y después. No es comparable con el puntaje de Lighthouse: no limita la red ni el procesador.
+
+## Cómo publicar (etapa 4, pendiente)
+
+Desde una máquina con Git y acceso al repo (o una sesión de Claude Code en la nube con el repo conectado):
+
+1. Copiar el contenido de `Patagonia-2027-main\` sobre un clon del repo en la rama `relato` (sin la carpeta `.git`, que no existe acá). Conviene un commit por checkpoint: primero el contenido de `_checkpoints\28-correcciones-y-paleta-base`, después el de `29-pulido-listo`, y crear las ramas `checkpoint/28-...` y `checkpoint/29-...`.
+2. Revisión automática: `node tools/revisar.cjs` (o, sin Node, `powershell -File tools\medir.ps1 -Medidor http://localhost:8080/tools/revisar.html`). Tiene que decir `revisión OK`.
+3. `git push origin main:refs/heads/checkpoint/main-antes-del-merge-3` (el nombre `checkpoint/main-antes-del-merge` ya está usado por el segundo merge).
+4. Merge con squash de `relato` a `main` y push. Vercel publica solo.
+5. Abrir https://patagonia-2027-eosin.vercel.app en 390×844 y 1280×800. En un celular que ya la tenía abierta puede hacer falta recargar una vez: el service worker es nuevo.
+6. Correr Lighthouse móvil sobre la URL publicada (PageSpeed Insights) y anotar los puntajes acá.
+7. Para el rediseño: crear la rama `rediseno-libre` desde `main`, copiar `Patagonia-2027-rediseno-libre\` encima, commit y push. El preview queda en `https://patagonia-2027-git-rediseno-libre-juans-projects-9f7b2d3f.vercel.app`.
+
+## Etapa 1 · Correcciones
+
+| # | Pedido | Antes | Después |
+|---|---|---|---|
+| 1 | Arrancar siempre en la portada | Sin `#` en el link, la página restauraba la última sección (`localStorage` `pat-page`) y el navegador restauraba el scroll: en el celular caía en el Itinerario. | Se eliminó `pat-page`. `history.scrollRestoration = 'manual'` y `scrollTo(0,0)` si no hay `#sección`. Con `#itinerario`, `#mapa`, etc. abre esa sección (sirve para compartir un link directo). |
+| 2 | Mapa de Google del trayecto en el celular | El iframe usaba `https://maps.google.com/maps?saddr=…&daddr=…&output=embed`. Esa dirección responde con un **301 que trae `X-Frame-Options: SAMEORIGIN`** y recién después llega al mapa embebible (lo verifiqué con pedidos directos con user agents de Android y iPhone). En la PC el navegador sigue la redirección; hay navegadores móviles que cortan ahí y dejan el cuadro vacío. | El iframe apunta directo al destino de esa redirección: `https://www.google.com/maps/embed?origin=mfe&pb=!1m6!4m4!4m1!2s<origen>!4m1!2s<destino>!5e0…`, sin pasar por el 301. Se inserta cuando el bloque está por entrar en pantalla (no frena la carga). Más alto en el celular (`clamp(260px, 56vw, 380px)`). Sin conexión muestra el texto del trayecto y el link. **No lo pude probar en un teléfono real**: lo probé en el navegador con emulación de celular (dibuja la ruta). Si en algún celular sigue sin verse, avisame cuál (modelo y navegador). |
+| 3 | Un solo itinerario | `DAYS_A`/`BASES_A`/`LEGS.a`, selector "Versión", dos botones en la portada, textos "itinerario original/nuevo" en Gastos, resumen y pesca. | Queda `DAYS`, `BASES`, `LEGS` (el nuevo). Se fueron el selector, los botones, `pat-ver` y todos los textos que dependían. El original se recupera del checkpoint `27-antes-correcciones-19-11`. |
+| 4 | Mapa plano angosto en la PC | Caja con `max-width: 640px` y la proporción vertical del mapa (600×827): quedaba una columna con bandas vacías. | El Mapa es una sección propia. En pantallas de más de 820 px la caja ocupa todo el ancho del contenido con altura `clamp(440px, alto de pantalla − 266px, 760px)`. El código del zoom se generalizó para cualquier proporción: la "vista general" en apaisado es la franja de ancho completo que va de Buenos Aires a la zona del viaje. En el celular queda como estaba. |
+| 5 | Texto "Relieve: …" en la portada | Línea de créditos sobre el borde inferior del 3D. | Eliminada. Los créditos del relieve, lugares, mapas y fotos están solo en el pie. |
+| 6 | Fotos | 7 de 17 eran fotos verticales recortadas al centro en 16:9: en San Martín quedaba el cerro y no el pueblo. "Bariloche" en el mosaico era una vista de lagos sin ciudad. Sin `srcset`. | Cada foto tiene un punto de interés (`fx`, `fy`) y se pide **recortada en el servidor** (`fit=crop&ar=3:2&crop=focalpoint`), con `srcset` de 480 a 1600 px. San Martín: mismo archivo, ahora encuadra el pueblo, la playa y el muelle. Bariloche: fotos nuevas de Unsplash con la costanera y la catedral (`photo-1698006812846-09a8022e549d`) y el puerto con el centro (`photo-1589836262351-edc2c3e1f09d`), elegidas mirándolas. Detalle en "Fotos" más abajo. |
+| 7 | Menú | Un botón suelto arriba a la derecha que abría un panel lateral y se escondía al bajar. | **Barra de secciones fija**: abajo en el celular (seis pestañas con ícono y nombre, 60 px + zona segura, al alcance del pulgar) y arriba en pantallas de 900 px o más (con el nombre del viaje a la izquierda). Fondo tinta con filete rojo polar; la sección abierta va en rojo y con `aria-current="page"`. No tapa contenido: la página reserva su alto y la portada 3D se achica lo mismo. Desde la portada, tocar una pestaña salta directo al plan sin recorrer todo el vuelo. |
+
+## Etapa 2 · Paleta nueva
+
+Hecha junto con la etapa 1 porque se reescribieron los estilos completos (el CSS anterior tenía cinco generaciones de reglas pisándose). Detalle, tabla de tokens y contrastes en `docs/investigacion-estetica.md`, "Paleta 4 · Fitz Roy y polares".
+
+- Las dos fotos llegaron después de arrancar; las usé solo para verificar el color. No están en el repo ni se usó nada de sus logos o textos.
+- Base: los hex que muestreaste. Agregué **lenga `#A9561F`** (naranja quemado de las lengas; oscurecido desde ≈`#B4622B` para que el texto blanco encima tenga contraste 5,2) y **marino `#22375C`** (bolsillos de los polares; elegido a ojo, ajustalo si lo ves distinto).
+- Rojo polar `#9D2F23` como acento: barra, botones, día y base elegidos, marcadores, ruta y senderos punteados. En el 3D va un punto más claro (`#B3321F`) para que se lea sobre el bosque.
+- Franjas del pie: abeto, caqui, pastizal, lenga y polar; rectas y separadas de la silueta. Elegí solo tonos de tierra para que no se parezcan a las franjas de ninguna marca.
+- Cielo, bruma y luz del 3D; mapa plano con el mismo papel en claro y oscuro; ilustraciones de respaldo: todo con la paleta.
+- Contraste: todos los pares de texto dan 4,5:1 o más (calculado con la fórmula de WCAG; tabla en el documento de estética). Encontré y corregí uno que no llegaba (blanco sobre el naranja del modo oscuro: 4,29 → 5,2).
+
+## Etapa 3 · Pulido
+
+### Diseño
+- **Antes:** tamaños de letra y espacios sueltos (11, 12, 13, 14, 15 px mezclados). **Después:** escala tipográfica (`--t-xs` a `--t-4xl`) y de espaciado (múltiplos de 4) en tokens.
+- **Estados:** hover, activo (`:active` con un leve desplazamiento) y foco visible (`outline` de 3 px con color propio por tema) en todo lo tocable. Transiciones de 150 ms; con `prefers-reduced-motion` se anulan.
+- **Áreas táctiles:** chips, links tipo botón, anterior/siguiente, botones del mapa, flechas de fotos y links del pie pasaron a 44 px o más. La revisión automática lo controla.
+- **Modo oscuro:** tokens propios (no una inversión): superficies `#1B242E`/`#25303B`, texto secundario `#A9BCCB`, links `#F09383`. El mapa plano se mantiene en papel claro en los dos temas.
+- **Anchos:** revisado en 360, 390, 768, 1280, 1440 y 2560 px con un control automático (scroll horizontal, textos con `overflow` cortado, áreas táctiles): sin fallas. Se sacó el único "…" que había (el crédito de la portada).
+
+### Portada 3D
+- Carteles: ya quedaban dentro de la pantalla con el arreglo anterior; al sacar el botón de menú y el crédito tienen más lugar. Verificado en 390 px a lo largo del recorrido (capturas en `docs/capturas/12-pulido-19-11/`).
+- Senderos: se apoyan en el relieve y lo que queda detrás de un filo se oculta (prueba de profundidad); no hice cambios de geometría.
+- Carga: el armado del relieve se parte en tramos (`await` cada 4 bloques) para no trabar el scroll mientras carga. La versión liviana entra primero y la alta se funde en 1,4 s, como antes.
+- Fluidez del dron: **no la pude medir** (el navegador de pruebas estaba en segundo plano y Chrome sin ventana no da cuadros por segundo reales). No toqué el recorrido. Queda como pendiente verlo en un celular.
+- Fallback: foto fija si no hay WebGL2, con `prefers-reduced-motion`, Save-Data o poca memoria; ahora con `srcset`.
+
+### Contenido y datos
+- **Una sola fuente:** `js/datos.js`. El resumen de la portada (km, noches por base, por persona), los carteles del 3D, la tabla de casas elegidas, Gastos y el bloque "Dónde dormimos" se calculan desde ahí. El total de autos y el valor en dólares del permiso de pesca también.
+- **La Angostura:** el plan actual son 2 noches (3 y 4/1), pero los precios de la lista se cotizaron el 30/10 para 3 noches (3 al 6/1). No inventé un precio: la sección lo dice ("total a confirmar"), los links a Airbnb y Booking ya van con entrada 3/1 y salida 5/1, y en Gastos figura "a confirmar".
+- **Se quitó "Combinaciones para las 8 noches":** con San Martín y Bariloche confirmadas, cuatro de las cinco combinaciones quedaban tachadas y la quinta usaba un precio de 3 noches. La tabla "Dónde dormimos en casa" muestra lo confirmado (USD 1.814, USD 227 por persona, 6 noches) y lo que falta.
+- Ortografía: "nailon", "10 %", "10/1" (antes "10/01" en un lugar), tildes revisadas.
+
+### Accesibilidad
+- `lang="es-UY"`, link "Saltar al plan", un solo `<main>`, encabezados de tabla con `scope`, listas de datos como `<dl>`.
+- Barra: `<nav>` con nombre y `aria-current`. Días y casas: botones con `aria-current` en el elegido; el cambio se anuncia en una región `role="status"` (antes se releía el panel entero).
+- Mapa: enfocable, con instrucciones en `aria-label`; teclado `+`, `−`, flechas y `0`.
+- Carruseles: `role="group"` con `aria-roledescription="carrusel"`, miniaturas "Foto 3 de 12" con `aria-current`, flechas del teclado, botón propio para abrir el visor. El visor es un diálogo modal que retiene el foco y lo devuelve al cerrar.
+- Fotos con texto alternativo descriptivo por día.
+
+### Rendimiento (Chrome sin ventana, misma máquina, sin limitar red ni procesador)
+
+| | Antes (zip de `main`) | Después |
+|---|---|---|
+| LCP, celular 390 | 688 ms (póster) | 572 ms (póster) |
+| CLS, celular | 0,0315 | 0,0002 |
+| LCP / CLS, PC 1280 | 744 ms / 0,0005 | 608 ms / 0,0009 |
+| Tareas largas, celular | 110, 435 y 188 ms | 83, 371, 62 y 151 ms |
+| Peso total transferido, celular | 5,3 MB | 4,2 MB |
+| HTML | 189 KB (todo adentro) | 26 KB + CSS 31 KB + datos 61 KB + lógica 44 KB |
+
+- Nada bloquea el itinerario: los scripts van con `defer`, el 3D arranca cuando el navegador queda libre y el mapa de Google se pide al acercarse.
+- **Por qué no puedo prometer 90 en Performance:** la tarea de ~370 ms es three.js compilando y dibujando el primer cuadro; en un celular de gama media (Lighthouse la multiplica por 4) eso es bloqueo de más de 1 s. Si al medir en producción no llega, la opción es arrancar el 3D recién con el primer scroll o toque (queda la foto hasta entonces).
+
+### Sin conexión
+- `sw.js`: al instalar guarda la página, estilos, scripts, datos, mapa, silueta y la versión liviana del 3D (22 archivos). Después la página le pasa una foto por día, las del resumen y las tipografías. Las fotos que se van viendo (casas) se guardan hasta 320.
+- La página se pide primero a la red (para ver cambios) y, si no hay o tarda más de 3 s, sale la copia.
+- Sin conexión, si falta el tamaño exacto de una foto se usa otro tamaño guardado de la misma; si no hay ninguna, se dibuja la ilustración del día.
+- Aviso "Sin conexión: estás viendo la copia guardada" abajo, discreto.
+- **Probado:** con el servidor local apagado, la página recargó desde la copia con los 15 días, la foto de un día que no había abierto, el mapa plano, la silueta, el 3D liviano y las tipografías.
+- Los mapas de Google no se guardan (son de otro sitio).
+
+### Compartir
+- Open Graph y Twitter Card con título, descripción e imagen propia (`img/portada-og.jpg`, 1200×630, captura real de la portada 3D).
+- `manifest.webmanifest`, ícono SVG y PNG (192, 512, maskable y 180 para iPhone), `theme-color`.
+
+### Robustez
+- **Links:** `docs/links.md` (30 revisados con `tools/links.ps1`). Todos responden salvo:
+  - `cazaypesca.neuquen.gob.ar/permisos/`: **no conecta desde esta PC** (tampoco la portada del sitio). No sé si está caído o bloquea conexiones de afuera de Argentina. Lo dejé (el link principal, permisosdepesca.com.ar, anda). Revisar a mano.
+  - EconomyBookings (403) y Expedia (429) bloquean robots: revisar a mano. Booking responde 202 (desafío anti-robots), no es un link roto.
+- `404.html` propia (Vercel la sirve sola en los sitios estáticos).
+- Consola: sin errores ni warnings en la carga normal. Sin conexión, el 3D avisa con un `console.warn` que sigue con la versión liviana.
+- Sin scroll horizontal en ningún ancho probado.
+
+### Código
+- `index.html` (marcado) · `css/estilos.css` · `js/datos.js` · `js/app.js` · `js/hero.js` · `sw.js`. Sin build.
+- Herramientas que andan sin Node ni Python: `tools/servidor.ps1`, `medir.ps1`, `revisar.html`, `capturar.ps1`, `capturas.ps1`, `links.ps1`, `iconos.ps1`.
+- `CLAUDE.md` ("Cómo está hoy") y `README.md` actualizados.
+
+### Fotos: qué quedó en cada día
+
+| Día | Foto | Estado |
+|---|---|---|
+| San Martín de los Andes | misma foto, reencuadrada al pueblo y el muelle | verificada a ojo |
+| Bajada del Frey y Bariloche · mosaico "Bariloche" | costanera y catedral (nueva) | verificada a ojo |
+| Día libre en Bariloche | puerto con el centro (nueva) | verificada a ojo |
+| Villa Traful | muelle de madera, reencuadrada | es el muelle de Traful |
+| Refugio Frey | laguna Toncek | corresponde |
+| Año Nuevo en el Falkner, Ruta de los 7 Lagos, Yuco, Bosque sumergido, Circuito Chico | lagos de la zona | **no pude confirmar que sean exactamente ese lago** (Unsplash no siempre trae el lugar). El pie dice el día, no el lugar de la foto. |
+| Rafting en el Manso | gomones en agua quieta | **floja**: no muestra rápidos. No encontré una libre del Manso; a reemplazar si conseguís una. |
+| Vuelta a casa | estepa (Wikimedia, con crédito) | corresponde |
+
+### Revisión automática
+`tools/revisar.html` (corre en Chrome sin ventana): 15 días con detalle, Frey presente, sin selector de versión, Mapa/Casas/Autos/Gastos/Pesca con contenido, 24 casas recorridas, 72 links externos bien formados, links a Windguru, Google Maps, Booking y Airbnb, sin errores de JS, sin scroll horizontal, áreas táctiles de 44 px. **Resultado: OK en 390×844 y 1280×800.**
+
+## Dudas para vos (etapas 1 a 3)
+
+1. **Distancias que no coinciden entre el texto del día y el trayecto de Google** (no las toqué, son datos tuyos): 1/1 Falkner → Traful dice "≈75 km, ≈1 h 30" y el trayecto "55 km, 1 h 19"; 3/1 dice "65 km" y el trayecto "57 km"; 28/12 "22 km" contra "23 km"; 30/12 "47 km" contra "48 km". ¿Cuál vale?
+2. **Hostería Posta de los Colonos** figura como "Primera opción · plan con Frey" para 1 noche (4/1). Con el plan actual son 2 noches en La Angostura. ¿Sigue siendo la primera opción?
+3. **6/1 Villa Catedral → Bariloche:** tiempo y km siguen "a confirmar".
+4. La foto del rafting.
+5. El azul marino y el naranja de las lengas los elegí yo: confirmá o pasame el hex.
+## Etapa 5 · Rediseño libre (carpeta `Patagonia-2027-rediseno-libre`, equivale a la rama `rediseno-libre`)
+
+Parte de la versión pulida (etapas 1 a 3) y reemplaza la portada por un **recorrido 3D del viaje**. Todo lo demás (itinerario, mapa plano, casas, autos, gastos, pesca, modo sin conexión, barra de secciones, paleta) queda igual y con los mismos datos.
+
+### Análisis de la referencia: Expedia · Route 66 (https://www.expedia.com/route66/)
+
+Lo que vi navegándola (19/11/2026) y mirando sus recursos públicos. No copié código, textos, imágenes, sonidos ni marca.
+
+| Qué hace | Cómo lo hace (lo que se ve desde afuera) |
+|---|---|
+| **Carga** | Pantalla crema con un contador de 0 a 100, curvas de nivel dibujadas, una ruta entre dos puntos y un "Did you know" con un dato mientras espera. |
+| **Intro** | Título enorme sobre un video (mp4 de 7 MB con un primer cuadro en JPG). Dos entradas: "Start your journey" y "Enter without audio". |
+| **Mapa** | Un país en miniatura, como una maqueta: tierra extruida, árboles y rocas repetidos (modelos `.glb` chicos), agua con textura, desenfoque en los bordes. Se arrastra. |
+| **Ruta y vehículo** | Línea amarilla sobre el mapa y un vehículo de juguete que la sigue; se puede cambiar de vehículo. |
+| **Paradas** | Pines con estrella sobre la ruta y pines grises para los desvíos; al tocarlos abren contenido. Una tarjeta abajo a la izquierda explica en pasos qué hacer ("Drag the map…", "Explore POI's"). |
+| **Progreso** | Contador "0/8" arriba a la derecha y un llavero coleccionable por estado (un modelo 3D con texturas por cada uno). |
+| **Dos modos** | "States" (lista) y "3D Map": el contenido se puede ver sin el mapa. |
+| **Sonido** | Apagado hasta que se elige; botón "Turn on sound". |
+| **Stack** | three.js r183, GSAP 3.13 (animaciones), Lenis 1.3 (scroll suave), Howler (audio). 71 texturas KTX2 (10,6 MB) y 16 modelos GLB (1 MB): unos 250 pedidos y más de 25 MB en total en la primera carga de escritorio. |
+
+**Qué tomé (la idea, hecha de nuevo para nuestro viaje):** intro de título con dos entradas; dato "¿Sabías que?" durante la carga; mapa del territorio que se recorre con un vehículo sobre la ruta; paradas como puntos que abren su contenido; tarjeta fija que dice en qué tramo estás; contador de progreso con un coleccionable por parada; versión sin 3D con el mismo contenido.
+
+**Qué hice distinto y por qué:**
+- **Territorio real, no una maqueta dibujada:** el relieve sale de datos de elevación (AWS Terrain Tiles) y las rutas son las reales (OSRM sobre OpenStreetMap). Se ve como un mapa en relieve impreso: color por altura (bosque al oeste, estepa al este, roca y nieve arriba), curvas de nivel cada 200 m y lagos de OpenStreetMap.
+- **Scroll en vez de arrastrar:** en el celular el scroll es el gesto que ya se usa para leer; arrastrar un mapa a pantalla completa atrapa el dedo. El auto avanza con el scroll y vuelve al subir.
+- **Liviano:** 1,9 MB en total en la primera carga del celular (three.js 670 KB + relieve 280 KB + datos 87 KB), contra más de 25 MB de la referencia. Sin modelos ni texturas: los autos son cajas y los parches son SVG dibujados por código.
+- **Sin sonido:** no lo agregué. Para que valga la pena hace falta elegir y licenciar bien los audios; lo dejo como idea.
+- **Solo datos útiles:** el "¿Sabías que?" usa cuatro datos que ya estaban en el sitio con su fuente (reglamento de pesca, horarios del camino a Pampa Linda, sendero al Frey). No agregué datos nuevos sin verificar.
+
+**Otros sitios premiados:** el pedido incluía investigar más referencias. **No lo hice**: el tiempo se fue en la referencia principal y en construir. Queda pendiente.
+
+### Qué tiene
+
+- **Intro:** "Patagonia 2027", fechas, 8 personas, 14 noches; botones "Empezar el recorrido" e "Ir directo al itinerario"; barra de carga con porcentaje y un "¿Sabías que?". De fondo, el territorio completo visto desde el norte.
+- **Territorio 3D** de Chapelco al Tronador (103 × 164 km), generado en el navegador con `tools/territorio.html` (no había Python): `data/territorio-alt-512.png` (280 KB) y `data/territorio.json` (rutas por tramo, senderos, 20 lagos, lugares). Los bordes se funden con la bruma. Hay una versión de 1024 px (`territorio-alt.png`, 1 MB) guardada pero sin usar.
+- **Recorrido:** Aeropuerto Chapelco → San Martín → Lago Falkner → Villa Traful → Villa La Angostura → Villa Catedral → (a pie) Refugio Frey → bajada → Bariloche. Unos 300 km de ruta real. Lo recorrido queda en rojo polar; lo que falta, en blanco. El sendero al Frey va punteado y lo sube un punto rojo mientras los autos esperan en Catedral. El camino a Pampa Linda y el sendero al Meiling aparecen punteados en oliva (opcional).
+- **Los dos autos:** dos Citroën Basalt de juguete (cajas, uno claro y uno gris; el color real de los alquilados no se sabe), sin marca.
+- **Cartel del tramo:** fecha, origen → destino, tiempo, km y ruta, tomados de `LEGS` (los mismos del itinerario). El tramo Catedral → Bariloche dice "tiempo y km a confirmar".
+- **Paradas:** un botón numerado en cada base. Al tocarlo se abre la **ficha**: fechas, dónde se duerme con precio y estado, y cada día que se pasa ahí con su descripción, trayecto, pesca, horarios, links y un botón para abrirlo en el itinerario. Es un `<dialog>`: hoja que sube desde abajo en el celular, tarjeta centrada en la PC; cierra con Escape, con la × o tocando afuera.
+- **Parches:** uno por base (8), dibujados por código: disco de color con pespunte, un dibujo simple del lugar (barco, casas, carpa, trucha, arrayán, agujas del Frey, cerros, Tronador), nombre en arco y fechas. Se consiguen al llegar; el del Meiling (opcional) al abrir su ficha. Se guardan en el celular. Diseño propio: no usan montañas con franjas ni nada de la marca.
+- **Sin 3D** (sin WebGL2, con movimiento reducido, ahorro de datos, poca memoria o agregando `?plano` al link): intro con la foto y la lista de las 8 paradas, que abren las mismas fichas.
+- Accesibilidad: los carteles son botones con foco visible; las fichas y los parches son diálogos nativos; el cartel del tramo es `role="status"`; todo el contenido del recorrido está también en el itinerario.
+
+### Medición y revisión (misma máquina, Chrome sin ventana)
+
+| | Versión pulida | Rediseño libre |
+|---|---|---|
+| LCP celular | 572 ms | 560 ms |
+| CLS celular | 0,0002 | 0,0018 |
+| Tareas largas celular | 83, 371, 62, 151 ms | 74 y 350 ms |
+| Peso total celular | 4,2 MB | 1,9 MB |
+| Archivos del 3D | 3,3 MB | 0,65 MB + 0,37 MB de datos |
+| Revisión automática | OK (390 y 1280) | OK (390 y 1280), incluye las 8 fichas y los 8 parches |
+
+Lighthouse: no se pudo correr (sin Node). Capturas en `docs/capturas/13-rediseno-libre/` (390×844, 1280×800 y 2560×1080).
+
+### Límites conocidos del rediseño
+
+- **No lo vi andar en un celular real ni medí cuadros por segundo.** Lo probé en el navegador de la PC con tamaño de celular. La malla tiene 41.000 vértices en el celular y 165.000 en la PC; debería andar bien en gama media, pero hay que probarlo.
+- El relieve es de zoom 10 (unos 115 m por punto): de lejos se ve bien; de cerca las montañas son suaves, sin el detalle fino que tiene la portada actual del Tronador (Copernicus de 30 m). Mejorarlo necesita Python o una herramienta de teselas más pesada.
+- Los carteles de paradas no evitan encimarse entre sí (en la vista de portada, Frey, Bariloche y Meiling quedan cerca).
+- El recorrido no incluye la vuelta a Chapelco del 10/1 (sale del territorio hacia el este) ni Buenos Aires (su parche se consigue al empezar).
+- No hay modo de arrastrar el mapa libremente ni sonido.
+- Las fotos, el resumen y las secciones de abajo son las mismas de la versión pulida: el rediseño cambió la entrada y el recorrido, no rediseñó el plan.
+
+## Comparación: versión pulida contra rediseño libre
+
+| | Pulida (`Patagonia-2027-main`) | Rediseño (`Patagonia-2027-rediseno-libre`) |
+|---|---|---|
+| Qué se ve al entrar | El relieve detallado del Nahuel Huapi y el Tronador con un vuelo de dron | Todo el territorio del viaje, de San Martín al Tronador, y el título con dos entradas |
+| Qué cuenta | Dónde están el Frey, el Meiling y Bariloche | El viaje entero en orden: cada tramo con su tiempo y km, cada parada con sus días |
+| Detalle del relieve | Alto (30 m, texturas con sombras, bosque, glaciares) | Medio (115 m, color por altura y curvas de nivel) |
+| Interacción | Scroll; los carteles no se tocan | Scroll; las paradas abren fichas; parches que se van juntando |
+| Peso | 4,2 MB | 1,9 MB |
+| Riesgo | Bajo: es la que ya conocen, mejorada | Medio: es nueva y no está probada en teléfonos |
+| Mi recomendación | **Publicar esta ya** | Probarla en dos o tres celulares; si gusta, sumarle el relieve fino de la zona del Tronador para no perder lo mejor de la actual |
+
+## Checkpoints y cómo volver (19/11)
+
+Todos son carpetas en `Desktop\Pat\_checkpoints\` (no hay Git en esta PC). Lista y contenido en `CHECKPOINTS.md`. Para volver a uno, copiar su contenido sobre la carpeta de trabajo. El itinerario original se recupera de `27-antes-correcciones-19-11\index.html`.
+
+## Pendientes
+
+1. **Publicar** (pasos en "Cómo publicar"). Es lo único que impide que los amigos vean los cambios.
+2. Lighthouse móvil en producción y, si Performance no llega a 90, arrancar el 3D recién con el primer scroll o toque.
+3. Probar en teléfonos reales: el mapa de Google de cada día, la fluidez del 3D (las dos versiones) y "agregar a la pantalla de inicio".
+4. Las cinco dudas de datos de más arriba.
+5. Link de Caza y Pesca Neuquén, que no respondió desde acá.
+6. Rediseño: investigar más referencias, relieve fino, carteles que no se encimen, sonido opcional.
+7. Subir los checkpoints como ramas cuando haya Git.

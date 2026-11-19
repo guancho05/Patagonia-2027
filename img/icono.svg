@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Patagonia 2027">
+  <rect width="512" height="512" rx="96" fill="#131A22"/>
+  <rect x="40" y="40" width="432" height="432" rx="64" fill="none" stroke="#F2F6F9" stroke-width="10"/>
+  <path d="M104 372c52-8 78-52 120-70s86 6 122-34 44-74 62-92" fill="none" stroke="#9D2F23" stroke-width="20" stroke-linecap="round" stroke-dasharray="2 38"/>
+  <circle cx="104" cy="372" r="22" fill="#9D2F23" stroke="#F2F6F9" stroke-width="8"/>
+  <circle cx="408" cy="176" r="22" fill="#D8B273" stroke="#F2F6F9" stroke-width="8"/>
+  <text x="256" y="196" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="700" font-size="150" fill="#F2F6F9" letter-spacing="-6">27</text>
+</svg>

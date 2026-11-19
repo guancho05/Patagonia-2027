@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>revisar</title>
+<!-- Revisión automática antes de publicar, sin Node (misma idea que tools/revisar.cjs):
+     - el itinerario tiene 15 días y cada uno abre con su detalle; está el Frey;
+     - Mapa, Casas, Autos, Gastos y Pesca tienen contenido; se recorren todas las casas;
+     - links externos bien formados; hay links a Windguru, Google Maps, Booking y Airbnb;
+     - sin errores de JavaScript ni scroll horizontal; áreas táctiles de 44 px o más.
+     Uso: powershell -File tools\medir.ps1 -Medidor http://localhost:8080/tools/revisar.html -Ancho 390 -Alto 844
+     Resultado en <pre id="r">: {"ok":true,...} o la lista de fallas. -->
+<style>body{margin:0;background:#888}iframe{border:0;display:block}</style>
+<pre id="r">revisando</pre>
+<script>
+const q = new URLSearchParams(location.search), w = +(q.get('w') || 390), h = +(q.get('h') || 844);
+const f = document.createElement('iframe'); f.width = w; f.height = h; f.src = '/?nosw=1#itinerario'; document.body.appendChild(f);
+const fallas = [], mal = (...m) => fallas.push(m.join(' ')), espera = ms => new Promise(r => setTimeout(r, ms));
+f.addEventListener('load', async () => {
+  const W = f.contentWindow, D = W.document, errores = [];
+  W.addEventListener('error', e => errores.push(String(e.message)));
+  W.addEventListener('unhandledrejection', e => errores.push('promesa: ' + String(e.reason)));
+  const ce = W.console.error; W.console.error = (...a) => { errores.push('console.error: ' + a.join(' ')); ce.apply(W.console, a) };
+  await espera(1200);
+  const links = new Map(), juntar = () => D.querySelectorAll('a[href]').forEach(a => links.set(a.getAttribute('href'), 1));
+  const sw = k => { const s = D.documentElement.scrollWidth; if (s > w) mal(k, 'scroll horizontal', s) };
+  const chicos = (k, root) => root.querySelectorAll('button,a').forEach(e => { const r = e.getBoundingClientRect(); if (!r.width || W.getComputedStyle(e).display === 'inline') return;
+    if (r.height < 43.5 || r.width < 43.5) mal(k, 'área táctil chica:', (e.textContent || e.className).trim().slice(0, 24), Math.round(r.width) + 'x' + Math.round(r.height)) });
+  // itinerario
+  const dias = [...D.querySelectorAll('#tl .day')];
+  if (dias.length !== 15) mal('itinerario con', dias.length, 'días (se esperaban 15)');
+  const titulos = [];
+  for (const [i, b] of dias.entries()) { b.click(); await espera(40);
+    const t = b.querySelector('.t').textContent, ttl = D.getElementById('ttl').textContent, lead = D.getElementById('lead').textContent;
+    if (ttl !== t || lead.length < 30) mal('día', i + 1, t, 'sin detalle'); titulos.push(t); juntar() }
+  if (!titulos.some(t => /Frey/.test(t))) mal('el itinerario no tiene el Frey');
+  if (D.querySelector('.vbtn,.vchoose')) mal('queda el selector de versión del itinerario');
+  sw('itinerario'); chicos('itinerario', D.getElementById('view-itin'));
+  // páginas
+  for (const [k, id, min] of [['mapa', 'view-mapa', 150], ['casas', 'view-casas', 400], ['autos', 'view-autos', 300], ['gastos', 'view-gastos', 300], ['pesca', 'view-pesca', 800]]) {
+    W.showPage(k); await espera(k === 'mapa' ? 900 : 250);
+    const e = D.getElementById(id), len = e && !e.hidden ? e.innerText.length : -1;
+    if (len < min) mal(k, 'sin contenido suficiente', len);
+    juntar(); sw(k); chicos(k, e);
+  }
+  if (!D.querySelector('#mapaSvg svg')) mal('el mapa no cargó');
+  // casas: todas las de cada lugar
+  W.showPage('casas'); let casas = 0;
+  for (const chip of [...D.querySelectorAll('#cityChips .chip')].map((_, i) => i)) { D.querySelectorAll('#cityChips .chip')[chip].click(); await espera(60);
+    for (const b of [...D.querySelectorAll('#hl .day')]) { b.click(); await espera(25); casas++; juntar(); if (!D.getElementById('httl').textContent) mal('casa sin título') } }
+  sw('casas (todas)');
+  chicos('barra', D.getElementById('barra')); chicos('pie', D.getElementById('pie'));
+  // links
+  const ext = [...links.keys()].filter(hf => !hf.startsWith('#'));
+  const rotos = ext.filter(hf => !/^(https?:|mailto:)/.test(hf) || /undefined|null|NaN/.test(hf));
+  if (rotos.length) mal('links mal formados:', rotos.slice(0, 5).join(' | '));
+  for (const [nom, re] of [['Windguru', /windguru\./], ['Google Maps', /google\.[a-z.]+\/maps/], ['Booking', /booking\.com/], ['Airbnb', /airbnb\./]]) if (!ext.some(hf => re.test(hf))) mal('no hay links a', nom);
+  // textos que no deberían quedar
+  if (/versión original|itinerario original|Relieve: /i.test(D.body.innerText)) mal('queda texto de la versión original o el crédito "Relieve:" en la portada');
+  if (errores.length) mal('errores de JS:', errores.join(' | '));
+  document.getElementById('r').textContent = JSON.stringify({ ok: !fallas.length, ancho: w, dias: titulos.length, casas, links_externos: ext.length, fallas });
+});
+</script>

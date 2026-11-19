@@ -63,3 +63,16 @@ Detalle de cada checkpoint y cómo volver: `docs/informe-noche.md` (sección "Ch
 | 2026-11-18 | — | Primer merge: `relato` a `main` en un commit (`7fb2438`). |
 | 2026-11-18 | `checkpoint/main-antes-del-merge` → `7fb2438` | `main` antes del segundo merge (rediseño sin los cambios de carteles, mapa y pie). |
 | 2026-11-18 | — | Segundo merge: carteles, mapa fluido y pie sin nombres (ver la línea siguiente). |
+
+## 19/11/2026 · correcciones, paleta nueva y pulido (modo autónomo, en una PC sin Git)
+
+Esta sesión se hizo en una PC con Windows sin Git, Node ni Python, a partir del zip de `main`. **No se pudo hacer commits, ramas ni push.** Los checkpoints de hoy son **copias de carpeta** en `Desktop\Pat\_checkpoints\` (al lado de la carpeta del repo). Para volver a uno: copiar su contenido sobre la carpeta de trabajo, o comparar con cualquier herramienta de diferencias. Cuando esto se suba al repo conviene crear las ramas `checkpoint/NN-...` con el mismo nombre, un commit por carpeta.
+
+| Fecha | Checkpoint (carpeta) | Qué tiene |
+|---|---|---|
+| 2026-11-19 | `27-antes-correcciones-19-11` | `main` tal como estaba publicado (zip): con el itinerario original y el nuevo, menú lateral, paleta violeta/azul/rojo. **De acá se recupera el itinerario original** (`DAYS_A`, `BASES_A`, `LEGS.a` en `index.html`). |
+| 2026-11-19 | `28-correcciones-y-paleta-base` | Etapas 1 y 2 juntas (se reescribieron los estilos de una vez): un solo itinerario, arranque en la portada, mapa de Google directo para el celular, mapa plano ancho, sin "Relieve: …" en la portada, fotos reencuadradas, barra de secciones, paleta Fitz Roy y polares. CSS y JS en archivos. |
+| 2026-11-19 | `29-pulido-listo` | Etapa 3: modo sin conexión (service worker), manifest, íconos, imagen para WhatsApp, 404, accesibilidad, contraste AA, 3D armado por partes, revisión automática sin Node, links revisados, documentación al día. **Es la versión lista para publicar.** |
+| 2026-11-19 | `Patagonia-2027-rediseno-libre` (carpeta aparte) | Etapa 5: rediseño libre. Equivale a la rama `rediseno-libre`; no mezclar con `main`. |
+
+Publicación (etapa 4): **pendiente**, no se pudo hacer desde esta PC. Pasos en `docs/informe-noche.md`, sección del 19/11.
