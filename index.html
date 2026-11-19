@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Caprasimo&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..800,100;1,9..144,400..800,100&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <script defer src="js/datos.js"></script>
 <script defer src="js/app.js"></script>
-<script type="module" src="js/hero.js"></script>
+<script type="module" src="js/viaje.js"></script>
 </head>
 <body>
 <a class="saltar" href="#app">Saltar al plan</a>
@@ -50,23 +50,31 @@
 </header>
 
 <main id="inicio">
-<section class="hero" id="hero" aria-label="Portada: del Nahuel Huapi al Tronador">
-  <div class="stage" id="stage">
+<section class="viaje" id="viaje" aria-label="Recorrido del viaje en un mapa 3D">
+  <div class="vstage" id="vstage">
     <img class="poster" src="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1200&q=70&auto=format&fit=crop"
       srcset="https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=640&q=70&auto=format&fit=crop 640w,https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=1200&q=70&auto=format&fit=crop 1200w,https://images.unsplash.com/photo-1597456042783-b23651b782ce?w=2000&q=70&auto=format&fit=crop 2000w"
       sizes="100vw" alt="El Tronador nevado sobre el bosque" fetchpriority="high" crossorigin="anonymous">
-    <canvas id="terrain" aria-hidden="true"></canvas>
-    <div class="pin" id="pin" aria-hidden="true"><div><b>Refugio Otto Meiling</b><small></small><small class="tr"></small></div></div>
-    <div class="pin" id="pinFrey" aria-hidden="true"><div><b>Refugio Frey</b><small></small><small class="tr"></small></div></div>
-    <div class="pin" id="pinBariloche" aria-hidden="true"><div><b>San Carlos de Bariloche</b><small></small></div></div>
-    <div class="pin sm" id="pinTronador" aria-hidden="true"><div><b>Cerro Tronador</b></div></div>
-    <div class="pin sm" id="pinPampa" aria-hidden="true"><div><b>Pampa Linda</b></div></div>
-    <div class="shade" aria-hidden="true"></div>
-    <div class="hero-txt"><small>Parques Nacionales Lanín · Nahuel Huapi</small><h1>Patagonia<br>2027</h1></div>
-    <p class="hero-band"><span><b>27/12/2026 → 10/1/2027</b></span><span>8 personas</span><span>14 noches</span><span>San Martín de los Andes → Bariloche</span></p>
+    <canvas id="vcanvas" aria-hidden="true"></canvas>
+    <div class="vintro" id="vintro">
+      <p class="vsello">Parques Nacionales Lanín · Nahuel Huapi</p>
+      <h1>Patagonia<br>2027</h1>
+      <p class="vdatos"><b>27/12/2026 → 10/1/2027</b><span>8 personas</span><span>14 noches</span><span>San Martín de los Andes → Bariloche</span></p>
+      <div class="vbotones">
+        <button type="button" class="vbtn p" id="vEmpezar">Empezar el recorrido <span aria-hidden="true">↓</span></button>
+        <a class="vbtn" href="#itinerario" data-go="itinerario">Ir directo al itinerario</a>
+      </div>
+      <p class="vcarga" id="vCarga"><span class="vbarra"><i id="vCargaB"></i></span><span>Cargando el mapa · <b id="vCargaN">0</b> %</span></p>
+      <p class="vsabias" id="vSabias"></p>
+    </div>
+    <div class="vhud">
+      <p class="vtramo" id="vTramo" role="status" hidden></p>
+      <button type="button" class="vpar" id="vparBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6" stroke-dasharray="2 2"/></svg><span>Parches</span><b id="vparN">0/8</b></button>
+      <div class="vllegada" id="vLlegada" hidden></div>
+    </div>
+    <ol class="vparadas" id="vParadas" aria-label="Paradas del viaje"></ol>
   </div>
 </section>
-
 <section class="intro" id="portada" aria-labelledby="intro-h">
   <div class="intro-in">
     <p class="kicker">Resumen del viaje</p>
@@ -349,6 +357,15 @@
   <img id="lbi" alt="" crossorigin="anonymous">
   <div class="lb-bot"><button type="button" class="lb-p" id="lbp" aria-label="Foto anterior">‹</button><button type="button" class="lb-n" id="lbn" aria-label="Foto siguiente">›</button></div>
 </div>
+<dialog class="hoja" id="ficha" aria-labelledby="fichaT">
+  <button type="button" class="dx" aria-label="Cerrar la ficha">×</button>
+  <div id="fichaC"></div>
+</dialog>
+<dialog class="hoja" id="parches" aria-labelledby="parT">
+  <button type="button" class="dx" aria-label="Cerrar">×</button>
+  <header><div><p class="kicker">Progreso del viaje</p><h2 id="parT">Parches</h2><p class="fsub">Uno por cada base. Se consiguen al llegar con el recorrido; el del Meiling, al abrir su ficha.</p></div></header>
+  <ul class="pargrid" id="parGrid"></ul>
+</dialog>
 <p class="sinred" id="sinred" role="status" hidden>Sin conexión: estás viendo la copia guardada.</p>
 <noscript><p style="padding:16px">Esta página necesita JavaScript para mostrar el itinerario.</p></noscript>
 </body>

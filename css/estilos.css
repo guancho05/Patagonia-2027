@@ -1,5 +1,5 @@
 /* Patagonia 2027 · estilos
-   1. Tokens (paleta, tipografía, espaciado)   2. Base   3. Barra de secciones   4. Portada 3D
+   1. Tokens (paleta, tipografía, espaciado)   2. Base   3. Barra de secciones   4. Recorrido 3D
    5. Resumen   6. Componentes comunes   7. Itinerario   8. Mapa   9. Casas   10. Autos
    11. Gastos   12. Pesca   13. Pie   14. Visor de fotos y avisos
    Paleta: docs/investigacion-estetica.md ("Paleta 4 · Fitz Roy y polares"). */
@@ -99,44 +99,104 @@ button,a,[tabindex]{-webkit-tap-highlight-color:transparent;touch-action:manipul
   .barra nav a[aria-current="page"]::after{display:none}
 }
 
-/* ===== 4. Portada 3D ===== */
-.hero{height:460vh;position:relative}
-.hero.static{height:calc(100svh - var(--barra-top) - var(--barra-bot))}
-.stage{position:sticky;top:var(--barra-top);height:calc(100svh - var(--barra-top) - var(--barra-bot));overflow:hidden;
-  background:linear-gradient(#6D95B4 0%,#A3C1D8 45%,#DCE7EE 78%,#E9EEF0 100%)}
-.stage::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;border:var(--marco) solid var(--fondo)}
-.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,var(--fondo));opacity:calc((var(--p,0) - .955)*14);pointer-events:none}
-.poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 60%;transition:opacity 1s}
-.hero.live .poster{opacity:0}
-#terrain{position:absolute;inset:0;width:100%;height:100%;display:block}
-.hero.static #terrain,.hero.static .pin{display:none}
-.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 45%,rgba(19,26,34,.66) 100%);opacity:calc(1 - var(--p,0)*1.6)}
-.hero.static .shade{opacity:1}
-.hero-txt{position:absolute;left:clamp(22px,6vw,96px);right:20px;bottom:calc(var(--marco) + 84px);color:#fff;
-  text-shadow:0 1px 2px rgba(0,0,0,.45),0 2px 28px rgba(19,26,34,.5);opacity:calc(1 - var(--p,0)*3.4)}
-.hero.static .hero-txt{opacity:1}
-.hero-txt small{display:inline-block;font-family:var(--mono);font-size:var(--t-xs);letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;background:rgba(19,26,34,.45);border-top:1px solid currentColor;border-bottom:1px solid currentColor}
-.hero-txt h1{font-family:var(--afiche);font-weight:400;font-size:clamp(3.5rem,12.5vw,10.5rem);line-height:.88;margin:14px 0 0;letter-spacing:-.035em}
-.hero-band{position:absolute;left:var(--marco);right:var(--marco);bottom:var(--marco);z-index:3;display:flex;flex-wrap:wrap;gap:4px 22px;align-items:center;
-  padding:12px clamp(16px,5vw,82px);background:var(--tinta);color:var(--nieve);font-family:var(--mono);font-size:var(--t-s);opacity:calc(1 - var(--p,0)*2.6)}
-.hero-band b{font-weight:600;color:var(--pastizal)}
-.hero.static .hero-band{opacity:1}
-@media (max-width:640px){.hero-band{font-size:var(--t-xs);gap:2px 14px;padding:10px 14px}.hero-txt{bottom:calc(var(--marco) + 104px)}.hero-txt small{letter-spacing:.05em;font-size:.6875rem}}
-/* carteles: el JS ubica la caja dentro de la pantalla y la une al punto con una línea */
-.stage .pin{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .3s}
-.stage .pin>div{position:relative;z-index:1;max-width:min(72vw,340px);background:var(--nieve);color:var(--tinta);border-left:4px solid var(--polar);padding:6px 10px 7px;border-radius:2px;box-shadow:0 0 0 1px rgba(19,26,34,.25),0 6px 20px rgba(19,26,34,.3)}
-.stage .pin b{display:block;font-family:var(--display);font-weight:600;font-size:1rem;line-height:1.15}
-.stage .pin small{display:block;font-family:var(--mono);font-size:.6875rem;line-height:1.35;color:#3F5060}
-.stage .pin .tr{width:0;min-width:100%;max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .3s;color:var(--polar);font-weight:600}
-.stage .pin.cerca .tr{max-height:3.2em;opacity:1;margin-top:3px}
-.stage .pin .stem{position:absolute;left:-1px;top:0;width:2px;height:0;transform-origin:1px 0;background:var(--polar);z-index:0}
-.stage .pin.sm>div{opacity:clamp(0,calc((var(--p,0) - .22)*6),1);background:rgba(242,246,249,.88);border-left:0;padding:3px 8px;box-shadow:none}
-.stage .pin.sm b{font-family:var(--mono);font-weight:500;font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase}
-.stage .pin.sm .stem{display:none}
-.stage .pin.lago>div{background:rgba(34,55,92,.88);color:#fff}
-.stage .pin.lago b{font-family:var(--display);font-style:italic;font-weight:500;font-size:.8125rem;letter-spacing:.01em;text-transform:none}
-@media (max-width:640px){.stage .pin b{font-size:.875rem}.stage .pin small{font-size:.65625rem}.stage .pin.sm:not(.lago){display:none}}
-
+/* ===== 4. Recorrido 3D (intro, mapa en relieve, carteles, fichas y parches) ===== */
+.viaje{height:1000vh;position:relative}
+.viaje.plano{height:auto}
+.vstage{position:sticky;top:var(--barra-top);height:calc(100svh - var(--barra-top) - var(--barra-bot));overflow:hidden;background:#DCE7EE;color:var(--tinta)}
+.viaje.plano .vstage{position:relative;height:auto;min-height:calc(100svh - var(--barra-top) - var(--barra-bot));display:flex;flex-direction:column}
+.vstage::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border:var(--marco) solid var(--fondo)}
+.vstage .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 60%;transition:opacity 1.2s}
+.viaje.vivo .poster{opacity:0}
+#vcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.viaje.plano #vcanvas,.viaje.plano .vhud{display:none}
+/* intro */
+.vintro{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;gap:14px;padding:calc(var(--marco) + 20px) clamp(20px,6vw,96px) calc(var(--marco) + 22px);color:#fff;
+  background:linear-gradient(180deg,rgba(19,26,34,.05) 20%,rgba(19,26,34,.78) 100%);opacity:calc(1 - var(--p,0)*22);transition:visibility 0s .3s}
+.viaje.andando .vintro{visibility:hidden;pointer-events:none}
+.viaje.plano .vintro{position:relative;flex:1;opacity:1;visibility:visible}
+.vsello{align-self:flex-start;font-family:var(--mono);font-size:var(--t-xs);letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;background:rgba(19,26,34,.5);border-top:1px solid currentColor;border-bottom:1px solid currentColor}
+.vintro h1{font-family:var(--afiche);font-weight:400;font-size:clamp(3.5rem,13vw,11rem);line-height:.86;letter-spacing:-.035em;text-shadow:0 2px 28px rgba(19,26,34,.5)}
+.vdatos{display:flex;flex-wrap:wrap;gap:2px 20px;font-family:var(--mono);font-size:var(--t-s)}
+.vdatos b{font-weight:600;color:var(--pastizal)}
+.vbotones{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.vbtn{min-height:48px;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:2px solid #fff;border-radius:var(--radio);background:rgba(19,26,34,.35);color:#fff;font:700 1rem var(--body);text-decoration:none;cursor:pointer;transition:background-color .15s,color .15s,transform .15s}
+.vbtn:hover{background:#fff;color:var(--tinta)}
+.vbtn.p{background:var(--polar);border-color:var(--polar)}
+.vbtn.p:hover{background:#B33A2C;color:#fff}
+.vbtn:active{transform:translateY(1px)}
+.vbtn:focus-visible{outline-color:var(--celeste)}
+.vcarga{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:var(--t-xs)}
+.vbarra{flex:0 0 120px;height:3px;background:rgba(255,255,255,.3)}
+.vbarra i{display:block;height:100%;background:var(--pastizal);transform-origin:0 50%;transform:scaleX(0);transition:transform .4s}
+.vsabias{max-width:56ch;min-height:5.2em;font-size:var(--t-s);line-height:1.45;padding-top:10px;border-top:1px solid rgba(255,255,255,.35)}
+.vsabias b{font-family:var(--mono);font-size:var(--t-xs);letter-spacing:.1em;text-transform:uppercase;color:var(--pastizal);margin-right:6px}
+.vsabias small{display:block;font-family:var(--mono);font-size:.6875rem;opacity:.85;margin-top:2px}
+@media (max-width:640px){.vintro{gap:10px}.vdatos{font-size:var(--t-xs);gap:2px 14px}.vbtn{flex:1 1 100%;justify-content:center}}
+@media (max-height:620px){.vsabias{display:none}}
+/* HUD */
+.vhud{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:clamp(0,calc(var(--p,0)*40 - 1.4),1)}
+.vhud>*{pointer-events:auto}
+.vtramo,.vllegada{position:absolute;left:calc(var(--marco) + 10px);max-width:min(78vw,400px);margin:0;padding:10px 14px 11px;background:var(--nieve);color:var(--tinta);border-left:4px solid var(--polar);border-radius:2px;box-shadow:0 0 0 1px rgba(19,26,34,.2),0 8px 24px rgba(19,26,34,.25)}
+.vtramo{top:calc(var(--marco) + 10px)}
+.vtramo small,.vllegada small{display:block;font-family:var(--mono);font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:#46596A}
+.vtramo b,.vllegada b{display:block;font-family:var(--display);font-weight:600;font-size:1.125rem;line-height:1.2}
+.vtramo span,.vllegada span{display:block;font-family:var(--mono);font-size:var(--t-xs);color:#2E353E;margin-top:2px}
+.vllegada{bottom:calc(var(--marco) + 12px);border-left-color:var(--abeto);display:grid;grid-template-columns:1fr auto;column-gap:14px;align-items:center}
+.vllegada small,.vllegada b,.vllegada span{grid-column:1}
+.vllegada button{grid-column:2;grid-row:1/4;min-height:44px;padding:8px 14px;border:0;border-radius:var(--radio);background:var(--polar);color:#fff;font:700 var(--t-s) var(--body);cursor:pointer}
+.vllegada button:hover{background:#B33A2C}
+.vpar{position:absolute;right:calc(var(--marco) + 10px);top:calc(var(--marco) + 10px);min-height:44px;display:flex;align-items:center;gap:8px;padding:6px 12px;border:0;border-radius:999px;background:var(--tinta);color:var(--nieve);font:700 var(--t-s) var(--body);cursor:pointer;box-shadow:0 4px 16px rgba(19,26,34,.3)}
+.vpar svg{width:20px;height:20px;fill:none;stroke:var(--pastizal);stroke-width:1.6}
+.vpar b{font-family:var(--mono);font-weight:600;color:var(--pastizal)}
+.vpar:hover{background:var(--pizarra)}
+.vpar.nuevo{animation:parche .9s ease}
+@keyframes parche{30%{transform:scale(1.14);background:var(--polar)}}
+@media (max-width:640px){.vpar span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.vtramo{max-width:calc(100% - 130px)}}
+/* carteles de las paradas: el JS mueve cada uno a su punto */
+.vpin{position:absolute;left:0;top:0;z-index:2;display:flex;align-items:center;gap:6px;margin:-17px 0 0 -17px;padding:0;border:0;background:none;color:var(--tinta);font:inherit;text-align:left;cursor:pointer;opacity:clamp(0,calc(var(--p,0)*40 - 1.4),1)}
+.vpin i{flex:0 0 34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--polar);color:#fff;border:2.5px solid var(--nieve);font:600 var(--t-s) var(--mono);font-style:normal;box-shadow:0 2px 8px rgba(19,26,34,.4);transition:transform .15s,background-color .2s}
+.vpin span{padding:3px 8px 4px;background:rgba(242,246,249,.94);border-radius:2px;box-shadow:0 0 0 1px rgba(19,26,34,.18);white-space:nowrap}
+.vpin b{display:block;font-family:var(--display);font-weight:600;font-size:.9375rem;line-height:1.15}
+.vpin small{display:block;font-family:var(--mono);font-size:.6875rem;color:#46596A}
+.vpin.izq{flex-direction:row-reverse;transform-origin:17px 17px}.vpin.izq span{position:absolute;right:calc(100% + 6px);top:50%;transform:translateY(-50%)}
+.vpin.lejos span{display:none}
+.vpin.hecho i{background:var(--abeto)}
+.vpin.opc i{background:var(--oliva);border-style:dashed}
+.vpin.info{cursor:default}.vpin.info i{background:var(--marino)}
+button.vpin:hover i,button.vpin:focus-visible i{transform:scale(1.15)}
+button.vpin:focus-visible{outline:0}button.vpin:focus-visible i{outline:3px solid var(--marino);outline-offset:2px}
+button.vpin::after{content:"";position:absolute;left:-5px;top:-5px;width:44px;height:44px}
+/* lista de paradas (solo cuando no hay 3D) */
+.vparadas{display:none;list-style:none;margin:0;padding:var(--e4) clamp(20px,6vw,96px) calc(var(--marco) + 16px);gap:8px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));background:var(--tinta);position:relative;z-index:3}
+.viaje.plano .vparadas{display:grid}.viaje.plano #vEmpezar{display:none}
+.vparadas button{width:100%;min-height:56px;display:grid;grid-template-columns:28px 1fr;column-gap:8px;align-items:center;padding:8px 10px;border:1px solid #34424F;border-radius:var(--radio);background:#1B242E;color:var(--nieve);font:inherit;text-align:left;cursor:pointer}
+.vparadas b{grid-row:span 2;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--polar);font:600 var(--t-xs) var(--mono)}
+.vparadas span{font-family:var(--display);font-weight:600;line-height:1.15}.vparadas small{font-family:var(--mono);font-size:.6875rem;color:#A9BCCB}
+.vparadas button:hover{border-color:var(--nieve)}
+/* fichas y parches: hoja que sube desde abajo en el celular, tarjeta centrada en pantallas anchas */
+dialog.hoja{width:min(100%,720px);max-width:100%;max-height:min(88svh,900px);margin:auto auto 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));border:0;border-top:4px solid var(--polar);border-radius:10px 10px 0 0;background:var(--sup);color:var(--texto);box-shadow:0 -10px 50px rgba(0,0,0,.35);overscroll-behavior:contain}
+dialog.hoja::backdrop{background:rgba(19,26,34,.55)}
+dialog.hoja[open]{animation:sube .28s ease}
+@keyframes sube{from{transform:translateY(40px);opacity:0}}
+@media (min-width:760px){dialog.hoja{margin:auto;border-radius:6px;padding:28px 30px 30px}}
+.hoja .dx{position:sticky;top:0;float:right;z-index:2;width:44px;height:44px;margin:-8px -6px 0 8px;border:0;border-radius:50%;background:var(--sup-2);color:var(--texto);font-size:24px;line-height:1;cursor:pointer}
+.hoja .dx:hover{background:var(--linea)}
+.hoja header{display:flex;gap:16px;align-items:center;margin-bottom:16px}
+.hoja .fpar{flex:0 0 92px}.hoja .fpar svg{display:block;width:100%;height:auto}
+.hoja h2{font-family:var(--afiche);font-weight:400;font-size:var(--t-3xl);line-height:1;letter-spacing:-.02em}
+.hoja .kicker{margin-bottom:6px}
+.fsub{font-family:var(--mono);font-size:var(--t-s);color:var(--texto-2);margin-top:6px}
+#fichaC{display:flex;flex-direction:column;gap:14px}
+.fdia{border-top:1px solid var(--linea);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.fdia h3{font-family:var(--display);font-weight:600;font-size:1.375rem;line-height:1.15}
+.fdia>p{font-size:.9375rem}.fleg{font-size:var(--t-s)!important;color:var(--texto-2)}.fleg b{color:var(--texto)}
+.pargrid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:560px){.pargrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pargrid button{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px 10px;border:0;border-radius:var(--radio);background:none;color:inherit;font:inherit;cursor:pointer;text-align:center}
+.pargrid button:hover{background:var(--sup-2)}
+.pargrid svg{width:min(100%,128px);height:auto;filter:grayscale(1) opacity(.38);transition:filter .3s}
+.pargrid .got svg{filter:drop-shadow(0 3px 5px rgba(19,26,34,.3))}
+.pargrid span{font-family:var(--display);font-weight:600;line-height:1.15}.pargrid small{font-family:var(--mono);font-size:.6875rem;color:var(--texto-2)}
 /* ===== 5. Resumen ===== */
 .intro{padding:clamp(48px,9vh,96px) 0 var(--e6)}
 .intro-in{max-width:var(--ancho);margin:0 auto;padding:0 max(var(--e4),env(safe-area-inset-right,0px)) 0 max(var(--e4),env(safe-area-inset-left,0px))}
@@ -161,7 +221,7 @@ button,a,[tabindex]{-webkit-tap-highlight-color:transparent;touch-action:manipul
   .mosaic img{flex:1 1 0;min-height:0;aspect-ratio:auto;height:auto}
 }
 /* color de película en las fotos del viaje */
-.ph img,.mosaic img,.poster{filter:contrast(.96) brightness(1.02) saturate(1.1)}
+.ph img,.mosaic img,.vstage .poster{filter:contrast(.96) brightness(1.02) saturate(1.1)}
 
 /* ===== 6. Componentes comunes ===== */
 .sec-band{background:var(--sec,var(--abeto));color:#fff;border-radius:var(--radio);padding:22px 22px 18px;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}

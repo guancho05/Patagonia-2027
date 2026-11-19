@@ -4,12 +4,11 @@
    - Sin conexión, si falta el tamaño exacto de una foto se usa otro tamaño guardado de la misma foto.
    - Los mapas de Google no se guardan (son de otro sitio): el itinerario muestra el trayecto en texto.
    Para publicar cambios: subir VERSION (borra la copia vieja al activarse). */
-const VERSION = 'pat27-v3';
+const VERSION = 'pat27-r1';
 const BASE = VERSION + '-base', FOTOS = VERSION + '-fotos', FUENTES = VERSION + '-fuentes';
-const PRECACHE = ['./', 'index.html', '404.html', 'css/estilos.css', 'js/datos.js', 'js/app.js', 'js/hero.js', 'vendor/three.module.min.js',
+const PRECACHE = ['./', 'index.html', '404.html', 'css/estilos.css', 'js/datos.js', 'js/app.js', 'js/viaje.js', 'vendor/three.module.min.js',
   'manifest.webmanifest', 'img/icono.svg', 'img/icono-192.png', 'img/icono-512.png', 'img/icono-180.png',
-  'data/mapa.svg', 'data/silueta.svg', 'data/terreno.json', 'data/terreno-cerca-agua.png', 'data/terreno-lejos-alt.png', 'data/terreno-lejos.jpg',
-  'data/terreno-cerca-alt-480.png', 'data/terreno-cerca-color-1024.jpg', 'data/terreno-cerca-normal-1024.jpg'];
+  'data/mapa.svg', 'data/silueta.svg', 'data/territorio.json', 'data/territorio-alt-512.png'];
 const MAX_FOTOS = 320;
 
 self.addEventListener('install', e => {

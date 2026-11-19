@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>territorio</title>
+<!-- Genera los datos del territorio completo del viaje para el recorrido 3D, sin Python:
+     - data/territorio-alt.png: alturas de San Martín de los Andes al Tronador (AWS Terrain Tiles, formato terrarium, zoom 10),
+       remuestreadas a una grilla regular en latitud/longitud. Metros = R*256 + G (igual que los terreno-*-alt.png).
+     - data/territorio.json: límites, rutas en auto reales (sacadas de data/mapa.svg, que las tiene de OSRM sobre OpenStreetMap),
+       senderos, lagos (polígonos simplificados de data/osm-fuente.json) y lugares.
+     Uso: con tools/servidor.ps1 andando, abrir http://localhost:PUERTO/tools/territorio.html y esperar "listo". Guarda con PUT /__guardar/. -->
+<pre id="log">generando…</pre>
+<script>
+const log = t => { document.getElementById('log').textContent += '\n' + t };
+const B = { n: -39.96, s: -41.44, w: -72.06, e: -70.84 }, Z = 10, ALTO = +(new URLSearchParams(location.search).get('alto') || 1024);   // ?alto=512 genera la versión liviana (territorio-alt-512.png)
+const kmLat = 110.57, kmLon = 111.32 * Math.cos((B.n + B.s) / 2 * Math.PI / 180);
+const ANCHO = Math.round(ALTO * ((B.e - B.w) * kmLon) / ((B.n - B.s) * kmLat));
+// proyección de tools/mapa.py, para volver de las coordenadas del SVG a latitud/longitud
+const LON0 = -77, LON1 = -52, LAT0 = -31.6, LAT1 = -56.4, C = Math.cos((LAT0 + LAT1) / 2 * Math.PI / 180), K = 600 / ((LON1 - LON0) * C);
+const inv = (x, y) => [+(LAT0 - y / K).toFixed(5), +(LON0 + x / (C * K)).toFixed(5)];
+const puntos = d => (d.match(/-?\d+(\.\d+)?,-?\d+(\.\d+)?/g) || []).map(p => inv(...p.split(',').map(Number)));
+// simplifica una línea [lat, lon] con Douglas-Peucker (tolerancia en grados)
+function rdp(p, eps) { if (p.length < 3) return p; let im = 0, dm = 0; const [a, b] = [p[0], p[p.length - 1]], dx = b[1] - a[1], dy = b[0] - a[0], n = Math.hypot(dx, dy) || 1e-12;
+  for (let i = 1; i < p.length - 1; i++) { const d = Math.abs(dx * (p[i][0] - a[0]) - dy * (p[i][1] - a[1])) / n; if (d > dm) { dm = d; im = i } }
+  return dm > eps ? rdp(p.slice(0, im + 1), eps).slice(0, -1).concat(rdp(p.slice(im), eps)) : [a, b] }
+const img = url => new Promise((ok, no) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = () => no(new Error('no cargó ' + url)); i.src = url });
+const guardar = (nombre, cuerpo) => fetch('/__guardar/data/' + nombre, { method: 'PUT', body: cuerpo }).then(r => r.text());
+(async () => {
+  try {
+    // 1) alturas
+    const tx = lon => (lon + 180) / 360 * 2 ** Z, ty = lat => (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * 2 ** Z;
+    const x0 = Math.floor(tx(B.w)), x1 = Math.floor(tx(B.e)), y0 = Math.floor(ty(B.n)), y1 = Math.floor(ty(B.s));
+    const mos = document.createElement('canvas'); mos.width = (x1 - x0 + 1) * 256; mos.height = (y1 - y0 + 1) * 256;
+    const mc = mos.getContext('2d', { willReadFrequently: true });
+    for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) mc.drawImage(await img(`https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${Z}/${x}/${y}.png`), (x - x0) * 256, (y - y0) * 256);
+    log(`mosaico ${mos.width}x${mos.height} (${(x1 - x0 + 1) * (y1 - y0 + 1)} teselas)`);
+    const src = mc.getImageData(0, 0, mos.width, mos.height).data, alt = (px, py) => { const i = (Math.min(mos.height - 1, Math.max(0, py)) * mos.width + Math.min(mos.width - 1, Math.max(0, px))) * 4; return src[i] * 256 + src[i + 1] + src[i + 2] / 256 - 32768 };
+    const out = document.createElement('canvas'); out.width = ANCHO; out.height = ALTO; const oc = out.getContext('2d'), od = oc.createImageData(ANCHO, ALTO);
+    let min = 1e9, max = -1e9;
+    for (let j = 0; j < ALTO; j++) { const lat = B.n + (B.s - B.n) * j / (ALTO - 1), fy = (ty(lat) - y0) * 256 - 0.5, iy = Math.floor(fy), wy = fy - iy;
+      for (let i = 0; i < ANCHO; i++) { const lon = B.w + (B.e - B.w) * i / (ANCHO - 1), fx = (tx(lon) - x0) * 256 - 0.5, ix = Math.floor(fx), wx = fx - ix;
+        const h = Math.max(0, Math.round((alt(ix, iy) * (1 - wx) + alt(ix + 1, iy) * wx) * (1 - wy) + (alt(ix, iy + 1) * (1 - wx) + alt(ix + 1, iy + 1) * wx) * wy));
+        min = Math.min(min, h); max = Math.max(max, h); const k = (j * ANCHO + i) * 4; od.data[k] = h >> 8; od.data[k + 1] = h & 255; od.data[k + 2] = 0; od.data[k + 3] = 255 } }
+    oc.putImageData(od, 0, 0);
+    const png = await new Promise(r => out.toBlob(r, 'image/png'));
+    log(`alturas ${ANCHO}x${ALTO}, ${min} a ${max} m, ${Math.round(png.size / 1024)} KB → ` + await guardar(ALTO === 1024 ? 'territorio-alt.png' : 'territorio-alt-' + ALTO + '.png', png));
+    // 2) rutas, senderos, lagos y lugares
+    const svg = new DOMParser().parseFromString(await (await fetch('/data/mapa.svg')).text(), 'image/svg+xml');
+    // en mapa.svg los tramos están en <defs> (tr0…tr5 = tramos del viaje en orden, tr6 = vuelta a Chapelco, tr7 = opcional a Pampa Linda)
+    const tramo = i => rdp(puntos(svg.getElementById('tr' + i).getAttribute('d')), 0.00025);
+    const anillo = r => { let im = 0, dm = 0; r.forEach((q, i) => { const d = Math.hypot(q[0] - r[0][0], q[1] - r[0][1]); if (d > dm) { dm = d; im = i } }); return rdp(r.slice(0, im + 1), 0.0006).slice(0, -1).concat(rdp(r.slice(im), 0.0006)) };
+    const osm = await (await fetch('/data/osm-fuente.json')).json(), ter = await (await fetch('/data/terreno.json')).json();
+    const dentro = ([la, lo]) => la < B.n && la > B.s && lo > B.w && lo < B.e;
+    const lagos = osm.lagos.map(l => { const polis = l.geom.type === 'Polygon' ? [l.geom.coordinates] : l.geom.coordinates;
+      return { name: l.name, lat: +l.lat.toFixed(5), lon: +l.lon.toFixed(5), anillos: polis.map(p => p.map(r => anillo(r.map(([lo, la]) => [+la.toFixed(5), +lo.toFixed(5)]))).filter(r => r.length > 3)) } }).filter(l => dentro([l.lat, l.lon]));
+    const json = { fuente: { alturas: 'AWS Terrain Tiles (terrarium, zoom 10): SRTM y otros', rutas: 'OSRM sobre © OpenStreetMap (de data/mapa.svg)', lagos: '© colaboradores de OpenStreetMap (ODbL)' },
+      ...B, ancho: ANCHO, alto: ALTO, liviano: 512, km: [+((B.e - B.w) * kmLon).toFixed(1), +((B.n - B.s) * kmLat).toFixed(1)], min, max,
+      rutas: { ruta: [0, 1, 2, 3, 4, 5].map(tramo), vuelta: [tramo(6)], opc: [tramo(7)] },
+      senderos: ter.senderos.map(s => ({ name: s.name, km: s.km, pts: rdp(s.pts, 0.00012) })), lagos, lugares: osm.lugares, glaciares: (osm.glaciares || []).map(g => ({ name: g.name, lat: g.lat, lon: g.lon })) };
+    const txt = JSON.stringify(json);
+    log(`json ${Math.round(txt.length / 1024)} KB · ruta: ${json.rutas.ruta.map(r => r.length).join('+')} pts · vuelta: ${json.rutas.vuelta.map(r => r.length).join('+')} · opc: ${json.rutas.opc.map(r => r.length).join('+')} · lagos: ${lagos.length} → ` + await guardar('territorio.json', txt));
+    { const all = json.rutas.vuelta[0].concat(json.rutas.opc[0]); log('vuelta+opc lon ' + Math.min(...all.map(q => q[1])) + ' a ' + Math.max(...all.map(q => q[1])) + ' lat ' + Math.min(...all.map(q => q[0])) + ' a ' + Math.max(...all.map(q => q[0]))) }
+    log('extremos ruta: ' + json.rutas.ruta.map(r => JSON.stringify(r[0]) + '→' + JSON.stringify(r[r.length - 1])).join(' | '));
+    log('listo');
+  } catch (e) { log('ERROR ' + e.message) }
+})();
+</script>

@@ -2,19 +2,19 @@
 
 Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aires, San Martín de los Andes, Lago Falkner, Villa Traful, Villa La Angostura, Refugio Frey, Bariloche y, opcional, el Refugio Otto Meiling en el Tronador). La usan los 8 desde el celular para ver el plan, también sin señal.
 
-## Cómo está hoy (19/11/2026)
+## Cómo está hoy (19/11/2026) · rama `rediseno-libre` (rediseño libre, NO mergear a `main` sin decidirlo)
 - Sitio estático sin paso de build. Archivos:
   - `index.html`: solo el marcado (portada, resumen, las seis secciones, pie) y el contenido fijo de Autos y Pesca.
   - `css/estilos.css`: todos los estilos, con índice arriba. Tokens en `:root` (paleta, tipografía, espaciado), tema claro y oscuro (`prefers-color-scheme` y `data-theme`).
   - `js/datos.js`: **único lugar con los datos del viaje** (ver abajo). Para cambiar el plan se edita solo este archivo.
   - `js/app.js`: dibuja todo desde los datos (itinerario, casas, gastos, pesca, resumen, mapa plano, barra de secciones, visor de fotos, aviso sin conexión).
-  - `js/hero.js`: portada 3D (ES module, carga diferida y por partes). Usa `vendor/three.module.min.js` (licencia en `vendor/three-LICENSE.txt`). Si no hay WebGL2, hay `prefers-reduced-motion`, Save-Data o poca memoria, queda la foto fija (`.hero.static`).
+  - `js/viaje.js`: **recorrido 3D** (ES module, carga diferida). Territorio real de San Martín de los Andes al Tronador como mapa en relieve (`data/territorio.json` + `data/territorio-alt-512.png`, generados con `tools/territorio.html`), ruta real por tramos, los dos autos que avanzan con el scroll, el sendero al Frey a pie, carteles de paradas, fichas (`<dialog id="ficha">`) y parches (`<dialog id="parches">`, `localStorage` `pat-parches`). Usa `vendor/three.module.min.js`. Sin WebGL2, con `prefers-reduced-motion`, Save-Data, poca memoria o `?plano` en el link: portada fija con la lista de paradas (`.viaje.plano`).
   - `sw.js`: service worker. Guarda la web, los datos, el mapa, la versión liviana del 3D, las tipografías y una foto por día para verla sin conexión después de abrirla una vez. **Al publicar cambios, subir `VERSION` en `sw.js`.**
   - `manifest.webmanifest`, `img/` (íconos, `portada-og.jpg` para la vista previa de WhatsApp), `404.html`.
 - Deploy: Vercel publica `main` de `guancho05/Patagonia-2027` tal cual. **El link de Vercel lo usan los amigos: no romper `main`.** Las ramas tienen su preview en Vercel. `.vercelignore` deja afuera `docs/`, `tools/`, `CLAUDE.md` y `CHECKPOINTS.md`.
 - Estructura de la página, de arriba abajo:
   1. Barra de secciones (`#barra`): fija **abajo en el celular** y **arriba en pantallas de 900 px o más**; Itinerario, Mapa, Casas, Autos, Gastos, Pesca. Marca la sección abierta (`aria-current="page"`). `go(k)` cambia de sección y lleva al plan.
-  2. Portada (`#hero`): canvas 3D con cámara tipo dron que avanza con el scroll; carteles del Frey, el Meiling y Bariloche. Sin créditos encima (van en el pie).
+  2. Recorrido (`#viaje`): intro con título, `Empezar el recorrido` e `Ir directo al itinerario`; después el mapa 3D que se recorre con el scroll (cartel del tramo con tiempo y km, paradas que abren su ficha, contador de parches).
   3. Resumen (`#portada`): fechas, datos del viaje (calculados) y mosaico de fotos.
   4. Plan (`#app`): vistas `#view-itin`, `#view-mapa`, `#view-casas`, `#view-autos`, `#view-gastos`, `#view-pesca`, cambiadas con `showPage(k)`.
   - La página **arranca siempre arriba**, en la portada. Con `#itinerario`, `#mapa`, etc. en el link abre esa sección.

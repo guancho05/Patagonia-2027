@@ -19,6 +19,12 @@ try {
     $res = $c.Response
     try {
       $ruta = [Uri]::UnescapeDataString($c.Request.Url.AbsolutePath).TrimStart('/')
+      # Solo para las herramientas de tools/ (por ejemplo territorio.html): PUT /__guardar/data/<archivo> escribe ese archivo en data/.
+      if ($c.Request.HttpMethod -eq 'PUT' -and $ruta -match '^__guardar/(data/[\w.-]+)$') {
+        $dest = Join-Path $raiz $Matches[1]; $ms = New-Object IO.MemoryStream; $c.Request.InputStream.CopyTo($ms)
+        [IO.File]::WriteAllBytes($dest, $ms.ToArray()); $b = [Text.Encoding]::UTF8.GetBytes("ok $($ms.Length)")
+        $res.StatusCode = 200; $res.ContentType = 'text/plain'; $res.ContentLength64 = $b.Length; $res.OutputStream.Write($b, 0, $b.Length); continue
+      }
       if ($ruta -eq '' -or $ruta.EndsWith('/')) { $ruta += 'index.html' }
       $archivo = [IO.Path]::GetFullPath((Join-Path $raiz $ruta))
       $estado = 200

@@ -26,7 +26,7 @@ f.addEventListener('load', () => {
       tareas_largas_ms: largas.map(e => Math.round(e.duration)), bloqueo_total_ms: Math.round(largas.reduce((a, e) => a + Math.max(0, e.duration - 50), 0)),
       dom_ms: Math.round(nav.domContentLoadedEventEnd), load_ms: Math.round(nav.loadEventEnd),
       pedidos: res.length, kb_total: peso(() => true), kb_propios: peso(r => r.name.startsWith(location.origin)), kb_3d: peso(r => /terreno|three/.test(r.name)),
-      scroll_horizontal: W.document.documentElement.scrollWidth > w, hero: W.document.getElementById('hero').className, errores
+      scroll_horizontal: W.document.documentElement.scrollWidth > w, hero: (W.document.getElementById('viaje') || W.document.getElementById('hero')).className, errores
     });
   }, 9000);
 });

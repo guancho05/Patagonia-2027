@@ -32,7 +32,7 @@ f.addEventListener('load', async () => {
     const t = b.querySelector('.t').textContent, ttl = D.getElementById('ttl').textContent, lead = D.getElementById('lead').textContent;
     if (ttl !== t || lead.length < 30) mal('día', i + 1, t, 'sin detalle'); titulos.push(t); juntar() }
   if (!titulos.some(t => /Frey/.test(t))) mal('el itinerario no tiene el Frey');
-  if (D.querySelector('.vbtn,.vchoose')) mal('queda el selector de versión del itinerario');
+  if (D.querySelector('.vchoose')) mal('queda el selector de versión del itinerario');
   sw('itinerario'); chicos('itinerario', D.getElementById('view-itin'));
   // páginas
   for (const [k, id, min] of [['mapa', 'view-mapa', 150], ['casas', 'view-casas', 400], ['autos', 'view-autos', 300], ['gastos', 'view-gastos', 300], ['pesca', 'view-pesca', 800]]) {
@@ -48,6 +48,10 @@ f.addEventListener('load', async () => {
     for (const b of [...D.querySelectorAll('#hl .day')]) { b.click(); await espera(25); casas++; juntar(); if (!D.getElementById('httl').textContent) mal('casa sin título') } }
   sw('casas (todas)');
   chicos('barra', D.getElementById('barra')); chicos('pie', D.getElementById('pie'));
+  // recorrido: cada parada abre su ficha con contenido; están los 8 parches
+  const pars = [...D.querySelectorAll('#vParadas [data-parada]')]; if (pars.length !== 8) mal('recorrido con', pars.length, 'paradas (se esperaban 8)');
+  for (const b of pars) { b.click(); await espera(60); const dg = D.getElementById('ficha'); if (!dg.open || dg.innerText.length < 80) mal('ficha vacía:', b.textContent.trim().slice(0, 20)); juntar(); dg.close() }
+  if (D.querySelectorAll('#parGrid svg').length !== 8) mal('faltan parches');
   // links
   const ext = [...links.keys()].filter(hf => !hf.startsWith('#'));
   const rotos = ext.filter(hf => !/^(https?:|mailto:)/.test(hf) || /undefined|null|NaN/.test(hf));
