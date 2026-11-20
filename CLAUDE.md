@@ -37,6 +37,7 @@ Web del viaje de 8 amigos a la Patagonia: 27/12/2026 → 10/01/2027 (Buenos Aire
 - Investigaciones y decisiones: `docs/investigacion-estetica.md`, `docs/investigacion-pesca.md`, `docs/informe-noche.md`, `docs/links.md`. Capturas en `docs/capturas/<etapa>/`, siempre JPEG.
 
 ## Reglas
+- **Flujo de trabajo (regla permanente):** los cambios visuales o de contenido grandes se muestran primero como artifact (prototipo o maqueta que se pueda revisar). Juan lo revisa, junta todos los cambios y recién después se programa en el repo. No codear a ciegas y ajustar en vueltas sucesivas.
 - Todo el texto visible en español rioplatense, con tildes y ñ. `<meta charset="utf-8">` siempre.
 - Mobile first: tiene que andar bien en un celular de gama media con 4G y leerse sin conexión. Nada de scroll horizontal de página. Áreas táctiles de 44 px o más.
 - Respetar `prefers-reduced-motion` y tener fallback liviano para todo lo 3D/animado.
