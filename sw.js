@@ -4,7 +4,7 @@
    - Sin conexión, si falta el tamaño exacto de una foto se usa otro tamaño guardado de la misma foto.
    - Los mapas de Google no se guardan (son de otro sitio): el itinerario muestra el trayecto en texto.
    Para publicar cambios: subir VERSION (borra la copia vieja al activarse). */
-const VERSION = 'pat27-v4';
+const VERSION = 'pat27-v5';
 const BASE = VERSION + '-base', FOTOS = VERSION + '-fotos', FUENTES = VERSION + '-fuentes';
 const PRECACHE = ['./', 'index.html', '404.html', 'css/estilos.css', 'js/datos.js', 'js/app.js', 'js/hero.js', 'vendor/three.module.min.js',
   'manifest.webmanifest', 'img/icono.svg', 'img/icono-192.png', 'img/icono-512.png', 'img/icono-180.png',
