@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Patagonia 2027 · recorrido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Caprasimo&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Mundo único: catálogo outdoor de época. Mapa 3D a pantalla completa, barra de secciones siempre visible, parches coleccionables por parada. */
+:root{
+  --nieve:#F2F6F9; --cielo:#B8D3E7; --cielo2:#85A8C3; --granito:#58758B; --pizarra:#2E353E; --tinta:#131A22;
+  --pastizal:#D8B273; --tierra:#937B65; --rojo:#9D2F23; --abeto:#3D594F; --abeto2:#182521; --caqui:#BFA984; --celeste:#6CC2DB;
+  --f-tit:'Caprasimo',Georgia,serif; --f-rel:'Fraunces',Georgia,serif; --f-txt:'Atkinson Hyperlegible',system-ui,sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,monospace;
+  --nav-h:60px; --safe-b:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--nieve);color:var(--tinta);font-family:var(--f-txt);font-size:16px;line-height:1.45;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--rojo)}
+:focus-visible{outline:3px solid var(--rojo);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* Barra de secciones */
+.nav{position:fixed;z-index:30;left:0;right:0;bottom:0;height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);background:var(--tinta);color:var(--nieve);display:flex;border-top:3px solid var(--rojo)}
+.nav .marca{display:none;font-family:var(--f-tit);font-size:20px;align-items:center;padding:0 20px;letter-spacing:.01em;white-space:nowrap}
+.nav .tabs{display:flex;flex:1;min-width:0}
+.nav button{flex:1;min-width:0;background:none;border:0;border-bottom:4px solid transparent;color:var(--cielo);font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:6px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px}
+.nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button[aria-current="page"]{color:var(--nieve);border-bottom-color:var(--rojo);background:rgba(255,255,255,.07)}
+.nav button:hover{color:var(--nieve)}
+@media(min-width:900px){
+  .nav{top:0;bottom:auto;height:60px;padding-bottom:0;border-top:0;border-bottom:3px solid var(--rojo)}
+  .nav .marca{display:flex}
+  .nav .tabs{flex:0 0 auto}
+  .nav button{flex:0 0 auto;flex-direction:row;font-size:12px;padding:0 20px;gap:8px;border-bottom:0;border-top:4px solid transparent}
+  .nav button[aria-current="page"]{border-top-color:var(--rojo)}
+}
+
+/* Vistas */
+main{position:absolute;inset:0 0 calc(var(--nav-h) + var(--safe-b)) 0}
+@media(min-width:900px){main{inset:60px 0 0 0}}
+.view{position:absolute;inset:0;display:none}
+.view.on{display:block}
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+/* Recorrido */
+#stage{position:absolute;inset:0;background:var(--cielo)}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#cv:active{cursor:grabbing}
+.lbls{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;pointer-events:auto;background:var(--nieve);color:var(--tinta);border:2px solid var(--tinta);border-radius:3px;font-family:var(--f-mono);font-size:11px;line-height:1;padding:7px 9px;white-space:nowrap;min-height:30px;display:flex;align-items:center;gap:6px;box-shadow:2px 2px 0 var(--tinta);will-change:transform}
+.lbl i{display:inline-block;width:9px;height:9px;border-radius:50%;border:2px solid var(--rojo);background:transparent}
+.lbl.ok i{background:var(--rojo)}
+.lbl.on{background:var(--rojo);color:var(--nieve);border-color:var(--tinta)}
+.lbl.on i{border-color:var(--nieve);background:var(--nieve)}
+.lbl.opc{border-style:dashed;background:rgba(242,246,249,.88)}
+.hud{position:absolute;inset:0;pointer-events:none}
+.hud>*{pointer-events:auto}
+.chip{position:absolute;top:12px;left:12px;max-width:calc(100% - 150px);background:var(--tinta);color:var(--nieve);border-left:5px solid var(--rojo);padding:8px 12px;font-family:var(--f-mono);font-size:12px;line-height:1.35}
+.chip b{display:block;font-family:var(--f-tit);font-weight:400;font-size:16px;letter-spacing:.01em}
+.pbtn{position:absolute;top:12px;right:12px;min-height:44px;background:var(--nieve);border:2px solid var(--tinta);box-shadow:2px 2px 0 var(--tinta);padding:6px 12px;font-family:var(--f-mono);font-size:12px;display:flex;align-items:center;gap:8px}
+.pbtn svg{width:26px;height:26px}
+.tools{position:absolute;right:12px;top:68px;display:flex;flex-direction:column;gap:8px}
+.tools button{width:44px;height:44px;background:var(--nieve);border:2px solid var(--tinta);box-shadow:2px 2px 0 var(--tinta);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px}
+.tools svg{width:22px;height:22px;stroke:var(--tinta);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tools button[aria-pressed="true"]{background:var(--rojo);color:var(--nieve)}
+.tools button[aria-pressed="true"] svg{stroke:var(--nieve)}
+
+.scrub{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(19,26,34,.82),rgba(19,26,34,.55));color:var(--nieve);padding:10px 16px 10px;display:flex;align-items:center;gap:10px}
+.scrub .arrow{flex:0 0 44px;height:44px;border:2px solid var(--nieve);background:transparent;display:grid;place-items:center;border-radius:2px}
+.scrub .arrow svg{width:20px;height:20px;stroke:var(--nieve);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.scrub .arrow:disabled{opacity:.35;cursor:default}
+.track{position:relative;flex:1;height:48px;min-width:0}
+.track .bar{position:absolute;left:8px;right:8px;top:14px;height:4px;background:rgba(242,246,249,.35)}
+.track .fill{position:absolute;left:8px;top:14px;height:4px;background:var(--rojo);width:0}
+.track .car{position:absolute;top:8px;width:16px;height:16px;margin-left:-8px;background:var(--rojo);border:2px solid var(--nieve);border-radius:50%;left:8px}
+.dot{position:absolute;top:0;width:44px;margin-left:-22px;height:48px;background:none;border:0;color:var(--nieve);padding:0;display:flex;flex-direction:column;align-items:center}
+.dot::before{content:"";width:12px;height:12px;margin-top:10px;border:3px solid var(--nieve);background:var(--tinta);transform:rotate(45deg)}
+.dot.ok::before{background:var(--rojo)}
+.dot.on::before{background:var(--nieve);border-color:var(--rojo)}
+.dot span{font-family:var(--f-mono);font-size:10px;margin-top:9px;white-space:nowrap;opacity:.95}
+
+.sheet{position:absolute;left:8px;right:8px;bottom:78px;background:var(--nieve);border:2px solid var(--tinta);box-shadow:4px 4px 0 var(--tinta);max-height:min(62%,520px);display:flex;flex-direction:column;overflow:hidden}
+.sheet[hidden]{display:none}
+.sh-head{display:flex;gap:12px;align-items:center;padding:10px 12px;border-bottom:2px solid var(--tinta);background:var(--caqui);cursor:pointer;border:0;text-align:left;width:100%}
+.sh-head svg.patch{flex:0 0 52px;width:52px;height:52px}
+.sh-head h2{font-family:var(--f-tit);font-weight:400;font-size:21px;line-height:1.1;margin:0}
+.sh-head p{margin:2px 0 0;font-family:var(--f-mono);font-size:12px}
+.sh-head .mas{margin-left:auto;font-family:var(--f-mono);font-size:11px;text-transform:uppercase;white-space:nowrap;border:2px solid var(--tinta);padding:6px 8px;background:var(--nieve)}
+.sh-body{display:none;overflow:auto;padding:12px 14px 16px;font-size:15px}
+.sheet.open .sh-body{display:block}
+.sh-body h3{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--granito);margin:14px 0 4px}
+.sh-body h3:first-child{margin-top:0}
+.sh-body ul{margin:0;padding-left:18px}
+.sh-body li{margin:2px 0}
+.sh-body .dl{list-style:none;padding:0}
+.sh-body .dl li{padding:6px 0;border-top:1px solid var(--cielo2)}
+.sh-body .dl li:first-child{border-top:0}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:2px 7px;border:2px solid var(--tinta);margin-right:6px;text-transform:uppercase}
+.tag.si{background:var(--abeto);color:var(--nieve);border-color:var(--abeto2)}
+.tag.no{background:var(--pastizal)}
+.sh-body .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.sh-body .links a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:2px solid var(--tinta);color:var(--tinta);text-decoration:none;font-family:var(--f-mono);font-size:12px;background:var(--nieve)}
+.sh-body .links a:hover{background:var(--cielo)}
+@media(min-width:900px){
+  .sheet{left:auto;right:16px;top:72px;bottom:96px;width:390px;max-height:none}
+  .sheet .sh-body{flex:1}
+  .chip{max-width:420px}
+  .scrub{left:50%;right:auto;width:min(720px,calc(100% - 440px));transform:translateX(calc(-50% - 200px));border-radius:0}
+  .scrub{left:16px;width:min(760px,calc(100% - 440px));transform:none;bottom:16px;border:2px solid var(--tinta)}
+}
+.aviso{position:absolute;left:12px;bottom:84px;max-width:min(360px,calc(100% - 24px));font-family:var(--f-mono);font-size:10px;line-height:1.4;color:var(--tinta);background:rgba(242,246,249,.82);padding:5px 8px;border-left:3px solid var(--granito)}
+.sheet:not([hidden])~.aviso{display:none}
+@media(min-width:900px){.aviso{bottom:92px;left:16px}.sheet:not([hidden])~.aviso{display:block}}
+
+.toast{position:absolute;left:50%;top:76px;transform:translate(-50%,-10px);background:var(--tinta);color:var(--nieve);padding:10px 16px;font-family:var(--f-mono);font-size:12px;border-bottom:3px solid var(--rojo);opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* Intro */
+.intro{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 20px calc(28px);color:var(--nieve);background:linear-gradient(to top,rgba(19,26,34,.92) 0%,rgba(19,26,34,.55) 48%,rgba(19,26,34,.05) 100%);transition:opacity .8s ease,visibility .8s}
+.intro.off{opacity:0;visibility:hidden}
+.intro .ed{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pastizal);margin:0 0 8px}
+.intro h1{font-family:var(--f-tit);font-weight:400;font-size:clamp(52px,17vw,150px);line-height:.92;margin:0 0 14px;letter-spacing:-.005em;text-wrap:balance}
+.intro .datos{font-family:var(--f-rel);font-size:clamp(17px,4.4vw,24px);margin:0 0 22px;max-width:30ch}
+.intro .acc{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{min-height:52px;padding:0 24px;background:var(--rojo);color:var(--nieve);border:2px solid var(--nieve);font-family:var(--f-mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;box-shadow:3px 3px 0 var(--nieve)}
+.btn:hover{background:#b23a2c}
+.lnk{min-height:44px;background:none;border:0;border-bottom:2px solid var(--nieve);color:var(--nieve);font-family:var(--f-mono);font-size:13px;padding:0 2px}
+@media(min-width:900px){.intro{padding:40px 56px 48px;justify-content:flex-end}}
+
+/* Otras vistas */
+.pag{max-width:880px;margin:0 auto;padding:20px 16px 40px}
+.pag h1{font-family:var(--f-tit);font-weight:400;font-size:clamp(32px,7vw,52px);margin:0 0 4px;line-height:1}
+.pag .sub{font-family:var(--f-rel);font-style:italic;color:var(--granito);margin:0 0 20px}
+.dest ul.dl{list-style:none;padding:0;margin:0 0 8px}.dest ul.dl li{padding:5px 0;border-top:1px solid var(--cielo2)}.dest ul.dl li:first-child{border-top:0}
+.dia{display:grid;grid-template-columns:76px 1fr;gap:14px;padding:14px 0;border-top:2px solid var(--tinta)}
+.dia .f{font-family:var(--f-mono);font-size:13px}
+.dia .f b{display:block;font-family:var(--f-tit);font-weight:400;font-size:26px;line-height:1}
+.dia h2{font-family:var(--f-rel);font-weight:600;font-size:19px;margin:0 0 2px}
+.dia p{margin:0 0 6px}
+.dia button{min-height:44px;border:2px solid var(--tinta);background:var(--nieve);padding:0 12px;font-family:var(--f-mono);font-size:11px;text-transform:uppercase}
+.dia.opc h2::after{content:"opcional";margin-left:8px;font-family:var(--f-mono);font-size:10px;font-weight:400;border:2px dashed var(--granito);padding:1px 6px;text-transform:uppercase}
+.nota{border-left:5px solid var(--pastizal);background:#fff;padding:12px 14px;margin:0}
+.dlg{position:absolute;inset:0;z-index:40;background:rgba(19,26,34,.7);display:none;align-items:center;justify-content:center;padding:16px}
+.dlg.on{display:flex}
+.dlg .caja{background:var(--nieve);border:2px solid var(--tinta);box-shadow:5px 5px 0 var(--tinta);width:min(560px,100%);max-height:100%;overflow:auto;padding:16px}
+.dlg h2{font-family:var(--f-tit);font-weight:400;margin:0 0 4px;font-size:28px}
+.album{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.album figure{margin:0;text-align:center;font-family:var(--f-mono);font-size:11px}
+.album svg{width:100%;max-width:120px;height:auto}
+.dlg .x{float:right;min-height:44px;min-width:44px;border:2px solid var(--tinta);background:var(--nieve)}
+.nogl{position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:24px;background:var(--cielo)}
+@media(prefers-reduced-motion:reduce){.intro,.toast{transition:none}}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Secciones">
+  <div class="marca">Patagonia 2027</div>
+  <div class="tabs" id="tabs">
+    <button data-v="recorrido" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 18c4-9 8 1 12-8 2-4 4-3 6-4"/><circle cx="4" cy="19" r="1.6"/><circle cx="20" cy="6" r="1.6"/></svg>Recorrido</button>
+    <button data-v="destinos"><svg viewBox="0 0 24 24"><path d="M12 21s-6-5.6-6-10a6 6 0 0 1 12 0c0 4.4-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>Destinos</button>
+    <button data-v="casas"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg>Casas</button>
+    <button data-v="autos"><svg viewBox="0 0 24 24"><path d="M4 16l1.5-5.5A2 2 0 0 1 7.4 9h9.2a2 2 0 0 1 1.9 1.5L20 16M3 16h18v3H3z"/></svg>Autos</button>
+    <button data-v="gastos"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5c0-1 1-1.6 2.5-1.6s2.5.7 2.5 1.8-1 1.5-2.5 1.8-2.5.8-2.5 1.9 1 1.8 2.5 1.8 2.5-.6 2.5-1.6"/></svg>Gastos</button>
+  </div>
+</nav>
+
+<main>
+  <section class="view on" id="v-recorrido" aria-label="Recorrido">
+    <div id="stage">
+      <canvas id="cv" aria-label="Mapa 3D del recorrido. Arrastrá hacia arriba o abajo para avanzar." tabindex="0"></canvas>
+      <div class="lbls" id="lbls"></div>
+      <div class="hud" id="hud" hidden>
+        <div class="chip" id="chip" aria-live="polite"></div>
+        <button class="pbtn" id="pbtn" aria-label="Abrir el álbum de parches"></button>
+        <div class="tools">
+          <button id="bGen" aria-pressed="false" aria-label="Vista general del recorrido"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16"/></svg></button>
+        </div>
+        <div class="scrub" id="scrub">
+          <button class="arrow" id="bPrev" aria-label="Parada anterior"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <div class="track" id="track"><div class="bar"></div><div class="fill" id="fill"></div><div class="car" id="carDot"></div></div>
+          <button class="arrow" id="bNext" aria-label="Parada siguiente"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+        <div class="sheet" id="sheet" hidden></div>
+        <div class="aviso">Maqueta: el relieve es ilustrativo. En la versión final va el terreno real escaneado.</div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="intro" id="intro">
+        <p class="ed">Recorrido de ocho amigos</p>
+        <h1>Patagonia<br>2027</h1>
+        <p class="datos">27 de diciembre al 10 de enero. Dos autos, seis paradas y un refugio.</p>
+        <div class="acc">
+          <button class="btn" id="bGo">Empezar el recorrido</button>
+          <button class="lnk" id="bDirect">Ver los destinos</button>
+        </div>
+      </div>
+      <div class="nogl" id="nogl"><div><h2 style="font-family:var(--f-tit);font-weight:400">Sin mapa 3D en este dispositivo</h2><p>Mirá el plan destino por destino.</p><button class="btn" id="bNogl">Ver los destinos</button></div></div>
+      <div class="dlg" id="album" role="dialog" aria-modal="true" aria-label="Álbum de parches"><div class="caja"><button class="x" id="albumX" aria-label="Cerrar">✕</button><h2>Parches</h2><p id="albumTxt" style="margin:0;font-family:var(--f-mono);font-size:12px"></p><div class="album" id="albumGrid"></div></div></div>
+    </div>
+  </section>
+
+  <section class="view scroll" id="v-destinos" aria-label="Destinos"><div class="pag" id="itin"></div></section>
+  <section class="view scroll" id="v-casas"><div class="pag"><h1>Casas</h1><p class="sub">Se mantiene como en la web publicada.</p><p class="nota">En la versión final esta sección se migra tal cual: puntajes, pros y contras, fotos y casas confirmadas. Acá no se rediseña.</p></div></section>
+  <section class="view scroll" id="v-autos"><div class="pag"><h1>Autos</h1><p class="sub">Se mantiene como en la web publicada.</p><p class="nota">Se migra tal cual, con los dos autos alquilados.</p></div></section>
+  <section class="view scroll" id="v-gastos"><div class="pag"><h1>Gastos</h1><p class="sub">Se mantiene como en la web publicada.</p><p class="nota">Se migra tal cual: una sola cuenta que alimenta la tabla y el resumen.</p></div></section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function $(id){return document.getElementById(id)}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+/* ---------- Datos (resumen del plan real; el sitio final los toma de datos.js) ---------- */
+var STOPS=[
+ {id:'sma',n:'San Martín de los Andes',c:'San Martín',f:'28 y 29 de diciembre',dd:'28–29/12',lat:-40.157,lon:-71.353,g:'casa',
+  leg:'30 min · 23 km desde Chapelco',aloj:{ok:1,t:'Casa en Las Pendientes (confirmada)'},
+  hace:['Vuelo a Chapelco el 28/12 y traslado a la casa.','29/12: día en San Martín, actividades a definir.'],q:'San Martín de los Andes'},
+ {id:'fal',n:'Lago Falkner',c:'Lago Falkner',f:'30 y 31 de diciembre',dd:'30–31/12',lat:-40.575,lon:-71.515,g:'lago',
+  leg:'51 min · 48 km desde San Martín',aloj:{ok:0,t:'A confirmar'},
+  hace:['Año Nuevo frente al lago.','Actividades a definir.'],q:'Lago Falkner'},
+ {id:'tra',n:'Villa Traful',c:'Villa Traful',f:'1 y 2 de enero',dd:'1–2/1',lat:-40.66,lon:-71.39,g:'lago',
+  leg:'1 h 19 min · 55 km desde Falkner',aloj:{ok:0,t:'A confirmar'},
+  hace:['Dos noches en Villa Traful.','Actividades a definir.'],q:'Villa Traful'},
+ {id:'ang',n:'Villa La Angostura',c:'La Angostura',f:'3 y 4 de enero',dd:'3–4/1',lat:-40.763,lon:-71.646,g:'casa',
+  leg:'1 h 26 min · 57 km desde Traful',aloj:{ok:0,t:'A confirmar (Posta de los Colonos cotizada: USD 320 la noche del 4/1)'},
+  hace:['Dos noches en Villa La Angostura.','Actividades a definir.'],q:'Villa La Angostura'},
+ {id:'fre',n:'Refugio Frey',c:'Refugio Frey',f:'5 de enero',dd:'5/1',lat:-41.205,lon:-71.455,g:'ref',trailhead:true,
+  leg:'1 h 56 min · 102 km hasta Villa Catedral',aloj:{ok:0,t:'Noche en el refugio'},
+  hace:['Trekking desde Villa Catedral: unos 10 km y +750 m de desnivel.','Dormir en el refugio.'],q:'Refugio Frey',
+  links:[['Viento y temperatura (Windguru)','https://www.windguru.cz/1179593']]},
+ {id:'bar',n:'Bariloche',c:'Bariloche',f:'6 al 10 de enero',dd:'6–10/1',lat:-41.135,lon:-71.31,g:'casa',
+  leg:'Desde el Frey: a confirmar',aloj:{ok:1,t:'Dúplex con vista al lago (confirmado): USD 957 en total, USD 120 por persona'},
+  hace:['7/1: Circuito Chico en bici.','8/1: rafting en el río Manso.','9/1: día libre.','10/1: salir 6:30 hacia Chapelco (3 h 23 min · 241 km). Vuelo 13:50.','Otto Meiling, opcional un día entre el 6 y el 9 si el clima está muy bueno.'],q:'Bariloche'}
+];
+var MEIL={id:'mei',n:'Refugio Otto Meiling',c:'Otto Meiling · opcional',f:'Un día entre el 6 y el 9 de enero',dd:'opcional',lat:-41.20,lon:-71.85,g:'ref',
+  leg:'Dos días: subir, dormir y bajar',aloj:{ok:0,t:'Solo si el clima acompaña'},hace:['Subir, dormir en el refugio y bajar al día siguiente.'],q:'Refugio Otto Meiling',
+  links:[['Viento y temperatura (Windguru)','https://www.windguru.cz/227442']]};
+var START={lat:-40.075,lon:-71.137};
+var DIAS=[
+ ['27/12','dom','Buenos Aires','Montevideo → Buenos Aires.',0],
+ ['28/12','lun','San Martín de los Andes','Vuelo a Chapelco. Traslado de 30 min (23 km). Casa en Las Pendientes (confirmada).',0],
+ ['29/12','mar','San Martín de los Andes','Día en San Martín. Actividades a definir.',0],
+ ['30/12','mié','Lago Falkner','San Martín → Falkner: 51 min (48 km).',1],
+ ['31/12','jue','Lago Falkner','Año Nuevo.',1],
+ ['1/1','vie','Villa Traful','Falkner → Traful: 1 h 19 min (55 km).',2],
+ ['2/1','sáb','Villa Traful','Día en Villa Traful. Actividades a definir.',2],
+ ['3/1','dom','Villa La Angostura','Traful → La Angostura: 1 h 26 min (57 km). Casa a confirmar.',3],
+ ['4/1','lun','Villa La Angostura','Día en Villa La Angostura. Actividades a definir.',3],
+ ['5/1','mar','Refugio Frey','La Angostura → Villa Catedral: 1 h 56 min (102 km). Trekking al refugio: unos 10 km, +750 m.',4],
+ ['6/1','mié','Bariloche','Dúplex con vista al lago (confirmado). Otto Meiling es opcional si el clima está muy bueno.',5],
+ ['7/1','jue','Bariloche','Circuito Chico en bici.',5],
+ ['8/1','vie','Bariloche','Rafting en el río Manso.',5],
+ ['9/1','sáb','Bariloche','Día libre.',5],
+ ['10/1','dom','Bariloche → Chapelco','Salir 6:30 (3 h 23 min · 241 km). Vuelo 13:50.',5]
+];
+
+/* ---------- Relieve ilustrativo ---------- */
+var LON0=-71.55,LAT0=-40.70;
+function X(lon){return (lon-LON0)*85}
+function Zc(lat){return -(lat-LAT0)*111}
+function hash(i,j){var n=Math.sin(i*127.1+j*311.7)*43758.5453;return n-Math.floor(n)}
+function vn(x,y){var xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+ var a=hash(xi,yi),b=hash(xi+1,yi),c=hash(xi,yi+1),d=hash(xi+1,yi+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v}
+function fbm(x,y){var s=0,a=.5;for(var i=0;i<5;i++){s+=a*vn(x,y);x*=2.03;y*=2.03;a*=.5}return s}
+function cl(v,a,b){return Math.max(a,Math.min(b,v))}
+function sstep(a,b,v){var t=cl((v-a)/(b-a),0,1);return t*t*(3-2*t)}
+var WL=.5;
+var LAKES=[
+ {w:1.1,p:[[-40.165,-71.34],[-40.18,-71.5],[-40.172,-71.64]]},
+ {w:.9,p:[[-40.55,-71.5],[-40.6,-71.52]]},
+ {w:1,p:[[-40.65,-71.41],[-40.63,-71.25],[-40.62,-71.1]]},
+ {w:3.2,p:[[-40.765,-71.655],[-40.85,-71.63],[-40.95,-71.57],[-41.05,-71.5],[-41.12,-71.36]]},
+ {w:1.8,p:[[-41.05,-71.52],[-41.08,-71.75],[-41.13,-71.95]]}
+].map(function(l){return {w:l.w,p:l.p.map(function(q){return [X(q[1]),Zc(q[0])]})}});
+var PEAKS=[[-41.157,-71.894,4.4,4.6],[-41.17,-71.43,2.1,3.4],[-40.17,-71.2,1.7,4.2],[-41.0,-71.7,1.2,5],[-40.4,-71.75,1.6,5]].map(function(p){return [X(p[1]),Zc(p[0]),p[2],p[3]]});
+function dseg(px,pz,ax,az,bx,bz){var dx=bx-ax,dz=bz-az,t=cl(((px-ax)*dx+(pz-az)*dz)/(dx*dx+dz*dz),0,1);var qx=ax+t*dx-px,qz=az+t*dz-pz;return Math.sqrt(qx*qx+qz*qz)}
+function terrain(x,z){
+ var h=1+1.1*fbm(x*.05+3,z*.05+9);
+ var w=cl((-x-8)/38,0,1);h+=w*w*(.8+2*Math.pow(1-Math.abs(2*fbm(x*.06,z*.06)-1),2));
+ h-=cl((x-12)/30,0,1)*.35;
+ for(var i=0;i<PEAKS.length;i++){var p=PEAKS[i],dx=x-p[0],dz=z-p[1];h+=p[2]*Math.exp(-(dx*dx+dz*dz)/(2*p[3]*p[3]))}
+ for(var k=0;k<LAKES.length;k++){var L=LAKES[k],d=1e9;for(var j=0;j<L.p.length-1;j++){d=Math.min(d,dseg(x,z,L.p[j][0],L.p[j][1],L.p[j+1][0],L.p[j+1][1]))}
+  var t=1-sstep(L.w*.55,L.w+2.2,d);h=h*(1-t)+(WL-.35)*t}
+ return h}
+function roadY(x,z){return Math.max(terrain(x,z),WL+.08)}
+
+/* ---------- Escena ---------- */
+var cv=$('cv'),renderer,scene,camera,THREEok=false;
+try{
+ renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false});
+ THREEok=!!renderer.getContext();
+}catch(e){THREEok=false}
+
+var state={mode:'intro',s:0,anim:null,collected:{},active:-1,userYaw:0,yaw:0,gen:false};
+try{var sv=JSON.parse(store('pat-parches-maqueta')||'{}');if(sv&&typeof sv==='object')state.collected=sv}catch(e){}
+
+var route=[],cum=[0],anchors=[],stopS=[],treks=[],obj={};
+function buildRoute(){
+ var pts=[[START.lat,START.lon],[-40.11,-71.24],[STOPS[0].lat,STOPS[0].lon]];
+ var legs=[
+  [[START.lat,START.lon],[-40.11,-71.24],[STOPS[0].lat,STOPS[0].lon]],
+  [[STOPS[0].lat,STOPS[0].lon],[-40.28,-71.43],[-40.42,-71.47],[STOPS[1].lat,STOPS[1].lon]],
+  [[STOPS[1].lat,STOPS[1].lon],[-40.62,-71.46],[STOPS[2].lat,STOPS[2].lon]],
+  [[STOPS[2].lat,STOPS[2].lon],[-40.71,-71.52],[STOPS[3].lat,STOPS[3].lon]],
+  [[STOPS[3].lat,STOPS[3].lon],[-40.86,-71.53],[-40.96,-71.45],[-41.06,-71.39],[-41.13,-71.4],[-41.17,-71.44]],
+  [[-41.17,-71.44],[-41.15,-71.37],[STOPS[5].lat,STOPS[5].lon]]
+ ];
+ route=[];cum=[];var total=0;anchors=[0];
+ legs.forEach(function(L,li){
+  var cu=new THREE.CatmullRomCurve3(L.map(function(q){return new THREE.Vector3(X(q[1]),0,Zc(q[0]))}),false,'centripetal');
+  var len=cu.getLength(),n=Math.max(8,Math.ceil(len/.5));
+  for(var i=(li===0?0:1);i<=n;i++){var v=cu.getPointAt(i/n);v.y=roadY(v.x,v.z);
+   if(route.length){total+=route[route.length-1].distanceTo(v)}
+   route.push(v);cum.push(total)}
+  anchors.push(total);
+ });
+ // paradas: SMA=anchors[1], Falkner=[2], Traful=[3], Angostura=[4], Frey/Catedral=[5], Bariloche=[6]
+ stopS=[anchors[1],anchors[2],anchors[3],anchors[4],anchors[5],anchors[6]];
+ obj.total=total;
+}
+function posAt(s){
+ s=cl(s,0,obj.total);var lo=0,hi=cum.length-1;
+ while(hi-lo>1){var m=(lo+hi)>>1;if(cum[m]<=s)lo=m;else hi=m}
+ var a=route[lo],b=route[hi],t=(s-cum[lo])/Math.max(1e-6,cum[hi]-cum[lo]);
+ var x=a.x+(b.x-a.x)*t,z=a.z+(b.z-a.z)*t,y=a.y+(b.y-a.y)*t;
+ var dx=b.x-a.x,dz=b.z-a.z,l=Math.sqrt(dx*dx+dz*dz)||1;
+ return {x:x,y:y,z:z,tx:dx/l,tz:dz/l}}
+var freyPt,trekPts=[];
+function buildTrek(){
+ var cps=[[-41.17,-71.44],[-41.178,-71.47],[-41.19,-71.455],[-41.2,-71.48],[-41.213,-71.465],[-41.205,-71.455]].map(function(q){return new THREE.Vector3(X(q[1]),0,Zc(q[0]))});
+ var cu=new THREE.CatmullRomCurve3(cps,false,'centripetal'),len=cu.getLength(),n=Math.ceil(len/.28);
+ for(var i=0;i<=n;i++){var v=cu.getPointAt(i/n);v.y=Math.max(terrain(v.x,v.z),WL)+.1;trekPts.push(v)}
+ freyPt=trekPts[trekPts.length-1].clone();
+}
+
+function initScene(){
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color('#B8D3E7');
+ scene.fog=new THREE.Fog('#B8D3E7',90,250);
+ camera=new THREE.PerspectiveCamera(48,1,.1,500);
+ scene.add(new THREE.HemisphereLight('#F2F6F9','#58758B',.95));
+ var sun=new THREE.DirectionalLight('#FFF1DA',.85);sun.position.set(-60,80,40);scene.add(sun);
+ // terreno
+ var W=100,D=170,sx=150,sz=250,g=new THREE.PlaneGeometry(W,D,sx,sz);g.rotateX(-Math.PI/2);
+ var pos=g.attributes.position,col=new Float32Array(pos.count*3);
+ for(var i=0;i<pos.count;i++){pos.setY(i,terrain(pos.getX(i),pos.getZ(i)))}
+ g.computeVertexNormals();
+ var nor=g.attributes.normal,cA=new THREE.Color('#3D594F'),cB=new THREE.Color('#2A4238'),cS=new THREE.Color('#D8B273'),cS2=new THREE.Color('#BFA984'),
+  cR=new THREE.Color('#58758B'),cN=new THREE.Color('#F2F6F9'),cT=new THREE.Color('#937B65'),c=new THREE.Color();
+ for(var j=0;j<pos.count;j++){
+  var x=pos.getX(j),y=pos.getY(j),z=pos.getZ(j),ny=nor.getY(j),n=fbm(x*.3,z*.3);
+  var st=sstep(-2,26,x);
+  c.copy(cA).lerp(cB,n);var steppe=cS.clone().lerp(cS2,n);c.lerp(steppe,st);
+  if(y<WL+.18)c.lerp(cT,.8);
+  var rock=Math.max(sstep(2.1,3.2,y),sstep(.82,.62,ny)*sstep(1.4,2.2,y));c.lerp(cR,cl(rock,0,1));
+  c.lerp(cN,sstep(3.3,4.3,y+(n-.5)*.7));
+  var b=.94+.12*hash(j,7);col[j*3]=c.r*b;col[j*3+1]=c.g*b;col[j*3+2]=c.b*b}
+ g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ scene.add(new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true})));
+ var wm=new THREE.Mesh(new THREE.PlaneGeometry(W,D),new THREE.MeshBasicMaterial({color:'#6FA7C4',transparent:true,opacity:.92}));
+ wm.rotation.x=-Math.PI/2;wm.position.y=WL;scene.add(wm);
+ // ruta punteada
+ buildRoute();buildTrek();
+ var step=1.15,nd=Math.floor(obj.total/step),dg=new THREE.BoxGeometry(.3,.08,.62),dm=new THREE.MeshBasicMaterial({color:'#9D2F23'}),im=new THREE.InstancedMesh(dg,dm,nd),o=new THREE.Object3D();
+ for(var k=0;k<nd;k++){var p=posAt(k*step);o.position.set(p.x,p.y+.1,p.z);o.rotation.set(0,Math.atan2(p.tx,p.tz),0);o.updateMatrix();im.setMatrixAt(k,o.matrix)}
+ scene.add(im);
+ var tm=new THREE.InstancedMesh(new THREE.SphereGeometry(.11,8,6),dm,Math.floor(trekPts.length/2));
+ for(var q=0;q<tm.count;q++){var tp=trekPts[q*2];o.position.copy(tp);o.rotation.set(0,0,0);o.updateMatrix();tm.setMatrixAt(q,o.matrix)}
+ scene.add(tm);
+ // pines
+ var all=STOPS.map(function(s,i){var wp;if(s.trailhead){wp=freyPt}else{wp=new THREE.Vector3(X(s.lon),0,Zc(s.lat));wp.y=roadY(wp.x,wp.z)}s.w=wp;return wp});
+ MEIL.w=new THREE.Vector3(X(MEIL.lon),Math.max(terrain(X(MEIL.lon),Zc(MEIL.lat)),WL)+.05,Zc(MEIL.lat));
+ var pm=new THREE.MeshLambertMaterial({color:'#9D2F23'}),pole=new THREE.MeshLambertMaterial({color:'#131A22'});
+ STOPS.concat([MEIL]).forEach(function(s){
+  var gr=new THREE.Group(),h=s.id==='mei'?2.1:1.7;
+  var c1=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,h,6),pole);c1.position.y=h/2;gr.add(c1);
+  var bl=new THREE.Mesh(new THREE.SphereGeometry(.34,14,10),s.id==='mei'?new THREE.MeshLambertMaterial({color:'#F2F6F9'}):pm);bl.position.y=h+.2;gr.add(bl);
+  gr.position.copy(s.w);scene.add(gr);s.pin=gr});
+ // autos
+ function mkCar(color){var gc=new THREE.Group();var b=new THREE.Mesh(new THREE.BoxGeometry(.95,.42,1.9),new THREE.MeshLambertMaterial({color:color}));b.position.y=.36;gc.add(b);
+  var ca=new THREE.Mesh(new THREE.BoxGeometry(.82,.34,1.0),new THREE.MeshLambertMaterial({color:'#F2F6F9'}));ca.position.set(0,.74,-.1);gc.add(ca);
+  var wh=new THREE.MeshLambertMaterial({color:'#131A22'});[[-.5,.7],[.5,.7],[-.5,-.7],[.5,-.7]].forEach(function(w){var m=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.14,10),wh);m.rotation.z=Math.PI/2;m.position.set(w[0],.2,w[1]);gc.add(m)});
+  gc.scale.setScalar(1.15);scene.add(gc);return gc}
+ obj.car1=mkCar('#9D2F23');obj.car2=mkCar('#2E353E');
+ placeCars();
+}
+function placeCars(){
+ var a=posAt(state.s),b=posAt(Math.max(0,state.s-2.2));
+ obj.car1.position.set(a.x,a.y+.02,a.z);obj.car1.rotation.y=Math.atan2(a.tx,a.tz);
+ obj.car2.position.set(b.x+b.tz*.0,b.y+.02,b.z);obj.car2.rotation.y=Math.atan2(b.tx,b.tz);
+ obj.head=Math.atan2(-a.tx,-a.tz);
+}
+
+/* ---------- Cámara ---------- */
+var cam={tx:0,ty:0,tz:0,yaw:0,pitch:.6,dist:100},vTmp;
+function angLerp(a,b,t){var d=((b-a+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI;return a+d*t}
+var sizeW=1,sizeH=1,mobile=true;
+function resize(){
+ var r=cv.parentNode.getBoundingClientRect();sizeW=Math.max(1,r.width);sizeH=Math.max(1,r.height);mobile=sizeW<900;
+ if(!renderer)return;renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));renderer.setSize(sizeW,sizeH,false);
+ camera.aspect=sizeW/sizeH;camera.fov=camera.aspect<.8?62:48;camera.updateProjectionMatrix();
+}
+function updateCam(dt){
+ var k=REDUCED?1:1-Math.exp(-dt*2.6),goal={x:0,y:0,z:0,yaw:cam.yaw,pitch:.62,dist:100};
+ if(state.mode==='intro'){
+  goal.x=-4;goal.y=1.5;goal.z=0;goal.dist=mobile?118:92;goal.pitch=.5;
+  if(!REDUCED)goal.yaw=cam.yaw+dt*.045; else goal.yaw=0.3;
+  k=REDUCED?1:Math.min(1,k*3);
+ }else if(state.gen){goal.x=0;goal.y=0;goal.z=0;goal.dist=mobile?150:135;goal.pitch=1.0;goal.yaw=state.userYaw*.6}
+ else{
+  var p=posAt(state.s),fr=(state.active>=0&&STOPS[state.active].trailhead&&Math.abs(state.s-stopS[state.active])<.3);
+  if(fr){goal.x=freyPt.x;goal.y=freyPt.y;goal.z=freyPt.z;goal.dist=mobile?15:13;goal.pitch=.78;goal.yaw=2.2+state.userYaw}
+  else{goal.x=p.x;goal.y=p.y+.4;goal.z=p.z;goal.dist=mobile?17:15;goal.pitch=.55;goal.yaw=Math.atan2(-p.tx,-p.tz)+state.userYaw}
+ }
+ cam.tx+=(goal.x-cam.tx)*k;cam.ty+=(goal.y-cam.ty)*k;cam.tz+=(goal.z-cam.tz)*k;
+ cam.yaw=angLerp(cam.yaw,goal.yaw,state.mode==='intro'&&!REDUCED?1:k);
+ cam.pitch+=(goal.pitch-cam.pitch)*k;cam.dist+=(goal.dist-cam.dist)*k;
+ var cp=Math.cos(cam.pitch),cx=cam.tx+Math.sin(cam.yaw)*cp*cam.dist,cz=cam.tz+Math.cos(cam.yaw)*cp*cam.dist,cy=cam.ty+Math.sin(cam.pitch)*cam.dist;
+ var floor=terrain(cx,cz)+1.2;cy=Math.max(cy,floor);
+ camera.position.set(cx,cy,cz);camera.lookAt(cam.tx,cam.ty,cam.tz);
+}
+
+/* ---------- Parches ---------- */
+function patchSVG(s,done,small){
+ var col={casa:'#9D2F23',lago:'#3D594F',ref:'#2E353E'}[s.g]||'#9D2F23';
+ var glyph={casa:'<path d="M-13 3l13-11 13 11M-9 1v12h18V1" fill="none" stroke="#F2F6F9" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>',
+  lago:'<path d="M-14-4q3.5-4 7 0t7 0 7 0M-14 3q3.5-4 7 0t7 0 7 0M-14 10q3.5-4 7 0t7 0 7 0" fill="none" stroke="#F2F6F9" stroke-width="2.4" stroke-linecap="round"/>',
+  ref:'<path d="M-14 12L0-10 14 12zM-4 12V3h8v9" fill="none" stroke="#F2F6F9" stroke-width="2.4" stroke-linejoin="round"/>'}[s.g];
+ var t=s.c.length>16?s.c.slice(0,16):s.c;
+ if(!done)return '<svg class="patch" viewBox="-50 -50 100 100" role="img" aria-label="Parche de '+s.c+' sin conseguir"><circle r="44" fill="#E3EAEF" stroke="#58758B" stroke-width="3" stroke-dasharray="4 5"/><text y="4" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="#58758B">'+t+'</text></svg>';
+ return '<svg class="patch" viewBox="-50 -50 100 100" role="img" aria-label="Parche de '+s.c+'"><circle r="46" fill="#BFA984"/><circle r="42" fill="'+col+'"/><circle r="39" fill="none" stroke="#F2F6F9" stroke-width="1.6" stroke-dasharray="2.6 2.6"/><g transform="translate(0,-8)">'+glyph+'</g><text y="25" text-anchor="middle" font-family="Caprasimo" font-size="'+(t.length>11?8.6:10.5)+'" fill="#F2F6F9">'+t+'</text><text y="35" text-anchor="middle" font-family="IBM Plex Mono" font-size="6.5" fill="#F2F6F9">'+s.dd+'</text></svg>';
+}
+function nColl(){return STOPS.filter(function(s){return state.collected[s.id]}).length}
+function renderPbtn(){
+ $('pbtn').innerHTML='<svg viewBox="-50 -50 100 100" aria-hidden="true"><circle r="44" fill="#9D2F23" stroke="#131A22" stroke-width="5"/><circle r="30" fill="none" stroke="#F2F6F9" stroke-width="4" stroke-dasharray="5 5"/></svg><span>Parches '+nColl()+'/'+STOPS.length+'</span>';
+}
+function renderAlbum(){
+ $('albumTxt').textContent=nColl()+' de '+STOPS.length+' conseguidos. Se consigue uno al llegar a cada parada.';
+ $('albumGrid').innerHTML=STOPS.map(function(s){return '<figure>'+patchSVG(s,!!state.collected[s.id])+'<figcaption>'+s.c+'</figcaption></figure>'}).join('');
+}
+var toastT;
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},2600)}
+
+/* ---------- HUD ---------- */
+var lblEls=[];
+function buildLabels(){
+ var host=$('lbls');host.innerHTML='';lblEls=[];
+ STOPS.concat([MEIL]).forEach(function(s,i){
+  var b=document.createElement('button');b.className='lbl'+(s.id==='mei'?' opc':'');b.type='button';
+  b.innerHTML='<i></i><span>'+s.c+'</span>';b.setAttribute('aria-label','Ir a '+s.n);
+  b.addEventListener('click',function(){if(s.id==='mei'){state.gen=false;$('bGen').setAttribute('aria-pressed','false');showSheet(MEIL,true)}else goTo(i)});
+  host.appendChild(b);lblEls.push({el:b,s:s,i:i,w:80})});
+}
+var proj=null;
+function updateLabels(){
+ if(!THREEok)return;var vis=state.mode!=='intro'||true,bm=mobile?232:120,tm=mobile?64:72;
+ lblEls.forEach(function(L){
+  var s=L.s,v=(s.pin?s.pin.position:s.w).clone();v.y+=2.7;v.project(camera);
+  var show=v.z<1&&v.z>-1;
+  if(state.mode==='intro'&&!REDUCED&&false)show=false;
+  if(!show){L.el.style.display='none';return}
+  L.el.style.display='';
+  if(!L.w||L.w<10)L.w=L.el.offsetWidth||80;
+  var w=L.el.offsetWidth||L.w,x=(v.x*.5+.5)*sizeW,y=(-v.y*.5+.5)*sizeH,m=10;
+  x=cl(x,m+w/2,sizeW-m-w/2);y=cl(y,tm,sizeH-bm);
+  L.el.style.transform='translate('+(x-w/2).toFixed(1)+'px,'+(y-15).toFixed(1)+'px)';
+  L.el.classList.toggle('ok',!!state.collected[s.id]);L.el.classList.toggle('on',state.active===L.i&&s.id!=='mei');
+ });
+}
+function renderScrub(){
+ var tr=$('track'),html='';var n=STOPS.length;
+ tr.querySelectorAll('.dot').forEach(function(d){d.remove()});
+ STOPS.forEach(function(s,i){
+  var b=document.createElement('button');b.className='dot';b.type='button';b.dataset.i=i;
+  b.style.left='calc(8px + (100% - 16px) * '+((i+1)/n)+')';
+  b.innerHTML='<span>'+s.dd+'</span>';b.setAttribute('aria-label','Ir a '+s.n+', '+s.f);
+  b.addEventListener('click',function(){goTo(i)});tr.appendChild(b)});
+}
+function frac(s){
+ var a=anchors.slice(0,5);a.push(anchors[5]);a.push(anchors[6]);
+ // posiciones: inicio=0, paradas i+1 / n ; Frey y Catedral comparten s
+ var pts=[[0,0],[stopS[0],1],[stopS[1],2],[stopS[2],3],[stopS[3],4],[stopS[4],5],[stopS[5],6]];
+ for(var i=0;i<pts.length-1;i++){if(s<=pts[i+1][0]+1e-6||i===pts.length-2){var d=pts[i+1][0]-pts[i][0];var t=d<=1e-6?1:cl((s-pts[i][0])/d,0,1);return (pts[i][1]+(pts[i+1][1]-pts[i][1])*t)/6}}
+ return 1}
+function nearest(){
+ var best=-1,bd=1.3;
+ for(var i=0;i<STOPS.length;i++){var d=Math.abs(state.s-stopS[i]);if(d<bd){bd=d;best=i}}
+ return best}
+function legInfo(){
+ var s=state.s,i;for(i=0;i<stopS.length;i++){if(s<stopS[i]-1.3)break}
+ if(i>=stopS.length)return null;return STOPS[i]}
+function refreshHud(){
+ var f=frac(state.s),tr=$('track'),w=tr.clientWidth-16;
+ $('fill').style.width=(w*f)+'px';$('carDot').style.left=(8+w*f)+'px';
+ var act=nearest();
+ if(act!==state.active){state.active=act;if(act>=0){arrive(act)}else if(!state.sheetPinned){hideSheet()}}
+ var chip=$('chip');
+ if(act>=0){chip.innerHTML='<b>'+STOPS[act].n+'</b>'+STOPS[act].f}
+ else{var nx=legInfo();chip.innerHTML=nx?'<b>Hacia '+nx.c+'</b>'+nx.leg:'<b>Fin del recorrido</b>10 de enero'}
+ var d=document.querySelectorAll('.dot');d.forEach(function(el,i){el.classList.toggle('on',i===state.active);el.classList.toggle('ok',!!state.collected[STOPS[i].id])});
+ $('bPrev').disabled=state.s<=.01;$('bNext').disabled=state.s>=stopS[stopS.length-1]-.01;
+}
+function arrive(i){
+ var s=STOPS[i];
+ if(!state.collected[s.id]){state.collected[s.id]=1;store('pat-parches-maqueta',JSON.stringify(state.collected));renderPbtn();toast('Parche nuevo: '+s.c)}
+ showSheet(s,false);
+}
+function linksFor(s){
+ var a=[['Abrir en Google Maps','https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.q)]];
+ return a.concat(s.links||[]);
+}
+function showSheet(s,open){
+ var sh=$('sheet');sh.hidden=false;state.sheetPinned=(s.id==='mei');
+ var done=!!state.collected[s.id];
+ sh.className='sheet'+(open?' open':'');
+ sh.innerHTML='<button class="sh-head" id="shHead" aria-expanded="'+(open?'true':'false')+'">'+patchSVG(s,s.id==='mei'?true:done)+'<span><h2>'+s.n+'</h2><p>'+s.f+'</p></span><span class="mas">'+(open?'Cerrar':'Ficha')+'</span></button>'+
+ '<div class="sh-body"><h3>Cómo se llega</h3><p style="margin:0">'+s.leg+'</p><h3>Alojamiento</h3><p style="margin:0"><span class="tag '+(s.aloj.ok?'si':'no')+'">'+(s.aloj.ok?'Confirmado':'A confirmar')+'</span>'+s.aloj.t+'</p>'+
+ '<h3>Día por día</h3>'+diasHtml(s)+
+ '<div class="links">'+linksFor(s).map(function(l){return '<a href="'+l[1]+'" target="_blank" rel="noopener">'+l[0]+'</a>'}).join('')+'</div></div>';
+ $('shHead').addEventListener('click',function(){var o=!sh.classList.contains('open');sh.classList.toggle('open',o);this.setAttribute('aria-expanded',o);this.querySelector('.mas').textContent=o?'Cerrar':'Ficha';if(!o&&s.id==='mei'){hideSheet()}});
+}
+function diasHtml(s){
+ var i=STOPS.indexOf(s);
+ if(i<0)return '<ul>'+s.hace.map(function(h){return '<li>'+h+'</li>'}).join('')+'</ul>';
+ return '<ul class="dl">'+DIAS.filter(function(d){return d[4]===i}).map(function(d){return '<li><b>'+d[0]+' '+d[1]+'</b> · '+d[3]+'</li>'}).join('')+'</ul>'}
+function hideSheet(){state.sheetPinned=false;$('sheet').hidden=true}
+
+/* ---------- Movimiento ---------- */
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+function goToS(target){
+ target=cl(target,0,stopS[stopS.length-1]);
+ var from=state.s,dist=Math.abs(target-from);if(dist<.01)return;
+ var dur=REDUCED?1:cl(dist*.045,1.1,3.8)*1000;state.anim={from:from,to:target,t0:performance.now(),dur:dur};
+}
+function goTo(i){state.gen=false;$('bGen').setAttribute('aria-pressed','false');state.sheetPinned=false;goToS(stopS[i])}
+function step(dir){
+ var cur=state.active;var tgt;
+ if(cur>=0){tgt=cur+dir}else{
+  if(dir>0){tgt=stopS.findIndex(function(v){return v>state.s+1.3});if(tgt<0)return}
+  else{tgt=-1;for(var i=0;i<stopS.length;i++){if(stopS[i]<state.s-1.3)tgt=i}if(tgt<0){state.gen=false;goToS(0);return}}}
+ if(tgt<0||tgt>=STOPS.length)return;goTo(tgt)}
+
+var last=performance.now();
+function frame(now){
+ var dt=Math.min(.1,(now-last)/1000);last=now;
+ if(state.anim){var a=state.anim,t=cl((now-a.t0)/a.dur,0,1);state.s=a.from+(a.to-a.from)*ease(t);if(t>=1)state.anim=null}
+ placeCars();updateCam(dt);renderer.render(scene,camera);updateLabels();
+ if(state.mode!=='intro')refreshHud();
+ requestAnimationFrame(frame)}
+
+/* arrastre */
+var drag=null;
+cv.addEventListener('pointerdown',function(e){if(state.mode==='intro')return;drag={x:e.clientX,y:e.clientY,id:e.pointerId};state.anim=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+cv.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+ if(state.gen){state.userYaw-=dx*.006;return}
+ state.s=cl(state.s-dy*.09,0,stopS[stopS.length-1]);state.userYaw=cl(state.userYaw-dx*.006,-1.4,1.4)});
+function endDrag(){drag=null}
+cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+cv.addEventListener('wheel',function(e){if(state.mode==='intro')return;e.preventDefault();state.anim=null;state.s=cl(state.s+e.deltaY*.04,0,stopS[stopS.length-1])},{passive:false});
+cv.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown'){step(1);e.preventDefault()}else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){step(-1);e.preventDefault()}});
+
+/* ---------- Vistas ---------- */
+function showView(v){
+ document.querySelectorAll('.view').forEach(function(e){e.classList.toggle('on',e.id==='v-'+v)});
+ document.querySelectorAll('#tabs button').forEach(function(b){if(b.dataset.v===v)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ try{history.replaceState(null,'','#'+v)}catch(e){}
+ if(v==='recorrido')resize();
+}
+function renderItin(){
+ var h='<h1>Destinos</h1><p class="sub">Seis paradas, de San Martín a Bariloche. Lo que no está confirmado dice "a confirmar".</p>';
+ STOPS.forEach(function(st,i){
+  h+='<article class="dia dest"><div class="f"><b>'+st.dd+'</b></div><div><h2>'+st.n+'</h2><p style="margin:0 0 6px"><span class="tag '+(st.aloj.ok?'si':'no')+'">'+(st.aloj.ok?'Confirmado':'A confirmar')+'</span>'+st.aloj.t+'</p><p style="margin:0 0 6px;font-family:var(--f-mono);font-size:12px">'+st.leg+'</p>'+diasHtml(st)+(THREEok?'<button data-go="'+i+'">Ver en el recorrido</button>':'')+'</div></article>'});
+ h+='<article class="dia opc"><div class="f"><b>6–9/1</b>un día</div><div><h2>Refugio Otto Meiling</h2><p>Dos días: subir, dormir en el refugio y bajar. Solo si el clima está muy bueno. <a href="https://www.windguru.cz/227442" target="_blank" rel="noopener">Windguru</a></p></div></article>';
+ $('itin').innerHTML=h;
+ $('itin').querySelectorAll('[data-go]').forEach(function(b){b.addEventListener('click',function(){showView('recorrido');startJourney(true);goTo(+b.dataset.go)})});
+}
+function startJourney(skip){
+ if(state.mode!=='intro'&&!skip)return;
+ $('intro').classList.add('off');$('hud').hidden=false;state.mode='travel';
+ renderScrub();refreshHud();
+ if(!skip){state.s=0;setTimeout(function(){goTo(0)},REDUCED?0:500)}
+ setTimeout(function(){cv.focus({preventScroll:true})},100);
+}
+
+/* ---------- Arranque ---------- */
+document.querySelectorAll('#tabs button').forEach(function(b){b.addEventListener('click',function(){showView(b.dataset.v)})});
+$('bDirect').addEventListener('click',function(){showView('destinos')});
+$('bNogl').addEventListener('click',function(){showView('destinos')});
+renderItin();renderPbtn();
+$('pbtn').addEventListener('click',function(){renderAlbum();$('album').classList.add('on');$('albumX').focus()});
+$('albumX').addEventListener('click',function(){$('album').classList.remove('on')});
+$('album').addEventListener('click',function(e){if(e.target===this)this.classList.remove('on')});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')$('album').classList.remove('on')});
+
+if(!THREEok||typeof THREE==='undefined'){
+ $('nogl').style.display='grid';$('intro').style.display='none';$('cv').style.display='none';
+}else{
+ initScene();buildLabels();resize();
+ window.addEventListener('resize',resize);
+ if('ResizeObserver' in window)new ResizeObserver(resize).observe(cv.parentNode);
+ state.s=0;cam.tx=-4;cam.ty=1.5;cam.tz=0;cam.yaw=.3;cam.dist=mobile?118:92;cam.pitch=.5;
+ $('bGo').addEventListener('click',function(){startJourney(false)});
+ $('bPrev').addEventListener('click',function(){step(-1)});$('bNext').addEventListener('click',function(){step(1)});
+ $('bGen').addEventListener('click',function(){state.gen=!state.gen;this.setAttribute('aria-pressed',state.gen);state.userYaw=0});
+ requestAnimationFrame(frame);
+}
+var hv=(location.hash||'').slice(1);if(['destinos','casas','autos','gastos'].indexOf(hv)>=0)showView(hv);
+})();
+</script>
+</body>
+</html>
