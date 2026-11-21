@@ -76,3 +76,11 @@ Esta sesión se hizo en una PC con Windows sin Git, Node ni Python, a partir del
 | 2026-11-19 | `Patagonia-2027-rediseno-libre` (carpeta aparte) | Etapa 5: rediseño libre. Equivale a la rama `rediseno-libre`; no mezclar con `main`. |
 
 Publicación (etapa 4): **pendiente**, no se pudo hacer desde esta PC. Pasos en `docs/informe-noche.md`, sección del 19/11.
+## Rediseño "Recorrido 3D" (rama `recorrido-3d`, desde el 21/11/2026)
+
+Checkpoints como ramas (desde la sesión en la nube no se pueden subir tags). Preview de la rama: https://patagonia-2027-git-recorrido-3d-juans-projects-9f7b2d3f.vercel.app
+
+| Fecha | Checkpoint | Qué tiene |
+|---|---|---|
+| 2026-11-21 | `checkpoint/30-antes-recorrido-3d` | `main` publicado (5ff8558), punto de partida del rediseño. |
+| 2026-11-21 | (rama `recorrido-3d`) | Fase 0: plan en `docs/informe-recorrido.md`, sin cambios en la web. Esperando OK. |
