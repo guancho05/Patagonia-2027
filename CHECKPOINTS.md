@@ -83,4 +83,6 @@ Checkpoints como ramas (desde la sesión en la nube no se pueden subir tags). Pr
 | Fecha | Checkpoint | Qué tiene |
 |---|---|---|
 | 2026-11-21 | `checkpoint/30-antes-recorrido-3d` | `main` publicado (5ff8558), punto de partida del rediseño. |
-| 2026-11-21 | (rama `recorrido-3d`) | Fase 0: plan en `docs/informe-recorrido.md`, sin cambios en la web. Esperando OK. |
+| 2026-11-21 | (rama `recorrido-3d`) | Fase 0, primer plan en `docs/informe-recorrido.md`, sin cambios en la web. |
+| 2026-11-23 | `checkpoint/31-antes-plan-route66` | `recorrido-3d` con `main` traído (La Angostura confirmada) y el primer plan. |
+| 2026-11-23 | (rama `recorrido-3d`) | Fase 0 (v2) con la referencia de Route 66: plan en `docs/informe-recorrido.md` y en el artifact https://claude.ai/artifact/HL7Gj71o68WYX44ht7SPjW. Sin cambios en la web. Esperando OK. |

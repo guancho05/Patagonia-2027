@@ -1,5 +1,7 @@
 # Rediseño "Recorrido 3D" — informe
 
+> **Vigente: la sección "Fase 0 (v2)" de abajo** (pedido del 23/11 con la referencia de Route 66 y 10 capturas). Lo que sigue hasta ahí es el primer plan (21/11) y queda como antecedente.
+
 Rama `recorrido-3d` (sale de `main` 5ff8558). Preview: https://patagonia-2027-git-recorrido-3d-juans-projects-9f7b2d3f.vercel.app
 
 Concepto aprobado: `docs/referencias/maqueta-recorrido.html`.
@@ -191,3 +193,97 @@ Ridgeline (Codrops, relieve SRTM con R3F y ScrollTrigger) no se pudo leer: Codro
 3. **Exageración:** ¿arranco en 1,3?
 4. **Autos:** ¿colores de los dos Basalt? Propuesta: uno rojo polar y uno nieve con techo tinta (el modelo admite techo de otro color).
 5. **Route 66:** ¿podés mandarme una grabación de pantalla recorriéndolo? Yo no puedo entrar por el captcha.
+
+
+---
+
+# Fase 0 (v2) · 23/11/2026
+
+**Propuesta para revisar (artifact):** https://claude.ai/artifact/HL7Gj71o68WYX44ht7SPjW
+- Análisis de la referencia, las ocho pantallas, tipografías con selector, paleta con contrastes, diorama, presupuesto y preguntas.
+- Usa curvas de nivel reales (AWS Terrain Tiles, cada 200 m y 1.000 m) y la ruta real de OSRM.
+
+**Capturas:** `docs/capturas/30-plan-recorrido/`.
+
+**Rama:** `recorrido-3d`, con `main` traído (La Angostura confirmada).
+
+## Route 66 · 100 Years 100 Stories, analizada con 10 capturas
+El sitio sigue detrás de un captcha anti-bots: no se pudo ver su código ni sus archivos. No lo intenté saltar. Lo que sigue sale de las capturas y de su ficha en Awwwards.
+
+1. **Carga.** Papel beige con curvas de nivel tenues y contador grande. "Loading *the* experience" mezcla sans gruesa y script. Una ruta fina avanza hasta un círculo; abajo, "Did you know" con un dato. Marco con esquinas redondeadas.
+2. **Intro.** Foto cálida con grano y título enorme muy ancho. Una ruta punteada cruza entre dos años. Botón grande y debajo "entrar sin audio". Texto corto abajo a la izquierda con filete vertical.
+3. **Ruta en foto.** Toma cinematográfica de la ruta, a modo de transición.
+4. **Mapa 3D.**
+   - Diorama del país con canto cortado y agua pintada con espuma alrededor.
+   - Árboles y rocas instanciados, bordes de estados y cinta de ruta pegada al suelo.
+   - Pines 3D parados (estrella para estados, cartel para desvíos) y auto sobre la ruta.
+   - Profundidad de campo fuerte en los bordes (efecto maqueta) y luz cálida con sombras.
+   - Barra superior con Estados, 3D Map y contador de llaveros 1/8.
+   - Tarjeta de ayuda abajo a la izquierda con miniatura y barra de progreso, "Turn off *sound*" y "Swap vehicle".
+5. **Postal.** Inclinada, con borde de papel, foto, "*State*" en script y el nombre enorme. La URL cambia a `/state/oklahoma`.
+6. **Portada del estado.** Foto a pantalla completa, subtítulo con script, nombre gigante, flechas en rombo a los costados y "Scroll to explore".
+7. **Plan al bajar.**
+   - Barra con foto chica, "*Exploring* Oklahoma", pasos Welcome · Stories · Deals y botón de color.
+   - Fondo verde con papel y curvas.
+   - Izquierda: ciudades del tramo y millas. Centro: la ruta que se dibuja, con "*Start* / *End*". Derecha: título condensado y texto.
+   - Abajo, silueta de costa beige que sube.
+   - Botón ovalado "Explore in 3D" con miniatura.
+8. **Tramo 3D con el scroll.**
+   - Al seguir bajando, 3D de cerca con cuadrícula de mapa sobre el terreno.
+   - El auto avanza por la ruta roja con el scroll.
+   - Nombres de pueblos en relieve sobre el piso, carteles y edificios.
+   - La barra muestra el progreso entre las dos ciudades.
+   - "New keychain!" al conseguir un llavero.
+
+**Lo que tomamos:** estructura y nivel de experiencia (1, 2, 4, 5, 6, 7 y los coleccionables).
+
+**Lo que no:** código, textos, fotos, modelos, sonidos, tipografías y marca.
+
+**El tramo 3D con el scroll (8)** no estaba en el pedido; queda como decisión.
+
+## Plan
+El detalle está en el artifact. Resumen de decisiones:
+- **Tipografía (propuesta):**
+  - Archivo Expanded Black (variable: el mismo archivo da la condensada para datos).
+  - Yellowtail como script de acento.
+  - Atkinson Hyperlegible Next para el cuerpo.
+  - Alternativas en el selector: Krona One, Unbounded, Barlow Condensed y Damion.
+  - Fuentes alojadas en el sitio y recortadas al español, para que anden sin conexión.
+- **Paleta:** papel `#EFE6D2`, papel claro `#F7F0E1`, beige oscuro `#D9CBAA`, tierra `#5B4636`, tinta `#2B211A` y rojo polar `#9D2F23` como único acento.
+
+| Destino | Fondo | Contraste con texto papel |
+|---|---|---|
+| San Martín | abeto `#3D594F` | 6,2 |
+| Falkner | marino `#22375C` | 9,6 |
+| Traful | granito oscuro `#4C677B` | 4,8 |
+| La Angostura | oliva oscuro `#5E5440` | 6,0 |
+| Frey | pizarra `#2E353E` | 10,0 |
+| Bariloche | lenga oscura `#8E4519` | 5,6 |
+
+- **Diorama:**
+  - Caja de lat −39,50 a −41,40 y lon −72,10 a −70,90: entran el Lanín y el Tronador.
+  - Copernicus GLO-30 con malla de ≈150 m y normal map horneado a 30 m. Exageración 1,5 (selector 1,2 / 1,5 / 1,8). Canto cortado sobre mesa de agua pintada.
+  - Lagos de OSM con espuma en la orilla.
+  - Árboles instanciados desde OSM y WorldCover: ciprés, coihue y lenga, araucarias cerca del Lanín. Hasta ≈6.000 en el celular y ≈20.000 en PC, con sombras horneadas.
+  - Rocas, nieve, glaciares, ruta real y pines rojo polar.
+  - Desenfoque de bordes, grano y tono cálido.
+- **Técnica:** three.js r170 y GSAP 3.13 + ScrollTrigger, desde `vendor/` con versión fija. Texturas KTX2 con respaldo WebP; calidad adaptativa.
+- **Presupuesto:**
+
+| Qué | Celular gama media | PC |
+|---|---|---|
+| Primera pantalla | ≤ 300 KB | ≤ 300 KB |
+| Intro con vuelo 3D liviano | ≤ 1,5 MB | ≤ 2,5 MB |
+| Diorama completo (detrás de la carga) | ≤ 5 MB | ≤ 10 MB |
+| Triángulos / draw calls | ≤ 400 mil / ≤ 60 | ≤ 1,5 millones / ≤ 120 |
+| Cuadros por segundo | 30 estables | 60 |
+| LCP (Lighthouse móvil) | ≤ 2,5 s | — |
+
+- **Datos:** el Otto Meiling pasa a ser opcional dentro de Bariloche, sin pin ni parche (cambio autorizado). Se aplica al integrar (fase 3), no en esta fase.
+
+## Pendiente de tu definición
+1. Tipografía.
+2. Colores de los dos Basalt (propuesta: rojo polar y beige papel con techo tinta).
+3. Tramo 3D con el scroll dentro de cada destino: ¿sí o no?
+4. Exageración del relieve.
+5. Fotos de portada: ¿las de `FOTOS` o tenés propias?
