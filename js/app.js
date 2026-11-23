@@ -179,7 +179,7 @@ try { const s = JSON.parse(load('pat-casa', 'null')); if (s) { city = s[0] | 0; 
 if (city >= CITIES.length) city = 0; if (hi >= CITIES[city].h.length) hi = 0;
 const hl = $('hl');
 const houseUrl = (c, h) => { const ci = h.ci || c.ci, co = h.co || c.co; return h.id ? AIR(h.id) + '?check_in=' + ci + '&check_out=' + co + '&adults=8' : h.url + '?checkin=' + ci + '&checkout=' + co + '&group_adults=8&no_rooms=' + (h.rooms || 1) + '&selected_currency=USD' };
-const score = h => h.s.reduce((a, b) => a + b, 0);
+const score = h => h.s ? h.s.reduce((a, b) => a + b, 0) : null;
 const mini = u => u.replace('/f_auto,q_auto/', '/f_auto,q_auto,c_fill,w_168,h_120/'), media = (u, w) => u.replace('/f_auto,q_auto/', '/f_auto,q_auto,w_' + w + '/');
 function renderPicked() {
   const filas = [['San Martín', '28 al 30/12'], ['La Angostura', '3 al 5/1'], ['Bariloche', '6 al 10/1']];
@@ -192,7 +192,7 @@ function renderPicked() {
   }).join('');
   $('pickedTab').innerHTML = `<thead><tr><th scope="col">Lugar</th><th scope="col">Casa</th><th scope="col">Fechas</th><th scope="col" class="n">Total</th><th scope="col" class="n">Por persona</th></tr></thead><tbody>${tr}<tr class="tot"><td colspan="3">Confirmado, ${noches(nn)}</td><td class="n">${usd(tot)}</td><td class="n">${usd(tot / N)}</td></tr></tbody>`;
   $('pickedPP').textContent = usd(tot / N);
-  $('pickedSub').textContent = 'por persona, las ' + nn + ' noches confirmadas (falta La Angostura)';
+  $('pickedSub').textContent = 'por persona, las ' + nn + ' noches confirmadas en casas';
 }
 function renderCities() {
   const box = $('cityChips'); box.innerHTML = '';
@@ -204,11 +204,13 @@ function renderCities() {
 function renderList() {
   const c = CITIES[city]; hl.innerHTML = '';
   c.h.forEach((h, i) => { const li = document.createElement('li'), b = document.createElement('button'); b.type = 'button'; b.className = 'day' + (h.out ? ' out' : ''); b.dataset.i = i;
-    b.innerHTML = `<span class="d">${score(h)}/30</span><span class="pin ${h.src === 'Airbnb' ? 'src-air' : 'src-bkg'}" aria-hidden="true"></span><span><span class="t">${h.star ? '<span class="star" aria-hidden="true">★</span> ' : ''}${h.n}</span><span class="s">${usd(h.tot == null ? null : h.tot / N)} c/u · ${h.src}${h.star ? ' · ' + h.star : ''}${h.out ? ' · descartada' : ''}</span></span>`;
+    b.innerHTML = `<span class="d">${score(h) == null ? '—' : score(h) + '/30'}</span><span class="pin ${h.src === 'Airbnb' ? 'src-air' : 'src-bkg'}" aria-hidden="true"></span><span><span class="t">${h.star ? '<span class="star" aria-hidden="true">★</span> ' : ''}${h.n}</span><span class="s">${usd(h.tot == null ? null : h.tot / N)} c/u · ${h.src}${h.star ? ' · ' + h.star : ''}${h.out ? ' · descartada' : ''}</span></span>`;
     b.onclick = () => pick(i, true); li.appendChild(b); hl.appendChild(li) });
 }
 function showPhoto(i) {
-  const h = CITIES[city].h[hi], p = h.f; ph = (i + p.length) % p.length; const img = $('hphoto');
+  const h = CITIES[city].h[hi], p = h.f; const img = $('hphoto');
+  if (!p.length) { img.removeAttribute('srcset'); img.removeAttribute('src'); img.alt = ''; $('hcred').textContent = 'Fotos: ver el anuncio en ' + h.src; $('hcount').textContent = ''; return }
+  ph = (i + p.length) % p.length;
   img.srcset = [640, 1200].map(w => media(p[ph], w) + ' ' + w + 'w').join(','); img.sizes = '(max-width: 820px) 100vw, 740px'; img.src = media(p[ph], 1200); img.alt = 'Foto ' + (ph + 1) + ' de ' + p.length + ': ' + h.n;
   $('hcred').textContent = 'Foto del anuncio en ' + h.src; $('hcount').textContent = (ph + 1) + ' / ' + p.length;
   document.querySelectorAll('#hthumbs button').forEach((b, j) => { if (j === ph) { b.setAttribute('aria-current', 'true'); const t = $('hthumbs'); t.scrollTo({ left: b.offsetLeft - t.clientWidth / 2 + b.clientWidth / 2, behavior: sinMov() ? 'auto' : 'smooth' }) } else b.removeAttribute('aria-current') });
@@ -226,7 +228,7 @@ function pick(i, user) {
   $('httl').textContent = h.n;
   $('hlead').textContent = (h.out ? 'Descartada: en ' + c.n + ' ya está confirmada la casa ' + CONF[c.k] + '. ' : '') + (h.star === 'Confirmada ✓' ? 'Confirmada. ' : '') + h.lead;
   $('hstats').innerHTML = [['Por persona', usd(h.tot == null ? null : h.tot / N)], ['Total cotizado · ' + noches(nq), usd(h.tot)], ['Reseñas', h.rat], ['Camas', h.beds], ['Dónde', h.zona]].map(s => `<div class="stat"><dt>${s[0]}</dt><dd>${s[1]}</dd></div>`).join('');
-  $('hbars').innerHTML = h.s.map((v, j) => `<dt>${SC[j]}</dt><dd><span class="tr" aria-hidden="true"><i style="width:${v * 20}%"></i></span><b>${v}/5</b></dd>`).join('') + `<div class="tot"><span>Puntaje total</span><span>${score(h)}/30</span></div>`;
+  $('hbars').innerHTML = !h.s ? '<p>Sin puntaje: se reservó sin comparar con la grilla.</p>' : h.s.map((v, j) => `<dt>${SC[j]}</dt><dd><span class="tr" aria-hidden="true"><i style="width:${v * 20}%"></i></span><b>${v}/5</b></dd>`).join('') + `<div class="tot"><span>Puntaje total</span><span>${score(h)}/30</span></div>`;
   $('hpro').innerHTML = h.pro.map(x => `<li>${x}</li>`).join(''); $('hcon').innerHTML = h.con.map(x => `<li>${x}</li>`).join('');
   $('hlinks').innerHTML = `<a href="${houseUrl(c, h)}" target="_blank" rel="noopener">Ver en ${h.src} ↗</a>` + (h.bk ? `<a href="${h.bk}?checkin=${c.ci}&checkout=${c.co}&group_adults=8&no_rooms=1&selected_currency=USD" target="_blank" rel="noopener">Ver en Booking ↗</a>` : '') + `<a href="${MAP(h.map)}" target="_blank" rel="noopener">Ver en el mapa ↗</a>`;
   $('hprev').disabled = i === 0; $('hnext').disabled = i === c.h.length - 1;
